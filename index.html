@@ -1,1 +1,90 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <title>GAMEFREE.WIN</title> <style> html, body { margin: 0; padding: 0; background-color: black; display: flex; justify-content: center; align-items: center; flex-direction: column; } .container { display: inline-block; position: relative; } .main-image { display: block; max-width: 100%; height: auto; } .taskbar { position: relative; } .taskbar img { width: 100%; display: block; } /* CLICKABLE AREA */ .click-zone { position: absolute; left: 19px; top: 10px; width: 69px; height: 28px; cursor: pointer; } /* ABOUT SECTION */ .about { display: none; color: white; margin-top: 10px; max-width: 400px; text-align: center; font-family: Arial, sans-serif; } </style> </head> <body> <div class="container"> <img src="gamerfre.png" class="main-image" alt="main image"> <div class="taskbar"> <img src="takbasr14.png" alt="taskbar"> <!-- Invisible clickable rectangle --> <div class="click-zone" onclick="toggleAbout()"></div> </div> </div> <div class="about" id="about"> <p> the <br> gamerfree.win zxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcm <br> play the games / watch the films blarghblorghblorghblar<br> NNaNNaNNaNNaNNaNNaNNaNNa </p> </div> <script> function toggleAbout() { const about = document.getElementById("about"); about.style.display = (about.style.display === "block") ? "none" : "block"; } </script> </body> </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GAMEFREE.WIN</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+ 
+        html, body {
+            background-color: black;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+ 
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+ 
+        .main-image {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+ 
+        .taskbar {
+            position: relative;
+            width: 100%;
+        }
+ 
+        .taskbar img {
+            width: 100%;
+            display: block;
+        }
+ 
+        .click-zone {
+            position: absolute;
+            left: 19px;
+            top: 10px;
+            width: 69px;
+            height: 28px;
+            cursor: pointer;
+        }
+ 
+        .about {
+            display: none;
+            color: white;
+            margin-top: 10px;
+            max-width: 400px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+ 
+    <div class="container">
+        <img src="gamerfre.png" class="main-image" alt="main image">
+        <div class="taskbar">
+            <img src="takbasr14.png" alt="taskbar">
+            <div class="click-zone" onclick="toggleAbout()"></div>
+        </div>
+    </div>
+ 
+    <div class="about" id="about">
+        <p>
+            the <br>
+            gamerfree.win zxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcm <br>
+            play the games / watch the films blarghblorghblorghblar <br>
+            NNaNNaNNaNNaNNaNNaNNaNNa
+        </p>
+    </div>
+ 
+    <script>
+        function toggleAbout() {
+            const about = document.getElementById("about");
+            about.style.display = (about.style.display === "block") ? "none" : "block";
+        }
+    </script>
+ 
+</body>
+</html>
