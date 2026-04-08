@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GAMEFREE.WIN</title>
+    <title>Image</title>
     <style>
         body {
             margin: 0;
@@ -13,13 +13,32 @@
             align-items: center;
         }
 
-        img {
+        .center-image {
             max-width: 100%;
             height: auto;
+        }
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .taskbar img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
     </style>
 </head>
 <body>
-    <img src="gamerfre.png" alt="center image">
+
+    <img src="gamerfre.png" class="center-image" alt="center image">
+
+    <div class="taskbar">
+        <img src="takbasr.png" alt="taskbar">
+    </div>
+
 </body>
 </html>
