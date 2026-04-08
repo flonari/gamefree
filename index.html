@@ -67,62 +67,21 @@
 
         .about {
             display: none;
-            margin-top: 12px;
-            width: 320px;
-            font-family: "MS Sans Serif", Arial, sans-serif;
-            font-size: 11px;
-            color: black;
-            border: 2px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            background-color: #d4d0c8;
+            margin-top: 8px;
+            width: 310px;
+            background-color: #c0c0c0;
+            border: 3px outset #c0c0c0;
+            font-family: Comic Sans MS, Arial, sans-serif;
+            font-size: 13px;
+            color: #000080;
+            padding: 4px;
+            text-align: center;
         }
 
-        .about-titlebar {
-            background: linear-gradient(to right, #000080, #1084d0);
-            color: white;
-            font-weight: bold;
-            font-size: 11px;
-            padding: 2px 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: "MS Sans Serif", Arial, sans-serif;
-        }
-
-        .about-titlebar-buttons {
-            display: flex;
-            gap: 2px;
-        }
-
-        .about-titlebar-btn {
-            background: #d4d0c8;
-            border: 1px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            width: 16px;
-            height: 14px;
-            font-size: 9px;
-            font-weight: bold;
-            color: black;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: "MS Sans Serif", Arial, sans-serif;
-            line-height: 1;
-        }
-
-        .about-body {
-            padding: 8px 10px;
-            border: 2px solid;
-            border-color: #808080 #ffffff #ffffff #808080;
-            margin: 4px;
-            background: #d4d0c8;
-            text-align: left;
-        }
-
-        .about-body p {
-            margin: 0;
-            line-height: 1.6;
+        .about p {
+            margin: 6px 2px;
+            line-height: 1.8;
+            word-break: break-all;
         }
     </style>
 </head>
@@ -141,22 +100,12 @@
     </div>
 
     <div class="about" id="about">
-        <div class="about-titlebar">
-            <span>&#128196; About gamerfree.win</span>
-            <div class="about-titlebar-buttons">
-                <div class="about-titlebar-btn">_</div>
-                <div class="about-titlebar-btn">&#9633;</div>
-                <div class="about-titlebar-btn" onclick="toggleAbout()">&#x2715;</div>
-            </div>
-        </div>
-        <div class="about-body">
-            <p>
-                the <br>
-                gamerfree.win zxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcm <br>
-                play the games / watch the films blarghblorghblorghblar <br>
-                NNaNNaNNaNNaNNaNNaNNaNNa
-            </p>
-        </div>
+        <p>
+            the <br>
+            gamerfree.win zxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcm <br>
+            play the games / watch the films blarghblorghblorghblar <br>
+            NNaNNaNNaNNaNNaNNaNNaNNa
+        </p>
     </div>
 
     <script>
@@ -164,9 +113,14 @@
 
         function playGameSound() {
             if (currentGameAudio && !currentGameAudio.ended) return;
+            const zone = document.querySelector(".game-zone");
             const track = Math.floor(Math.random() * 7) + 1;
             currentGameAudio = new Audio("game" + track + ".ogg");
             currentGameAudio.play();
+            zone.style.cursor = "default";
+            currentGameAudio.addEventListener("ended", function () {
+                zone.style.cursor = "pointer";
+            });
         }
 
         function playClickSound() {
