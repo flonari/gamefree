@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
         }
-
+ 
         html, body {
             background-color: black;
             min-height: 100vh;
@@ -18,25 +18,25 @@
             align-items: center;
             flex-direction: column;
         }
-
+ 
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-
+ 
         .main-image-wrap {
             position: relative;
             display: block;
             line-height: 0;
         }
-
+ 
         .main-image {
             display: block;
             max-width: 100%;
             height: auto;
         }
-
+ 
         .game-zone {
             position: absolute;
             left: 164px;
@@ -45,17 +45,17 @@
             height: 71px;
             cursor: pointer;
         }
-
+ 
         .taskbar {
             position: relative;
             width: 100%;
         }
-
+ 
         .taskbar img {
             width: 100%;
             display: block;
         }
-
+ 
         .click-zone {
             position: absolute;
             left: 19px;
@@ -64,7 +64,7 @@
             height: 28px;
             cursor: pointer;
         }
-
+ 
         .about {
             display: none;
             margin-top: 8px;
@@ -77,16 +77,49 @@
             padding: 4px;
             text-align: center;
         }
-
+ 
         .about p {
             margin: 6px 2px;
             line-height: 1.8;
             word-break: break-all;
         }
+        @keyframes glitch-shake {
+            0%   { transform: translate(0, 0) skewX(0deg); }
+            10%  { transform: translate(-6px, 3px) skewX(-2deg); }
+            20%  { transform: translate(8px, -4px) skewX(1deg); }
+            30%  { transform: translate(-3px, 6px) skewX(3deg); }
+            40%  { transform: translate(10px, -2px) skewX(-1deg); }
+            50%  { transform: translate(-8px, 5px) skewX(2deg); }
+            60%  { transform: translate(5px, -7px) skewX(-3deg); }
+            70%  { transform: translate(-10px, 2px) skewX(1deg); }
+            80%  { transform: translate(7px, -5px) skewX(-2deg); }
+            90%  { transform: translate(-4px, 8px) skewX(3deg); }
+            100% { transform: translate(0, 0) skewX(0deg); }
+        }
+ 
+        @keyframes flicker {
+            0%   { visibility: visible; }
+            49%  { visibility: visible; }
+            50%  { visibility: hidden; }
+            99%  { visibility: hidden; }
+            100% { visibility: visible; }
+        }
+ 
+        body.glitching {
+            animation: glitch-shake 0.18s steps(1) infinite, glitch-colors 0.25s steps(1) infinite;
+        }
+ 
+        #blackout {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
-
+ 
     <div class="container">
         <div class="main-image-wrap">
             <img src="gamerfre.png" class="main-image" alt="main image">
@@ -98,7 +131,7 @@
             <div class="click-zone" onclick="toggleAbout()"></div>
         </div>
     </div>
-
+ 
     <div class="about" id="about">
         <p>
             the <br>
@@ -106,16 +139,91 @@
             play the games / watch the films blarghblorghblorghblar <br>
             NNaNNaNNaNNaNNaNNaNNaNNa
         </p>
-        the website is on version 0.1.1  a state that has nothing done
     </div>
-
+ 
     <script>
         let currentGameAudio = null;
-
+ 
+        function triggerGlitch() {
+            const audio = new Audio("game3.ogg");
+            currentGameAudio = audio;
+            const zone = document.querySelector(".game-zone");
+            zone.style.cursor = "default";
+            audio.play();
+ 
+            const container = document.querySelector(".container");
+            const about = document.getElementById("about");
+            const elements = [container, about].filter(Boolean);
+ 
+            let moveInterval = null;
+            let flickerInterval = null;
+            let flickerPeriod = 500; // ms, starts at 0.5s
+            let flickerAccelId = null;
+            let flickerVisible = true;
+ 
+            const flickerOverlay = document.getElementById("blackout");
+ 
+            function startFlicker() {
+                if (flickerInterval) clearInterval(flickerInterval);
+                flickerInterval = setInterval(function () {
+                    flickerVisible = !flickerVisible;
+                    flickerOverlay.style.display = flickerVisible ? "none" : "block";
+                }, flickerPeriod / 2);
+            }
+ 
+            function accelerateFlicker() {
+                flickerPeriod = Math.max(40, flickerPeriod * 0.78);
+                startFlicker();
+            }
+ 
+            // 1.5s in: start moving elements around
+            setTimeout(function () {
+                moveInterval = setInterval(function () {
+                    elements.forEach(function (el) {
+                        const x = (Math.random() - 0.5) * 60;
+                        const y = (Math.random() - 0.5) * 40;
+                        el.style.transform = "translate(" + x + "px, " + y + "px)";
+                    });
+                }, 80);
+ 
+                // Start flicker at 0.5s period, then accelerate every 400ms
+                startFlicker();
+                flickerAccelId = setInterval(accelerateFlicker, 400);
+            }, 1500);
+ 
+            // Blackout 0.8s before end
+            audio.addEventListener("loadedmetadata", function () {
+                const blackoutAt = (audio.duration - 0.8) * 1000;
+                setTimeout(function () {
+                    clearInterval(moveInterval);
+                    clearInterval(flickerInterval);
+                    clearInterval(flickerAccelId);
+                    elements.forEach(function (el) {
+                        el.style.transform = "";
+                        el.style.visibility = "visible";
+                    });
+                    flickerOverlay.style.display = "block";
+                }, blackoutAt);
+            });
+ 
+            audio.addEventListener("ended", function () {
+                location.reload();
+            });
+        }
+ 
         function playGameSound() {
             if (currentGameAudio && !currentGameAudio.ended) return;
             const zone = document.querySelector(".game-zone");
-            const track = Math.floor(Math.random() * 7) + 1;
+ 
+            const roll = Math.random();
+            if (roll < 0.01) {
+                triggerGlitch();
+                return;
+            }
+ 
+            // pick from game1-7 but skip game3
+            const pool = [1,2,4,5,6,7];
+            const track = pool[Math.floor(Math.random() * pool.length)];
             currentGameAudio = new Audio("game" + track + ".ogg");
             currentGameAudio.play();
             zone.style.cursor = "default";
@@ -123,19 +231,28 @@
                 zone.style.cursor = "pointer";
             });
         }
-
+ 
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Tab") {
+                e.preventDefault();
+                if (currentGameAudio && !currentGameAudio.ended) return;
+                triggerGlitch();
+            }
+        });
+ 
         function playClickSound() {
             const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
             const audio = new Audio(file);
             audio.play();
         }
-
+ 
         function toggleAbout() {
             playClickSound();
             const about = document.getElementById("about");
             about.style.display = (about.style.display === "block") ? "none" : "block";
         }
     </script>
-
+    <div id="blackout"></div>
+ 
 </body>
 </html>
