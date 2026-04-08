@@ -25,10 +25,25 @@
             align-items: center;
         }
 
+        .main-image-wrap {
+            position: relative;
+            display: block;
+            line-height: 0;
+        }
+
         .main-image {
             display: block;
             max-width: 100%;
             height: auto;
+        }
+
+        .game-zone {
+            position: absolute;
+            left: 164px;
+            top: 267px;
+            width: 79px;
+            height: 71px;
+            cursor: pointer;
         }
 
         .taskbar {
@@ -52,18 +67,73 @@
 
         .about {
             display: none;
+            margin-top: 12px;
+            width: 320px;
+            font-family: "MS Sans Serif", Arial, sans-serif;
+            font-size: 11px;
+            color: black;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            background-color: #d4d0c8;
+        }
+
+        .about-titlebar {
+            background: linear-gradient(to right, #000080, #1084d0);
             color: white;
-            margin-top: 10px;
-            max-width: 400px;
-            text-align: center;
-            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 11px;
+            padding: 2px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: "MS Sans Serif", Arial, sans-serif;
+        }
+
+        .about-titlebar-buttons {
+            display: flex;
+            gap: 2px;
+        }
+
+        .about-titlebar-btn {
+            background: #d4d0c8;
+            border: 1px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            width: 16px;
+            height: 14px;
+            font-size: 9px;
+            font-weight: bold;
+            color: black;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "MS Sans Serif", Arial, sans-serif;
+            line-height: 1;
+        }
+
+        .about-body {
+            padding: 8px 10px;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            margin: 4px;
+            background: #d4d0c8;
+            text-align: left;
+        }
+
+        .about-body p {
+            margin: 0;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="gamerfre.png" class="main-image" alt="main image">
+        <div class="main-image-wrap">
+            <img src="gamerfre.png" class="main-image" alt="main image">
+            <div class="game-zone" onclick="playGameSound()"></div>
+        </div>
+        </div>
         <div class="taskbar">
             <img src="takbasr14.png" alt="taskbar">
             <div class="click-zone" onclick="toggleAbout()"></div>
@@ -71,15 +141,34 @@
     </div>
 
     <div class="about" id="about">
-        <p>
-            the <br>
-            gamerfree.win zxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcm <br>
-            play the games / watch the films blarghblorghblorghblar <br>
-            NNaNNaNNaNNaNNaNNaNNaNNa
-        </p>
+        <div class="about-titlebar">
+            <span>&#128196; About gamerfree.win</span>
+            <div class="about-titlebar-buttons">
+                <div class="about-titlebar-btn">_</div>
+                <div class="about-titlebar-btn">&#9633;</div>
+                <div class="about-titlebar-btn" onclick="toggleAbout()">&#x2715;</div>
+            </div>
+        </div>
+        <div class="about-body">
+            <p>
+                the <br>
+                gamerfree.win zxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcm <br>
+                play the games / watch the films blarghblorghblorghblar <br>
+                NNaNNaNNaNNaNNaNNaNNaNNa
+            </p>
+        </div>
     </div>
 
     <script>
+        let currentGameAudio = null;
+
+        function playGameSound() {
+            if (currentGameAudio && !currentGameAudio.ended) return;
+            const track = Math.floor(Math.random() * 7) + 1;
+            currentGameAudio = new Audio("game" + track + ".ogg");
+            currentGameAudio.play();
+        }
+
         function playClickSound() {
             const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
             const audio = new Audio(file);
