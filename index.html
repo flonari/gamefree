@@ -45,14 +45,27 @@
         }
 
         /* ABOUT SECTION */
-        .about {
-            display: none;
-            color: white;
-            margin-top: 10px;
-            max-width: 400px;
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
+       .about {
+    display: none;
+    color: white;
+    margin-top: 10px;
+    max-width: 400px;
+    text-align: center;
+
+    /* PIXEL FONT */
+    font-family: "Courier New", monospace;
+
+    /* MAKE IT CHUNKY */
+    font-size: 20px;
+    letter-spacing: 2px;
+
+    /* STRETCH EFFECT */
+    transform: scaleY(1.8);
+    
+    /* KEEP IT SHARP (NO SMOOTHING) */
+    image-rendering: pixelated;
+    -webkit-font-smoothing: none;
+}
     </style>
 </head>
 <body>
