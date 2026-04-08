@@ -193,7 +193,7 @@
  
             // Blackout 0.8s before end
             audio.addEventListener("loadedmetadata", function () {
-                const blackoutAt = (audio.duration - 0.8) * 1000;
+                const blackoutAt = (audio.duration - 1.5) * 1000;
                 setTimeout(function () {
                     clearInterval(moveInterval);
                     clearInterval(flickerInterval);
