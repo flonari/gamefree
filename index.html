@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
         }
- 
+
         html, body {
             background-color: black;
             min-height: 100vh;
@@ -18,29 +18,29 @@
             align-items: center;
             flex-direction: column;
         }
- 
+
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
- 
+
         .main-image {
             display: block;
             max-width: 100%;
             height: auto;
         }
- 
+
         .taskbar {
             position: relative;
             width: 100%;
         }
- 
+
         .taskbar img {
             width: 100%;
             display: block;
         }
- 
+
         .click-zone {
             position: absolute;
             left: 19px;
@@ -49,7 +49,7 @@
             height: 28px;
             cursor: pointer;
         }
- 
+
         .about {
             display: none;
             color: white;
@@ -61,7 +61,7 @@
     </style>
 </head>
 <body>
- 
+
     <div class="container">
         <img src="gamerfre.png" class="main-image" alt="main image">
         <div class="taskbar">
@@ -69,7 +69,7 @@
             <div class="click-zone" onclick="toggleAbout()"></div>
         </div>
     </div>
- 
+
     <div class="about" id="about">
         <p>
             the <br>
@@ -78,13 +78,20 @@
             NNaNNaNNaNNaNNaNNaNNaNNa
         </p>
     </div>
- 
+
     <script>
+        function playClickSound() {
+            const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
+            const audio = new Audio(file);
+            audio.play();
+        }
+
         function toggleAbout() {
+            playClickSound();
             const about = document.getElementById("about");
             about.style.display = (about.style.display === "block") ? "none" : "block";
         }
     </script>
- 
+
 </body>
 </html>
