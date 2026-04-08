@@ -4,22 +4,28 @@
     <meta charset="UTF-8">
     <title>Image</title>
     <style>
-        body {
+        html, body {
             margin: 0;
-            height: 100vh;
+            padding: 0;
             background-color: black;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .center-image {
+        .container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .main-image {
+            display: block;
             max-width: 100%;
             height: auto;
         }
 
         .taskbar {
-            position: fixed;
+            position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
@@ -27,17 +33,17 @@
 
         .taskbar img {
             width: 100%;
-            height: auto;
             display: block;
         }
     </style>
 </head>
 <body>
 
-    <img src="gamerfre.png" class="center-image" alt="center image">
-
-    <div class="taskbar">
-        <img src="takbasr.png" alt="taskbar">
+    <div class="container">
+        <img src="gamerfre.png" class="main-image" alt="main image">
+        <div class="taskbar">
+            <img src="takbasr.png" alt="taskbar">
+        </div>
     </div>
 
 </body>
