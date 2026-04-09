@@ -356,12 +356,16 @@
         function toggleCollection() {
             playClickSound();
             const col = document.getElementById("collection");
+            const about = document.getElementById("about");
+            about.style.display = "none";
             col.style.display = (col.style.display === "block") ? "none" : "block";
         }
 
         function toggleAbout() {
             playClickSound();
             const about = document.getElementById("about");
+            const col = document.getElementById("collection");
+            col.style.display = "none";
             about.style.display = (about.style.display === "block") ? "none" : "block";
         }
     </script>
