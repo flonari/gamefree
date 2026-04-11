@@ -74,7 +74,6 @@
     </style>
 </head>
 <body>
-    <audio src="ambient2.ogg" autoplay loop></audio>
     <div class="links" id="links">
         <a onclick="showImage('49.png')">11.04.2026</a>
     </div>
@@ -86,6 +85,8 @@
 
     <script>
         function showImage(src) {
+            const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
+            new Audio(file).play();
             document.getElementById("links").style.display = "none";
             const view = document.getElementById("image-view");
             document.getElementById("draw-img").src = src;
