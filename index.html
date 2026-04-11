@@ -74,6 +74,34 @@
             cursor: pointer;
         }
 
+        .draws-zone {
+            position: absolute;
+            left: 265px;
+            top: 9px;
+            width: 75px;
+            height: 31px;
+            cursor: pointer;
+        }
+
+        #loading-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            font-size: 18px;
+            color: #6ed632;
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        #loading-screen.visible {
+            display: flex;
+        }
+
         .collection {
             display: none;
             margin-top: 8px;
@@ -226,6 +254,7 @@
             <img src="takbasr14.png" alt="taskbar">
             <div class="click-zone" onclick="toggleAbout()"></div>
             <div class="collection-zone" onclick="toggleCollection()"></div>
+            <div class="draws-zone" onclick="goToDraws()"></div>
         </div>
     </div>
 
@@ -362,6 +391,33 @@
             audio.play();
         }
 
+        function goToDraws() {
+            // wipe everything visible
+            document.querySelector(".container").style.display = "none";
+            document.getElementById("about").style.display = "none";
+            document.getElementById("collection").style.display = "none";
+
+            const screen = document.getElementById("loading-screen");
+            const text = document.getElementById("loading-text");
+            screen.classList.add("visible");
+
+            // animate dots: loading. loading.. loading... cycling
+            let dots = 0;
+            const dotsInterval = setInterval(function () {
+                dots = (dots + 1) % 4;
+                text.textContent = "loading" + ".".repeat(dots);
+            }, 400);
+
+            // after 4s fade out then redirect
+            setTimeout(function () {
+                clearInterval(dotsInterval);
+                screen.style.opacity = "0";
+                setTimeout(function () {
+                    window.location.href = "/draws";
+                }, 1000);
+            }, 4000);
+        }
+
         function toggleCollection() {
             playClickSound();
             const col = document.getElementById("collection");
@@ -378,6 +434,7 @@
             about.style.display = (about.style.display === "block") ? "none" : "block";
         }
     </script>
+    <div id="loading-screen"><span id="loading-text">loading</span></div>
     <div id="blackout"></div>
 
 </body>
