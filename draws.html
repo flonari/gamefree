@@ -31,6 +31,7 @@
             color: #6ed632;
             text-decoration: underline;
             letter-spacing: 1px;
+            cursor: pointer;
         }
 
         .links a:visited {
@@ -40,11 +41,60 @@
         .links a:hover {
             color: #9fff4c;
         }
+
+        #image-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        #image-view img {
+            max-width: 90vw;
+            max-height: 90vh;
+            display: block;
+        }
+
+        #back-btn {
+            font-family: monospace;
+            font-size: 11px;
+            color: #3a7a10;
+            letter-spacing: 2px;
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        #back-btn:hover {
+            color: #6ed632;
+        }
     </style>
 </head>
 <body>
-    <div class="links">
-        <a href="draw1.png">11.04.2026</a>
+    <div class="links" id="links">
+        <a onclick="showImage('draw1.png')">draw1</a>
     </div>
+
+    <div id="image-view">
+        <img id="draw-img" src="" alt="">
+        <button id="back-btn" onclick="goBack()">← back</button>
+    </div>
+
+    <script>
+        function showImage(src) {
+            document.getElementById("links").style.display = "none";
+            const view = document.getElementById("image-view");
+            document.getElementById("draw-img").src = src;
+            view.style.display = "flex";
+        }
+
+        function goBack() {
+            document.getElementById("image-view").style.display = "none";
+            document.getElementById("draw-img").src = "";
+            document.getElementById("links").style.display = "flex";
+        }
+    </script>
 </body>
 </html>
