@@ -78,7 +78,9 @@
             display: none;
             margin-top: 8px;
             width: 370px;
-            border: 1px solid #555;
+            border: 1px solid #4a4a4a;
+            border-right-color: #333;
+            border-bottom-color: #333;
             background: transparent;
             font-family: monospace;
             font-size: 11px;
@@ -86,11 +88,11 @@
         }
 
         .collection-header {
-            border-bottom: 1px solid #555;
-            padding: 4px 8px;
-            color: #777;
-            letter-spacing: 2px;
-            font-size: 10px;
+            border-bottom: 1px solid #4a4a4a;
+            padding: 3px 8px 4px 6px;
+            color: #666;
+            letter-spacing: 3px;
+            font-size: 9px;
             text-transform: uppercase;
         }
 
@@ -101,11 +103,11 @@
 
         .collection-slot {
             flex: 1;
-            border-right: 1px solid #555;
+            border-right: 1px solid #3f3f3f;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 8px 6px;
+            padding: 9px 6px 7px;
             gap: 6px;
         }
 
@@ -116,7 +118,9 @@
         .collection-slot-img {
             width: 64px;
             height: 64px;
-            border: 1px solid #444;
+            border: 1px solid #3a3a3a;
+            border-right-color: #222;
+            border-bottom-color: #222;
             background: transparent;
             display: flex;
             align-items: center;
@@ -128,7 +132,7 @@
         .collection-slot-img::after {
             content: "";
             position: absolute;
-            background: #444;
+            background: #3a3a3a;
         }
 
         .collection-slot-img::before {
@@ -136,7 +140,6 @@
             height: 1px;
             top: 50%;
             left: 0;
-            transform: rotate(0deg);
         }
 
         .collection-slot-img::after {
@@ -147,7 +150,7 @@
         }
 
         .collection-slot-label {
-            color: #555;
+            color: #484848;
             font-size: 9px;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -157,19 +160,30 @@
             display: none;
             margin-top: 8px;
             width: 310px;
-            background-color: #c0c0c0;
-            border: 3px outset #c0c0c0;
-            font-family: Comic Sans MS, Arial, sans-serif;
-            font-size: 13px;
-            color: #000080;
-            padding: 4px;
-            text-align: center;
+            border: 1px solid #4a4a4a;
+            border-right-color: #333;
+            border-bottom-color: #333;
+            background: transparent;
+            font-family: monospace;
+            font-size: 11px;
+            color: #aaa;
         }
 
-        .about p {
-            margin: 6px 2px;
-            line-height: 1.8;
+        .about-header {
+            border-bottom: 1px solid #4a4a4a;
+            padding: 3px 8px 4px 6px;
+            color: #666;
+            letter-spacing: 3px;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .about-body {
+            padding: 10px 12px;
+            color: #888;
+            line-height: 1.9;
             word-break: break-all;
+            font-size: 11px;
         }
         @keyframes glitch-shake {
             0%   { transform: translate(0, 0) skewX(0deg); }
@@ -222,12 +236,13 @@
     </div>
 
     <div class="about" id="about">
-        <p>
+        <div class="about-header">// about //</div>
+        <div class="about-body">
             the <br>
             gamerfree.win zxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcm <br>
             play the games / watch the films blarghblorghblorghblar <br>
             NNaNNaNNaNNaNNaNNaNNaNNa
-        </p>
+        </div>
     </div>
 
     <div class="collection" id="collection">
