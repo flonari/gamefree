@@ -262,13 +262,7 @@
             animation: vc-blink 1.1s steps(1) infinite;
         }
 
-        #vc-label {
-            color: #5F5E5A;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            font-size: 9px;
-            white-space: nowrap;
-        }
+        #vc-label { display: none; }
 
         #vc-digits {
             display: flex;
@@ -291,13 +285,9 @@
         .vc-digit.glitch { color: #B4B2A9; }
         .vc-digit.dead   { color: #2C2C2A; }
 
-        #vc-sfx {
-            font-size: 9px;
-            color: #5F5E5A;
-            letter-spacing: 1px;
-            font-family: monospace;
-            flex-shrink: 0;
-        }
+        #vc-sfx { display: none; }
+        #vc-dot { display: none; }
+        #vc-wrap { justify-content: center; }
 
         @keyframes vc-blink {
             0%, 49%  { background: #888780; }
@@ -362,7 +352,7 @@
     <script>
         /* ── VISIT COUNTER ── */
         (function () {
-            var BASE = 494, DIGITS = 6;
+            var BASE = 494, DIGITS = 3;
             function getCount() {
                 return BASE;
             }
