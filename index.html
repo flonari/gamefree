@@ -83,25 +83,6 @@
             cursor: pointer;
         }
 
-        #loading-screen {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: black;
-            z-index: 99999;
-            align-items: center;
-            justify-content: center;
-            font-family: monospace;
-            font-size: 18px;
-            color: #6ed632;
-            opacity: 1;
-            transition: opacity 1s ease;
-        }
-
-        #loading-screen.visible {
-            display: flex;
-        }
-
         .collection {
             display: none;
             margin-top: 8px;
@@ -234,6 +215,16 @@
             z-index: 9999;
         }
 
+        #fade-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 99999;
+            opacity: 0;
+            transition: opacity 1.8s ease;
+        }
+
         /* ── VISIT COUNTER ── */
         #visit-counter {
             display: flex;
@@ -348,6 +339,9 @@
             </div>
         </div>
     </div>
+
+    <div id="fade-overlay"></div>
+    <div id="blackout"></div>
 
     <script>
         /* ── VISIT COUNTER ── */
@@ -488,22 +482,16 @@
         }
 
         function goToDraws() {
-            document.querySelector(".container").style.display = "none";
-            document.getElementById("about").style.display = "none";
-            document.getElementById("collection").style.display = "none";
-            const screen = document.getElementById("loading-screen");
-            const text = document.getElementById("loading-text");
-            screen.classList.add("visible");
-            let dots = 0;
-            const dotsInterval = setInterval(function () {
-                dots = (dots + 1) % 4;
-                text.textContent = "loading" + ".".repeat(dots);
-            }, 400);
+            const overlay = document.getElementById("fade-overlay");
+            overlay.style.display = "block";
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    overlay.style.opacity = "1";
+                });
+            });
             setTimeout(function () {
-                clearInterval(dotsInterval);
-                screen.style.opacity = "0";
-                setTimeout(function () { window.location.href = "/draws"; }, 1000);
-            }, 4000);
+                window.location.href = "/draws";
+            }, 2000);
         }
 
         function toggleCollection() {
@@ -522,9 +510,6 @@
             about.style.display = (about.style.display === "block") ? "none" : "block";
         }
     </script>
-
-    <div id="loading-screen"><span id="loading-text">loading</span></div>
-    <div id="blackout"></div>
 
 </body>
 </html>
