@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GAMEFREE.WIN</title>
+    <title>I YELL AT MY TV FOR ITS HORRIBLE CRIMES</title>
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -11,581 +11,647 @@
         }
 
         html, body {
-            background-color: black;
+            background-color: #000;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .main-image-wrap {
-            position: relative;
-            display: block;
-            line-height: 0;
-        }
-
-        .main-image {
-            display: block;
-            max-width: 100%;
-            height: auto;
-        }
-
-        .game-zone {
-            position: absolute;
-            left: 164px;
-            top: 267px;
-            width: 79px;
-            height: 71px;
-            cursor: pointer;
-        }
-
-        .taskbar {
-            position: relative;
-            width: 100%;
-        }
-
-        .taskbar img {
-            width: 100%;
-            display: block;
-        }
-
-        .click-zone {
-            position: absolute;
-            left: 19px;
-            top: 10px;
-            width: 69px;
-            height: 28px;
-            cursor: pointer;
-        }
-
-        .collection-zone {
-            position: absolute;
-            left: 124px;
-            top: 11px;
-            width: 105px;
-            height: 25px;
-            cursor: pointer;
-        }
-
-        .draws-zone {
-            position: absolute;
-            left: 265px;
-            top: 9px;
-            width: 75px;
-            height: 31px;
-            cursor: pointer;
-        }
-
-        /* ── VIDEOS BUTTON ── */
-        .videos-zone {
-            position: absolute;
-            left: 350px;
-            top: 9px;
-            width: 75px;
-            height: 31px;
-            cursor: pointer;
-            display: flex;
             align-items: center;
             justify-content: center;
             font-family: monospace;
+            color: #6ed632;
+            padding: 20px 0;
+        }
+
+        /* scanlines */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.2) 2px,
+                rgba(0,0,0,0.2) 4px
+            );
+            pointer-events: none;
+            z-index: 9000;
+        }
+
+        /* header */
+        #site-header {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        #site-title {
+            font-size: 8px;
+            color: #4caf1a;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        #back-btn {
+            font-family: monospace;
+            font-size: 8px;
+            color: #4caf1a;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: 1px solid #2a5c0a;
+            padding: 3px 7px;
+            background: transparent;
+        }
+
+        #back-btn:hover {
+            color: #9eff4e;
+            border-color: #6ed632;
+        }
+
+        /* player */
+        #player-wrap {
+            position: relative;
+            width: 480px;
+            border: 2px solid #4caf1a;
+            background: #000;
+            box-shadow: 0 0 24px rgba(78,175,26,0.06);
+        }
+
+        /* screen */
+        #screen-area {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        #main-video {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            filter: contrast(1.05) brightness(0.85) saturate(0.55);
+        }
+
+        /* no signal */
+        #no-signal {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            background: #000;
+        }
+
+        #no-signal.visible { display: flex; }
+
+        .tv-bars {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                #fff    0%,   #fff    12.5%,
+                #ff0   12.5%, #ff0    25%,
+                #0ff   25%,   #0ff    37.5%,
+                #0f0   37.5%, #0f0    50%,
+                #f0f   50%,   #f0f    62.5%,
+                #f00   62.5%, #f00    75%,
+                #00f   75%,   #00f    87.5%,
+                #000   87.5%, #000   100%
+            );
+            opacity: 0.13;
+        }
+
+        .ns-text {
+            font-family: monospace;
+            font-size: 10px;
+            color: #6ed632;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            z-index: 1;
+            text-shadow: 0 0 6px #4caf1a;
+            animation: ns-blink 3s steps(1) infinite;
+            margin-bottom: 8px;
+        }
+
+        .ns-sub {
+            font-family: monospace;
+            font-size: 8px;
+            color: #2a5c0a;
+            letter-spacing: 3px;
+            z-index: 1;
+            text-transform: uppercase;
+        }
+
+        @keyframes ns-blink {
+            0%, 80%, 84%, 88%, 100% { opacity: 1; }
+            82%, 86%                 { opacity: 0; }
+        }
+
+        /* vhs tracking line */
+        #tracking-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(110,214,50,0.12);
+            pointer-events: none;
+            z-index: 10;
+            animation: tracking 11s linear infinite;
+            mix-blend-mode: screen;
+        }
+
+        @keyframes tracking {
+            0%   { top: -4px; }
+            100% { top: 100%; }
+        }
+
+        /* paused blink */
+        #paused-label {
+            position: absolute;
+            top: 8px;
+            right: 10px;
             font-size: 9px;
             color: #6ed632;
+            letter-spacing: 3px;
+            opacity: 0;
+            z-index: 20;
+            animation: blink 1s steps(1) infinite;
+            text-shadow: 0 0 5px #4caf1a;
+        }
+
+        #paused-label.visible { opacity: 1; }
+
+        @keyframes blink {
+            0%, 49%  { opacity: 1; }
+            50%, 100% { opacity: 0.15; }
+        }
+
+        /* now playing badge */
+        #now-playing-badge {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            font-size: 7px;
+            color: #6ed632;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 20;
+            text-shadow: 0 0 5px #4caf1a;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #now-playing-badge.visible { opacity: 1; }
+
+        /* controls */
+        #controls {
+            border-top: 1px solid #1a4a06;
+            padding: 7px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #040404;
+        }
+
+        #progress-wrap {
+            width: 100%;
+            height: 5px;
+            background: #0d1f05;
+            border: 1px solid #1a4a06;
+            cursor: pointer;
+            position: relative;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: #4caf1a;
+            width: 0%;
+        }
+
+        #ctrl-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ctrl-btn {
+            font-family: monospace;
+            font-size: 8px;
+            color: #4caf1a;
+            background: transparent;
+            border: 1px solid #2a5c0a;
+            padding: 3px 7px;
+            cursor: pointer;
             letter-spacing: 2px;
             text-transform: uppercase;
         }
 
-        .collection {
-            display: none;
-            margin-top: 8px;
-            width: 370px;
-            border: 2px solid #4caf1a;
-            background: #0a0a0a;
-            font-family: monospace;
-            font-size: 11px;
-            color: #6ed632;
+        .ctrl-btn:hover, .ctrl-btn.active {
+            color: #9eff4e;
+            border-color: #6ed632;
         }
 
-        .collection-header {
-            border-bottom: 2px solid #4caf1a;
-            padding: 4px 8px;
+        #time-display {
+            font-size: 8px;
             color: #4caf1a;
-            letter-spacing: 3px;
-            font-size: 9px;
+            letter-spacing: 2px;
+            margin-left: auto;
+        }
+
+        /* status */
+        #status-bar {
+            width: 480px;
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0 0;
+            font-size: 7px;
+            color: #2a5c0a;
+            letter-spacing: 2px;
+        }
+
+        /* ── CATALOGUE ── */
+        #catalogue-wrap {
+            width: 480px;
+            margin-top: 10px;
+            border: 2px solid #4caf1a;
+            background: #040404;
+        }
+
+        #catalogue-header {
+            border-bottom: 1px solid #1a4a06;
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #catalogue-title {
+            font-size: 8px;
+            color: #4caf1a;
+            letter-spacing: 4px;
             text-transform: uppercase;
         }
 
-        .collection-slots {
-            display: flex;
-            gap: 0;
+        #catalogue-count {
+            font-size: 7px;
+            color: #2a5c0a;
+            letter-spacing: 2px;
         }
 
-        .collection-slot {
+        .cat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-bottom: 1px solid #0d1f05;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .cat-item:last-child {
+            border-bottom: none;
+        }
+
+        .cat-item:hover {
+            background: #0a1a03;
+        }
+
+        .cat-item.active {
+            background: #0d2205;
+        }
+
+        .cat-num {
+            font-size: 7px;
+            color: #1a4a06;
+            letter-spacing: 2px;
+            min-width: 24px;
+        }
+
+        .cat-item.active .cat-num {
+            color: #6ed632;
+        }
+
+        .cat-thumb {
+            width: 64px;
+            height: 36px;
+            background: #0a0a0a;
+            border: 1px solid #1a4a06;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cat-item.active .cat-thumb {
+            border-color: #4caf1a;
+        }
+
+        .cat-thumb-bars {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                #fff 0%, #fff 12.5%,
+                #ff0 12.5%, #ff0 25%,
+                #0ff 25%, #0ff 37.5%,
+                #0f0 37.5%, #0f0 50%,
+                #f0f 50%, #f0f 62.5%,
+                #f00 62.5%, #f00 75%,
+                #00f 75%, #00f 87.5%,
+                #000 87.5%, #000 100%
+            );
+            opacity: 0.18;
+        }
+
+        .cat-thumb-label {
+            font-size: 6px;
+            color: #4caf1a;
+            letter-spacing: 1px;
+            z-index: 1;
+            text-shadow: 0 0 4px #000;
+        }
+
+        .cat-playing-icon {
+            font-size: 7px;
+            color: #6ed632;
+            z-index: 1;
+            animation: blink 0.8s steps(1) infinite;
+        }
+
+        .cat-info {
             flex: 1;
-            border-right: 1px solid #2a5c0a;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 9px 6px 7px;
-            gap: 6px;
+            gap: 3px;
         }
 
-        .collection-slot:last-child {
-            border-right: none;
-        }
-
-        .collection-slot-img {
-            width: 64px;
-            height: 64px;
-            border: 1px solid #2a5c0a;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .collection-slot-img::before,
-        .collection-slot-img::after {
-            content: "";
-            position: absolute;
-            background: #2a5c0a;
-        }
-
-        .collection-slot-img::before {
-            width: 100%;
-            height: 1px;
-            top: 50%;
-            left: 0;
-        }
-
-        .collection-slot-img::after {
-            width: 1px;
-            height: 100%;
-            left: 50%;
-            top: 0;
-        }
-
-        .collection-slot-label {
-            color: #3a7a10;
+        .cat-name {
             font-size: 9px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .about {
-            display: none;
-            margin-top: 8px;
-            width: 310px;
-            border: 2px solid #4caf1a;
-            background: #0a0a0a;
-            font-family: monospace;
-            font-size: 11px;
-            color: #6ed632;
-        }
-
-        .about-header {
-            border-bottom: 2px solid #4caf1a;
-            padding: 4px 8px;
             color: #4caf1a;
-            letter-spacing: 3px;
-            font-size: 9px;
+            letter-spacing: 2px;
             text-transform: uppercase;
         }
 
-        .about-body {
-            padding: 10px 12px;
-            color: #6ed632;
-            line-height: 1.9;
-            word-break: break-all;
-            font-size: 11px;
+        .cat-item.active .cat-name {
+            color: #9eff4e;
         }
 
-        @keyframes glitch-shake {
-            0%   { transform: translate(0, 0) skewX(0deg); }
-            10%  { transform: translate(-6px, 3px) skewX(-2deg); }
-            20%  { transform: translate(8px, -4px) skewX(1deg); }
-            30%  { transform: translate(-3px, 6px) skewX(3deg); }
-            40%  { transform: translate(10px, -2px) skewX(-1deg); }
-            50%  { transform: translate(-8px, 5px) skewX(2deg); }
-            60%  { transform: translate(5px, -7px) skewX(-3deg); }
-            70%  { transform: translate(-10px, 2px) skewX(1deg); }
-            80%  { transform: translate(7px, -5px) skewX(-2deg); }
-            90%  { transform: translate(-4px, 8px) skewX(3deg); }
-            100% { transform: translate(0, 0) skewX(0deg); }
+        .cat-meta {
+            font-size: 7px;
+            color: #2a5c0a;
+            letter-spacing: 1px;
         }
 
-        body.glitching {
-            animation: glitch-shake 0.18s steps(1) infinite;
-        }
-
-        #blackout {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: black;
-            z-index: 9999;
-        }
-
-        #fade-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: black;
-            z-index: 99999;
-            opacity: 0;
-            transition: opacity 1.8s ease;
-        }
-
-        /* ── VISIT COUNTER ── */
-        #visit-counter {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            padding: 10px 0 4px;
-        }
-
-        #vc-wrap {
+        .cat-load-btn {
+            font-family: monospace;
+            font-size: 7px;
+            color: #2a5c0a;
             background: transparent;
-            font-family: monospace;
-            color: #888780;
-            padding: 4px 10px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            position: relative;
-        }
-
-        #vc-dot {
-            width: 4px;
-            height: 4px;
-            background: #888780;
-            border-radius: 50%;
+            border: 1px solid #1a4a06;
+            padding: 3px 6px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
             flex-shrink: 0;
-            animation: vc-blink 1.1s steps(1) infinite;
         }
 
-        #vc-label { display: none; }
-
-        #vc-digits {
-            display: flex;
-            gap: 1px;
-            align-items: center;
+        .cat-item:hover .cat-load-btn {
+            color: #4caf1a;
+            border-color: #2a5c0a;
         }
 
-        .vc-digit {
-            color: #888780;
-            font-family: monospace;
-            font-size: 18px;
-            width: 13px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-        }
-
-        .vc-digit.glitch { color: #B4B2A9; }
-        .vc-digit.dead   { color: #2C2C2A; }
-
-        #vc-sfx { display: none; }
-        #vc-dot { display: none; }
-        #vc-wrap { justify-content: center; }
-
-        @keyframes vc-blink {
-            0%, 49%  { background: #888780; }
-            50%, 100% { background: transparent; }
+        .cat-item.active .cat-load-btn {
+            color: #6ed632;
+            border-color: #4caf1a;
         }
     </style>
 </head>
 <body>
-<audio src="ambient2.ogg" autoplay loop></audio>
 
-    <!-- VISIT COUNTER -->
-    <div id="visit-counter">
-        <div id="vc-wrap">
-            <div id="vc-dot"></div>
-            <span id="vc-label">// visitors //</span>
-            <div id="vc-digits"></div>
-            <span id="vc-sfx">unique</span>
-        </div>
+    <div id="site-header">
+        <span id="site-title">//FREEGAME.WIN//TELEVISION//</span>
+        <button id="back-btn" onclick="window.location.href='/'">← BACK</button>
     </div>
 
-    <div class="container">
-        <div class="main-image-wrap">
-            <img src="gamerfre.png" class="main-image" alt="main image">
-            <div class="game-zone" onclick="playGameSound()"></div>
-        </div>
-        <div class="taskbar">
-            <img src="takbasr14.png" alt="taskbar">
-            <div class="click-zone" onclick="toggleAbout()"></div>
-            <div class="collection-zone" onclick="toggleCollection()"></div>
-            <div class="draws-zone" onclick="goToDraws()"></div>
-            <div class="videos-zone" onclick="goToVideos()"></div>
-        </div>
-    </div>
-
-    <div class="about" id="about">
-        <div class="about-header">// about //</div>
-        <div class="about-body">
-            the <br>
-            gamerfree.win zxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcmnzxcm <br>
-            play the games / watch the films blarghblorghblorghblar <br>
-            NNaNNaNNaNNaNNaNNaNNaNNa
-        </div>
-    </div>
-
-    <div class="collection" id="collection">
-        <div class="collection-header">// collection //</div>
-        <div class="collection-slots">
-            <div class="collection-slot">
-                <div class="collection-slot-img"></div>
-                <div class="collection-slot-label">slot 1</div>
+    <div id="player-wrap">
+        <div id="screen-area" onclick="togglePlay()">
+            <video id="main-video" src="video1.mp4" preload="metadata"></video>
+            <div id="tracking-line"></div>
+            <div id="paused-label">■ PAUSED</div>
+            <div id="now-playing-badge">▶ NOW PLAYING</div>
+            <div id="no-signal">
+                <div class="tv-bars"></div>
+                <div class="ns-text">// NO SIGNAL //</div>
+                <div class="ns-sub">check up on it later</div>
             </div>
-            <div class="collection-slot">
-                <div class="collection-slot-img"></div>
-                <div class="collection-slot-label">slot 2</div>
+        </div>
+
+        <div id="controls">
+            <div id="progress-wrap" onclick="seekTo(event)">
+                <div id="progress-fill"></div>
             </div>
-            <div class="collection-slot">
-                <div class="collection-slot-img"></div>
-                <div class="collection-slot-label">slot 3</div>
+            <div id="ctrl-row">
+                <button class="ctrl-btn" id="play-btn" onclick="togglePlay()">▶ PLAY</button>
+                <button class="ctrl-btn" id="mute-btn" onclick="toggleMute()">VOL ON</button>
+                <span id="time-display">00:00 / 00:00</span>
             </div>
         </div>
     </div>
 
-    <div id="fade-overlay"></div>
-    <div id="blackout"></div>
+    <div id="status-bar">
+        <span id="status-left">RDY_</span>
+        <span id="status-right"></span>
+    </div>
+
+    <!-- CATALOGUE -->
+    <div id="catalogue-wrap">
+        <div id="catalogue-header">
+            <span id="catalogue-title">// BROADCAST CATALOGUE //</span>
+            <span id="catalogue-count">3 TITLES</span>
+        </div>
+
+        <div class="cat-item active" id="cat-0" onclick="loadVideo(0)">
+            <span class="cat-num">CH.1</span>
+            <div class="cat-thumb">
+                <div class="cat-thumb-bars"></div>
+                <span class="cat-playing-icon">▶</span>
+            </div>
+            <div class="cat-info">
+                <span class="cat-name">VIDEO 01</span>
+                <span class="cat-meta">SRC: VIDEO1.MP4 &nbsp;·&nbsp; TAPE A</span>
+            </div>
+            <button class="cat-load-btn">LOAD</button>
+        </div>
+
+        <div class="cat-item" id="cat-1" onclick="loadVideo(1)">
+            <span class="cat-num">CH.2</span>
+            <div class="cat-thumb">
+                <div class="cat-thumb-bars"></div>
+                <span class="cat-thumb-label">VIDEO2</span>
+            </div>
+            <div class="cat-info">
+                <span class="cat-name">VIDEO 02</span>
+                <span class="cat-meta">SRC: VIDEO2.MP4 &nbsp;·&nbsp; TAPE B</span>
+            </div>
+            <button class="cat-load-btn">LOAD</button>
+        </div>
+
+        <div class="cat-item" id="cat-2" onclick="loadVideo(2)">
+            <span class="cat-num">CH.3</span>
+            <div class="cat-thumb">
+                <div class="cat-thumb-bars"></div>
+                <span class="cat-thumb-label">VIDEO3</span>
+            </div>
+            <div class="cat-info">
+                <span class="cat-name">VIDEO 03</span>
+                <span class="cat-meta">SRC: VIDEO3.MP4 &nbsp;·&nbsp; TAPE C</span>
+            </div>
+            <button class="cat-load-btn">LOAD</button>
+        </div>
+    </div>
 
     <script>
-        /* ── VISIT COUNTER ── */
-        (function () {
-            var BASE = 638, DIGITS = 3;
-            function getCount() { return BASE; }
-            function render() {
-                var n = String(getCount()).padStart(DIGITS, '0');
-                var gi = Math.random() < 0.25 ? Math.floor(Math.random() * DIGITS) : -1;
-                var di = Math.random() < 0.12 ? Math.floor(Math.random() * DIGITS) : -1;
-                if (di === gi) di = -1;
-                var c = document.getElementById('vc-digits');
-                c.innerHTML = '';
-                for (var i = 0; i < n.length; i++) {
-                    var d = document.createElement('div');
-                    d.className = 'vc-digit';
-                    if (i === gi) { d.classList.add('glitch'); d.textContent = '??%!#@'[Math.floor(Math.random() * 6)]; }
-                    else if (i === di) { d.classList.add('dead'); d.textContent = n[i]; }
-                    else { d.textContent = n[i]; }
-                    c.appendChild(d);
-                }
-                var opts = ['unique', 'or???', 'souls', 'visits', 'unknwn', 'unique'];
-                document.getElementById('vc-sfx').textContent = opts[Math.floor(Math.random() * opts.length)];
-            }
-            render();
-            setInterval(render, 2800);
-            setInterval(function () {
-                if (Math.random() < 0.2) {
-                    var w = document.getElementById('vc-wrap');
-                    w.style.transform = 'translate(' + (Math.random() * 3 - 1.5) + 'px,' + (Math.random() * 1.5 - 0.75) + 'px)';
-                    setTimeout(function () { w.style.transform = ''; }, 80);
-                }
-            }, 1800);
-            setInterval(function () {
-                var ds = document.querySelectorAll('.vc-digit:not(.glitch):not(.dead)');
-                if (ds.length && Math.random() < 0.3) {
-                    var d = ds[Math.floor(Math.random() * ds.length)], o = d.textContent;
-                    d.style.color = '#B4B2A9';
-                    d.textContent = '??%!#@'[Math.floor(Math.random() * 6)];
-                    setTimeout(function () { d.style.color = ''; d.textContent = o; }, 90);
-                }
-            }, 700);
-        })();
+        const video      = document.getElementById('main-video');
+        const playBtn    = document.getElementById('play-btn');
+        const muteBtn    = document.getElementById('mute-btn');
+        const progFill   = document.getElementById('progress-fill');
+        const timeDsp    = document.getElementById('time-display');
+        const pausedLbl  = document.getElementById('paused-label');
+        const nowPlaying = document.getElementById('now-playing-badge');
+        const statusL    = document.getElementById('status-left');
+        const statusR    = document.getElementById('status-right');
+        const noSignal   = document.getElementById('no-signal');
 
-        /* ── GAME AUDIO ── */
-        let currentGameAudio = null;
+        const videos = [
+            { src: 'video1.mp4', label: 'VIDEO 01' },
+            { src: 'video2.mp4', label: 'VIDEO 02' },
+            { src: 'video3.mp4', label: 'VIDEO 03' },
+        ];
 
-        function triggerGlitch() {
-            const audio = new Audio("game3.ogg");
-            currentGameAudio = audio;
-            const zone = document.querySelector(".game-zone");
-            zone.style.cursor = "default";
-            audio.play();
+        let currentIndex = 0;
 
-            const container = document.querySelector(".container");
-            const about = document.getElementById("about");
-            const elements = [container, about].filter(Boolean);
-
-            let moveInterval = null;
-            let flickerInterval = null;
-            let flickerPeriod = 500;
-            let flickerAccelId = null;
-            let flickerVisible = true;
-            const flickerOverlay = document.getElementById("blackout");
-
-            function startFlicker() {
-                if (flickerInterval) clearInterval(flickerInterval);
-                flickerInterval = setInterval(function () {
-                    flickerVisible = !flickerVisible;
-                    flickerOverlay.style.display = flickerVisible ? "none" : "block";
-                }, flickerPeriod / 2);
-            }
-
-            function accelerateFlicker() {
-                flickerPeriod = Math.max(40, flickerPeriod * 0.78);
-                startFlicker();
-            }
-
-            setTimeout(function () {
-                moveInterval = setInterval(function () {
-                    elements.forEach(function (el) {
-                        const x = (Math.random() - 0.5) * 60;
-                        const y = (Math.random() - 0.5) * 40;
-                        el.style.transform = "translate(" + x + "px, " + y + "px)";
-                    });
-                }, 80);
-                startFlicker();
-                flickerAccelId = setInterval(accelerateFlicker, 400);
-            }, 1500);
-
-            audio.addEventListener("loadedmetadata", function () {
-                const blackoutAt = (audio.duration - 0.8) * 1000;
-                setTimeout(function () {
-                    clearInterval(moveInterval);
-                    clearInterval(flickerInterval);
-                    clearInterval(flickerAccelId);
-                    elements.forEach(function (el) {
-                        el.style.transform = "";
-                        el.style.visibility = "visible";
-                    });
-                    flickerOverlay.style.display = "block";
-                }, blackoutAt);
-            });
-
-            audio.addEventListener("ended", function () {
-                location.reload();
-            });
+        function fmt(s) {
+            if (isNaN(s)) return '00:00';
+            return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(Math.floor(s%60)).padStart(2,'0');
         }
 
-        function playGameSound() {
-            if (currentGameAudio && !currentGameAudio.ended) return;
-            const zone = document.querySelector(".game-zone");
-            const roll = Math.random();
-            if (roll < 0.01) { triggerGlitch(); return; }
-            const pool = [1, 2, 4, 5, 6, 7];
-            const track = pool[Math.floor(Math.random() * pool.length)];
-            currentGameAudio = new Audio("game" + track + ".ogg");
-            currentGameAudio.play();
-            zone.style.cursor = "default";
-            currentGameAudio.addEventListener("ended", function () {
-                zone.style.cursor = "pointer";
+        function loadVideo(index) {
+            const wasPlaying = !video.paused;
+            currentIndex = index;
+
+            // update catalogue highlight
+            document.querySelectorAll('.cat-item').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+                const thumb = el.querySelector('.cat-thumb-label, .cat-playing-icon');
+                if (thumb) {
+                    if (i === index) {
+                        thumb.className = 'cat-playing-icon';
+                        thumb.textContent = '▶';
+                    } else {
+                        thumb.className = 'cat-thumb-label';
+                        thumb.textContent = videos[i].label.replace(' ', '');
+                    }
+                }
             });
+
+            // reset player state
+            video.pause();
+            playBtn.textContent = '▶ PLAY';
+            playBtn.classList.remove('active');
+            pausedLbl.classList.remove('visible');
+            nowPlaying.classList.remove('visible');
+            progFill.style.width = '0%';
+            timeDsp.textContent = '00:00 / 00:00';
+            statusL.textContent = 'LOADING_';
+
+            noSignal.classList.remove('visible');
+            video.style.display = 'block';
+
+            video.src = videos[index].src;
+            video.load();
+
+            if (wasPlaying) {
+                video.addEventListener('loadedmetadata', function autoPlay() {
+                    video.play();
+                    video.removeEventListener('loadedmetadata', autoPlay);
+                });
+            }
         }
 
-        document.addEventListener("keydown", function (e) {
-            if (e.key === "Tab") {
-                e.preventDefault();
-                if (currentGameAudio && !currentGameAudio.ended) return;
-                triggerGlitch();
+        function togglePlay() {
+            if (video.paused) {
+                video.play();
+                playBtn.textContent = '■ STOP';
+                playBtn.classList.add('active');
+                pausedLbl.classList.remove('visible');
+                nowPlaying.classList.add('visible');
+                statusL.textContent = 'PLAYING_';
+            } else {
+                video.pause();
+                playBtn.textContent = '▶ PLAY';
+                playBtn.classList.remove('active');
+                pausedLbl.classList.add('visible');
+                nowPlaying.classList.remove('visible');
+                statusL.textContent = 'PAUSED_';
             }
+        }
+
+        function toggleMute() {
+            video.muted = !video.muted;
+            muteBtn.textContent = video.muted ? 'VOL OFF' : 'VOL ON';
+            muteBtn.classList.toggle('active', video.muted);
+        }
+
+        function seekTo(e) {
+            if (!video.duration) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            video.currentTime = ((e.clientX - rect.left) / rect.width) * video.duration;
+        }
+
+        video.addEventListener('timeupdate', function () {
+            if (!video.duration) return;
+            progFill.style.width = (video.currentTime / video.duration * 100) + '%';
+            timeDsp.textContent = fmt(video.currentTime) + ' / ' + fmt(video.duration);
+            statusR.textContent = new Date().toLocaleTimeString('en-GB', {hour12:false});
         });
 
-        function playClickSound() {
-            const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
-            new Audio(file).play();
-        }
+        video.addEventListener('loadedmetadata', function () {
+            noSignal.classList.remove('visible');
+            video.style.display = 'block';
+            statusL.textContent = 'RDY_';
+        });
 
-        function goToDraws() {
-            const overlay = document.getElementById("fade-overlay");
-            overlay.style.display = "block";
-            requestAnimationFrame(function () {
-                requestAnimationFrame(function () {
-                    overlay.style.opacity = "1";
-                });
-            });
-            setTimeout(function () {
-                window.location.href = "/draws";
-            }, 2000);
-        }
+        video.addEventListener('ended', function () {
+            playBtn.textContent = '▶ PLAY';
+            playBtn.classList.remove('active');
+            pausedLbl.classList.remove('visible');
+            nowPlaying.classList.remove('visible');
+            statusL.textContent = 'END_';
+        });
 
-        /* ── VIDEOS FREAK-OUT ── */
-        function goToVideos() {
-            const blackout = document.getElementById("blackout");
-            const container = document.querySelector(".container");
-            const about = document.getElementById("about");
-            const collection = document.getElementById("collection");
-            const counter = document.getElementById("visit-counter");
-            const allEls = [container, about, collection, counter];
+        video.addEventListener('error', function () {
+            noSignal.classList.add('visible');
+            video.style.display = 'none';
+            statusL.textContent = 'NO_SIGNAL_';
+            nowPlaying.classList.remove('visible');
+        });
 
-            let flickerInterval = null;
-            let shakeInterval = null;
-            let flickerPeriod = 120;
-            let visible = true;
-            let elapsed = 0;
-            const freakDuration = 2800; // ms of chaos
-            const pauseDuration = 600;  // ms of pure black silence
-
-            // start shaking everything
-            shakeInterval = setInterval(function () {
-                allEls.forEach(function (el) {
-                    if (!el) return;
-                    const x = (Math.random() - 0.5) * 80;
-                    const y = (Math.random() - 0.5) * 50;
-                    const skew = (Math.random() - 0.5) * 6;
-                    el.style.transform = "translate(" + x + "px," + y + "px) skewX(" + skew + "deg)";
-                });
-            }, 60);
-
-            // flicker the blackout overlay, getting faster over time
-            function runFlicker() {
-                flickerInterval = setInterval(function () {
-                    elapsed += flickerPeriod;
-                    visible = !visible;
-                    blackout.style.display = visible ? "none" : "block";
-
-                    // accelerate flicker as we go
-                    flickerPeriod = Math.max(30, flickerPeriod * 0.92);
-                    clearInterval(flickerInterval);
-
-                    if (elapsed >= freakDuration) {
-                        // chaos over — go full black, pause, then redirect
-                        clearInterval(shakeInterval);
-                        allEls.forEach(function (el) {
-                            if (!el) return;
-                            el.style.transform = "";
-                            el.style.visibility = "hidden";
-                        });
-                        blackout.style.display = "block";
-                        setTimeout(function () {
-                            window.location.href = "/videos";
-                        }, pauseDuration);
-                    } else {
-                        runFlicker();
-                    }
-                }, flickerPeriod);
-            }
-
-            runFlicker();
-        }
-
-        function toggleCollection() {
-            playClickSound();
-            const col = document.getElementById("collection");
-            const about = document.getElementById("about");
-            about.style.display = "none";
-            col.style.display = (col.style.display === "block") ? "none" : "block";
-        }
-
-        function toggleAbout() {
-            playClickSound();
-            const about = document.getElementById("about");
-            const col = document.getElementById("collection");
-            col.style.display = "none";
-            about.style.display = (about.style.display === "block") ? "none" : "block";
-        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+            if (e.key === 'ArrowRight') { currentIndex = (currentIndex + 1) % videos.length; loadVideo(currentIndex); }
+            if (e.key === 'ArrowLeft')  { currentIndex = (currentIndex - 1 + videos.length) % videos.length; loadVideo(currentIndex); }
+        });
     </script>
 
 </body>
