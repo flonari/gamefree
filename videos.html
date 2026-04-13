@@ -19,6 +19,7 @@
             justify-content: center;
             font-family: monospace;
             color: #6ed632;
+            padding: 20px 0;
         }
 
         /* scanlines */
@@ -49,7 +50,7 @@
 
         #site-title {
             font-size: 8px;
-            color: #2a5c0a;
+            color: #4caf1a;
             letter-spacing: 4px;
             text-transform: uppercase;
         }
@@ -57,18 +58,18 @@
         #back-btn {
             font-family: monospace;
             font-size: 8px;
-            color: #2a5c0a;
+            color: #4caf1a;
             letter-spacing: 3px;
             text-transform: uppercase;
             cursor: pointer;
-            border: 1px solid #1a4a06;
+            border: 1px solid #2a5c0a;
             padding: 3px 7px;
             background: transparent;
         }
 
         #back-btn:hover {
-            color: #6ed632;
-            border-color: #4caf1a;
+            color: #9eff4e;
+            border-color: #6ed632;
         }
 
         /* player */
@@ -194,6 +195,23 @@
             50%, 100% { opacity: 0.15; }
         }
 
+        /* now playing badge */
+        #now-playing-badge {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            font-size: 7px;
+            color: #6ed632;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 20;
+            text-shadow: 0 0 5px #4caf1a;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #now-playing-badge.visible { opacity: 1; }
+
         /* controls */
         #controls {
             border-top: 1px solid #1a4a06;
@@ -228,9 +246,9 @@
         .ctrl-btn {
             font-family: monospace;
             font-size: 8px;
-            color: #2a5c0a;
+            color: #4caf1a;
             background: transparent;
-            border: 1px solid #1a4a06;
+            border: 1px solid #2a5c0a;
             padding: 3px 7px;
             cursor: pointer;
             letter-spacing: 2px;
@@ -238,13 +256,13 @@
         }
 
         .ctrl-btn:hover, .ctrl-btn.active {
-            color: #6ed632;
-            border-color: #4caf1a;
+            color: #9eff4e;
+            border-color: #6ed632;
         }
 
         #time-display {
             font-size: 8px;
-            color: #1a4a06;
+            color: #4caf1a;
             letter-spacing: 2px;
             margin-left: auto;
         }
@@ -256,8 +274,166 @@
             justify-content: space-between;
             padding: 5px 0 0;
             font-size: 7px;
+            color: #2a5c0a;
+            letter-spacing: 2px;
+        }
+
+        /* ── CATALOGUE ── */
+        #catalogue-wrap {
+            width: 480px;
+            margin-top: 10px;
+            border: 2px solid #4caf1a;
+            background: #040404;
+        }
+
+        #catalogue-header {
+            border-bottom: 1px solid #1a4a06;
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #catalogue-title {
+            font-size: 8px;
+            color: #4caf1a;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        #catalogue-count {
+            font-size: 7px;
+            color: #2a5c0a;
+            letter-spacing: 2px;
+        }
+
+        .cat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-bottom: 1px solid #0d1f05;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .cat-item:last-child {
+            border-bottom: none;
+        }
+
+        .cat-item:hover {
+            background: #0a1a03;
+        }
+
+        .cat-item.active {
+            background: #0d2205;
+        }
+
+        .cat-num {
+            font-size: 7px;
             color: #1a4a06;
             letter-spacing: 2px;
+            min-width: 24px;
+        }
+
+        .cat-item.active .cat-num {
+            color: #6ed632;
+        }
+
+        .cat-thumb {
+            width: 64px;
+            height: 36px;
+            background: #0a0a0a;
+            border: 1px solid #1a4a06;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cat-item.active .cat-thumb {
+            border-color: #4caf1a;
+        }
+
+        .cat-thumb-bars {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                #fff 0%, #fff 12.5%,
+                #ff0 12.5%, #ff0 25%,
+                #0ff 25%, #0ff 37.5%,
+                #0f0 37.5%, #0f0 50%,
+                #f0f 50%, #f0f 62.5%,
+                #f00 62.5%, #f00 75%,
+                #00f 75%, #00f 87.5%,
+                #000 87.5%, #000 100%
+            );
+            opacity: 0.18;
+        }
+
+        .cat-thumb-label {
+            font-size: 6px;
+            color: #4caf1a;
+            letter-spacing: 1px;
+            z-index: 1;
+            text-shadow: 0 0 4px #000;
+        }
+
+        .cat-playing-icon {
+            font-size: 7px;
+            color: #6ed632;
+            z-index: 1;
+            animation: blink 0.8s steps(1) infinite;
+        }
+
+        .cat-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .cat-name {
+            font-size: 9px;
+            color: #4caf1a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .cat-item.active .cat-name {
+            color: #9eff4e;
+        }
+
+        .cat-meta {
+            font-size: 7px;
+            color: #2a5c0a;
+            letter-spacing: 1px;
+        }
+
+        .cat-load-btn {
+            font-family: monospace;
+            font-size: 7px;
+            color: #2a5c0a;
+            background: transparent;
+            border: 1px solid #1a4a06;
+            padding: 3px 6px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .cat-item:hover .cat-load-btn {
+            color: #4caf1a;
+            border-color: #2a5c0a;
+        }
+
+        .cat-item.active .cat-load-btn {
+            color: #6ed632;
+            border-color: #4caf1a;
         }
     </style>
 </head>
@@ -270,9 +446,10 @@
 
     <div id="player-wrap">
         <div id="screen-area" onclick="togglePlay()">
-            <video id="main-video" src="video.mp4" preload="metadata"></video>
+            <video id="main-video" src="video1.mp4" preload="metadata"></video>
             <div id="tracking-line"></div>
             <div id="paused-label">■ PAUSED</div>
+            <div id="now-playing-badge">▶ NOW PLAYING</div>
             <div id="no-signal">
                 <div class="tv-bars"></div>
                 <div class="ns-text">// NO SIGNAL //</div>
@@ -297,19 +474,119 @@
         <span id="status-right"></span>
     </div>
 
+    <!-- CATALOGUE -->
+    <div id="catalogue-wrap">
+        <div id="catalogue-header">
+            <span id="catalogue-title">// BROADCAST CATALOGUE //</span>
+            <span id="catalogue-count">3 TITLES</span>
+        </div>
+
+        <div class="cat-item active" id="cat-0" onclick="loadVideo(0)">
+            <span class="cat-num">CH.1</span>
+            <div class="cat-thumb">
+                <div class="cat-thumb-bars"></div>
+                <span class="cat-playing-icon">▶</span>
+            </div>
+            <div class="cat-info">
+                <span class="cat-name">VIDEO 01</span>
+                <span class="cat-meta">SRC: VIDEO1.MP4 &nbsp;·&nbsp; TAPE A</span>
+            </div>
+            <button class="cat-load-btn">LOAD</button>
+        </div>
+
+        <div class="cat-item" id="cat-1" onclick="loadVideo(1)">
+            <span class="cat-num">CH.2</span>
+            <div class="cat-thumb">
+                <div class="cat-thumb-bars"></div>
+                <span class="cat-thumb-label">VIDEO2</span>
+            </div>
+            <div class="cat-info">
+                <span class="cat-name">VIDEO 02</span>
+                <span class="cat-meta">SRC: VIDEO2.MP4 &nbsp;·&nbsp; TAPE B</span>
+            </div>
+            <button class="cat-load-btn">LOAD</button>
+        </div>
+
+        <div class="cat-item" id="cat-2" onclick="loadVideo(2)">
+            <span class="cat-num">CH.3</span>
+            <div class="cat-thumb">
+                <div class="cat-thumb-bars"></div>
+                <span class="cat-thumb-label">VIDEO3</span>
+            </div>
+            <div class="cat-info">
+                <span class="cat-name">VIDEO 03</span>
+                <span class="cat-meta">SRC: VIDEO3.MP4 &nbsp;·&nbsp; TAPE C</span>
+            </div>
+            <button class="cat-load-btn">LOAD</button>
+        </div>
+    </div>
+
     <script>
-        const video    = document.getElementById('main-video');
-        const playBtn  = document.getElementById('play-btn');
-        const muteBtn  = document.getElementById('mute-btn');
-        const progFill = document.getElementById('progress-fill');
-        const timeDsp  = document.getElementById('time-display');
-        const pausedLbl= document.getElementById('paused-label');
-        const statusL  = document.getElementById('status-left');
-        const statusR  = document.getElementById('status-right');
+        const video      = document.getElementById('main-video');
+        const playBtn    = document.getElementById('play-btn');
+        const muteBtn    = document.getElementById('mute-btn');
+        const progFill   = document.getElementById('progress-fill');
+        const timeDsp    = document.getElementById('time-display');
+        const pausedLbl  = document.getElementById('paused-label');
+        const nowPlaying = document.getElementById('now-playing-badge');
+        const statusL    = document.getElementById('status-left');
+        const statusR    = document.getElementById('status-right');
+        const noSignal   = document.getElementById('no-signal');
+
+        const videos = [
+            { src: 'video1.mp4', label: 'VIDEO 01' },
+            { src: 'video2.mp4', label: 'VIDEO 02' },
+            { src: 'video3.mp4', label: 'VIDEO 03' },
+        ];
+
+        let currentIndex = 0;
 
         function fmt(s) {
             if (isNaN(s)) return '00:00';
             return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(Math.floor(s%60)).padStart(2,'0');
+        }
+
+        function loadVideo(index) {
+            const wasPlaying = !video.paused;
+            currentIndex = index;
+
+            // update catalogue highlight
+            document.querySelectorAll('.cat-item').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+                const thumb = el.querySelector('.cat-thumb-label, .cat-playing-icon');
+                if (thumb) {
+                    if (i === index) {
+                        thumb.className = 'cat-playing-icon';
+                        thumb.textContent = '▶';
+                    } else {
+                        thumb.className = 'cat-thumb-label';
+                        thumb.textContent = videos[i].label.replace(' ', '');
+                    }
+                }
+            });
+
+            // reset player state
+            video.pause();
+            playBtn.textContent = '▶ PLAY';
+            playBtn.classList.remove('active');
+            pausedLbl.classList.remove('visible');
+            nowPlaying.classList.remove('visible');
+            progFill.style.width = '0%';
+            timeDsp.textContent = '00:00 / 00:00';
+            statusL.textContent = 'LOADING_';
+
+            noSignal.classList.remove('visible');
+            video.style.display = 'block';
+
+            video.src = videos[index].src;
+            video.load();
+
+            if (wasPlaying) {
+                video.addEventListener('loadedmetadata', function autoPlay() {
+                    video.play();
+                    video.removeEventListener('loadedmetadata', autoPlay);
+                });
+            }
         }
 
         function togglePlay() {
@@ -318,12 +595,14 @@
                 playBtn.textContent = '■ STOP';
                 playBtn.classList.add('active');
                 pausedLbl.classList.remove('visible');
+                nowPlaying.classList.add('visible');
                 statusL.textContent = 'PLAYING_';
             } else {
                 video.pause();
                 playBtn.textContent = '▶ PLAY';
                 playBtn.classList.remove('active');
                 pausedLbl.classList.add('visible');
+                nowPlaying.classList.remove('visible');
                 statusL.textContent = 'PAUSED_';
             }
         }
@@ -347,27 +626,31 @@
             statusR.textContent = new Date().toLocaleTimeString('en-GB', {hour12:false});
         });
 
+        video.addEventListener('loadedmetadata', function () {
+            noSignal.classList.remove('visible');
+            video.style.display = 'block';
+            statusL.textContent = 'RDY_';
+        });
+
         video.addEventListener('ended', function () {
             playBtn.textContent = '▶ PLAY';
             playBtn.classList.remove('active');
             pausedLbl.classList.remove('visible');
+            nowPlaying.classList.remove('visible');
             statusL.textContent = 'END_';
         });
 
-        // show no-signal if video fails to load
         video.addEventListener('error', function () {
-            document.getElementById('no-signal').classList.add('visible');
+            noSignal.classList.add('visible');
             video.style.display = 'none';
             statusL.textContent = 'NO_SIGNAL_';
-        });
-
-        video.addEventListener('loadedmetadata', function () {
-            document.getElementById('no-signal').classList.remove('visible');
-            video.style.display = 'block';
+            nowPlaying.classList.remove('visible');
         });
 
         document.addEventListener('keydown', function (e) {
             if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+            if (e.key === 'ArrowRight') { currentIndex = (currentIndex + 1) % videos.length; loadVideo(currentIndex); }
+            if (e.key === 'ArrowLeft')  { currentIndex = (currentIndex - 1 + videos.length) % videos.length; loadVideo(currentIndex); }
         });
     </script>
 
