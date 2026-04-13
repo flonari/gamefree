@@ -20,6 +20,7 @@
             font-family: monospace;
             color: #6ed632;
             padding: 20px 0;
+            zoom: 1.35;
         }
 
         /* scanlines */
@@ -72,6 +73,48 @@
             border-color: #6ed632;
         }
 
+        /* ── PLAYER STAGE (player + trees side by side) ── */
+        #player-stage {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+        }
+
+        /* ASCII trees */
+        .tree-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 4px;
+            width: 52px;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .tree {
+            font-size: 8px;
+            line-height: 1.35;
+            color: #2a5c0a;
+            white-space: pre;
+            text-shadow: 0 0 4px #1a4a06;
+            letter-spacing: 0;
+        }
+
+        .tree.bright {
+            color: #3a7a10;
+        }
+
+        /* subtle pulse on trees */
+        @keyframes treepulse {
+            0%, 100% { opacity: 0.7; }
+            50%       { opacity: 1;   }
+        }
+
+        .tree-col .tree:nth-child(1) { animation: treepulse 6s ease-in-out infinite; }
+        .tree-col .tree:nth-child(2) { animation: treepulse 8s ease-in-out 1s infinite; }
+        .tree-col .tree:nth-child(3) { animation: treepulse 5s ease-in-out 2s infinite; }
+
         /* player */
         #player-wrap {
             position: relative;
@@ -79,6 +122,7 @@
             border: 2px solid #4caf1a;
             background: #000;
             box-shadow: 0 0 24px rgba(78,175,26,0.06);
+            flex-shrink: 0;
         }
 
         /* screen */
@@ -317,17 +361,9 @@
             transition: background 0.15s;
         }
 
-        .cat-item:last-child {
-            border-bottom: none;
-        }
-
-        .cat-item:hover {
-            background: #0a1a03;
-        }
-
-        .cat-item.active {
-            background: #0d2205;
-        }
+        .cat-item:last-child { border-bottom: none; }
+        .cat-item:hover      { background: #0a1a03; }
+        .cat-item.active     { background: #0d2205; }
 
         .cat-num {
             font-size: 7px;
@@ -336,9 +372,7 @@
             min-width: 24px;
         }
 
-        .cat-item.active .cat-num {
-            color: #6ed632;
-        }
+        .cat-item.active .cat-num { color: #6ed632; }
 
         .cat-thumb {
             width: 64px;
@@ -353,9 +387,7 @@
             position: relative;
         }
 
-        .cat-item.active .cat-thumb {
-            border-color: #4caf1a;
-        }
+        .cat-item.active .cat-thumb { border-color: #4caf1a; }
 
         .cat-thumb-bars {
             position: absolute;
@@ -403,9 +435,7 @@
             text-transform: uppercase;
         }
 
-        .cat-item.active .cat-name {
-            color: #9eff4e;
-        }
+        .cat-item.active .cat-name { color: #9eff4e; }
 
         .cat-meta {
             font-size: 7px;
@@ -426,15 +456,8 @@
             flex-shrink: 0;
         }
 
-        .cat-item:hover .cat-load-btn {
-            color: #4caf1a;
-            border-color: #2a5c0a;
-        }
-
-        .cat-item.active .cat-load-btn {
-            color: #6ed632;
-            border-color: #4caf1a;
-        }
+        .cat-item:hover .cat-load-btn  { color: #4caf1a; border-color: #2a5c0a; }
+        .cat-item.active .cat-load-btn { color: #6ed632; border-color: #4caf1a; }
     </style>
 </head>
 <body>
@@ -444,30 +467,72 @@
         <button id="back-btn" onclick="window.location.href='/'">← BACK</button>
     </div>
 
-    <div id="player-wrap">
-        <div id="screen-area" onclick="togglePlay()">
-            <video id="main-video" src="video1.mp4" preload="metadata"></video>
-            <div id="tracking-line"></div>
-            <div id="paused-label">■ PAUSED</div>
-            <div id="now-playing-badge">▶ NOW PLAYING</div>
-            <div id="no-signal">
-                <div class="tv-bars"></div>
-                <div class="ns-text">// NO SIGNAL //</div>
-                <div class="ns-sub">check up on it later</div>
+    <!-- player + flanking trees -->
+    <div id="player-stage">
+
+        <!-- LEFT TREES -->
+        <div class="tree-col">
+            <pre class="tree">   /\
+  /  \
+ / /\ \
+/______\
+   ||</pre>
+            <pre class="tree bright" style="margin-top:14px">  /\
+ /\/\
+/____\
+  ||</pre>
+            <pre class="tree" style="margin-top:14px">    *
+   /|\
+  / | \
+ /  |  \
+/___+___\
+    |</pre>
+        </div>
+
+        <!-- PLAYER -->
+        <div id="player-wrap">
+            <div id="screen-area" onclick="togglePlay()">
+                <video id="main-video" src="video1.mp4" preload="metadata"></video>
+                <div id="tracking-line"></div>
+                <div id="paused-label">■ PAUSED</div>
+                <div id="now-playing-badge">▶ NOW PLAYING</div>
+                <div id="no-signal">
+                    <div class="tv-bars"></div>
+                    <div class="ns-text">// NO SIGNAL //</div>
+                    <div class="ns-sub">check up on it later</div>
+                </div>
+            </div>
+
+            <div id="controls">
+                <div id="progress-wrap" onclick="seekTo(event)">
+                    <div id="progress-fill"></div>
+                </div>
+                <div id="ctrl-row">
+                    <button class="ctrl-btn" id="play-btn" onclick="togglePlay()">▶ PLAY</button>
+                    <button class="ctrl-btn" id="mute-btn" onclick="toggleMute()">VOL ON</button>
+                    <span id="time-display">00:00 / 00:00</span>
+                </div>
             </div>
         </div>
 
-        <div id="controls">
-            <div id="progress-wrap" onclick="seekTo(event)">
-                <div id="progress-fill"></div>
-            </div>
-            <div id="ctrl-row">
-                <button class="ctrl-btn" id="play-btn" onclick="togglePlay()">▶ PLAY</button>
-                <button class="ctrl-btn" id="mute-btn" onclick="toggleMute()">VOL ON</button>
-                <span id="time-display">00:00 / 00:00</span>
-            </div>
+        <!-- RIGHT TREES -->
+        <div class="tree-col">
+            <pre class="tree bright">  /\
+ /\/\
+/____\
+  ||</pre>
+            <pre class="tree" style="margin-top:14px">   /\
+  /  \
+ / /\ \
+/______\
+   ||</pre>
+            <pre class="tree bright" style="margin-top:14px">  *
+ /|\
+/_|_\
+  |</pre>
         </div>
-    </div>
+
+    </div><!-- /player-stage -->
 
     <div id="status-bar">
         <span id="status-left">RDY_</span>
@@ -550,7 +615,6 @@
             const wasPlaying = !video.paused;
             currentIndex = index;
 
-            // update catalogue highlight
             document.querySelectorAll('.cat-item').forEach((el, i) => {
                 el.classList.toggle('active', i === index);
                 const thumb = el.querySelector('.cat-thumb-label, .cat-playing-icon');
@@ -565,7 +629,6 @@
                 }
             });
 
-            // reset player state
             video.pause();
             playBtn.textContent = '▶ PLAY';
             playBtn.classList.remove('active');
