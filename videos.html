@@ -10,8 +10,6 @@
             padding: 0;
         }
 
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-
         html, body {
             background-color: #000;
             min-height: 100vh;
@@ -21,10 +19,9 @@
             justify-content: center;
             font-family: monospace;
             color: #6ed632;
-            overflow-x: hidden;
         }
 
-        /* \u2500\u2500 SCANLINE OVERLAY \u2500\u2500 */
+        /* scanlines */
         body::before {
             content: "";
             position: fixed;
@@ -33,72 +30,40 @@
                 0deg,
                 transparent,
                 transparent 2px,
-                rgba(0,0,0,0.18) 2px,
-                rgba(0,0,0,0.18) 4px
+                rgba(0,0,0,0.2) 2px,
+                rgba(0,0,0,0.2) 4px
             );
             pointer-events: none;
             z-index: 9000;
         }
 
-        /* \u2500\u2500 NOISE / GRAIN \u2500\u2500 */
-        body::after {
-            content: "";
-            position: fixed;
-            inset: -50%;
-            width: 200%;
-            height: 200%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-            opacity: 0.035;
-            pointer-events: none;
-            z-index: 8999;
-            animation: grain-drift 0.9s steps(2) infinite;
-        }
-
-        @keyframes grain-drift {
-            0%   { transform: translate(0, 0); }
-            25%  { transform: translate(-2%, 1%); }
-            50%  { transform: translate(1%, -2%); }
-            75%  { transform: translate(-1%, 2%); }
-            100% { transform: translate(2%, -1%); }
-        }
-
-        /* \u2500\u2500 HEADER \u2500\u2500 */
+        /* header */
         #site-header {
             width: 100%;
-            max-width: 560px;
+            max-width: 480px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 0 6px 0;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
 
         #site-title {
-            font-family: monospace;
-            font-size: 9px;
-            color: #3a7a10;
+            font-size: 8px;
+            color: #2a5c0a;
             letter-spacing: 4px;
             text-transform: uppercase;
-            opacity: 0.7;
-            animation: title-flicker 7s steps(1) infinite;
-        }
-
-        @keyframes title-flicker {
-            0%, 94%, 96%, 98%, 100% { opacity: 0.7; }
-            95%, 97%                 { opacity: 0.15; }
         }
 
         #back-btn {
             font-family: monospace;
-            font-size: 9px;
-            color: #3a7a10;
+            font-size: 8px;
+            color: #2a5c0a;
             letter-spacing: 3px;
             text-transform: uppercase;
             cursor: pointer;
             border: 1px solid #1a4a06;
-            padding: 3px 8px;
+            padding: 3px 7px;
             background: transparent;
-            transition: color 0.1s, border-color 0.1s;
         }
 
         #back-btn:hover {
@@ -106,29 +71,16 @@
             border-color: #4caf1a;
         }
 
-        /* \u2500\u2500 PLAYER WRAPPER \u2500\u2500 */
+        /* player */
         #player-wrap {
             position: relative;
-            width: 560px;
+            width: 480px;
             border: 2px solid #4caf1a;
             background: #000;
-            box-shadow:
-                0 0 0 1px #1a4a06,
-                0 0 18px rgba(78,175,26,0.08),
-                inset 0 0 40px rgba(0,0,0,0.8);
+            box-shadow: 0 0 24px rgba(78,175,26,0.06);
         }
 
-        /* CRT phosphor glow on border */
-        #player-wrap::before {
-            content: "";
-            position: absolute;
-            inset: -4px;
-            border: 1px solid rgba(110,214,50,0.08);
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        /* \u2500\u2500 VIDEO SCREEN \u2500\u2500 */
+        /* screen */
         #screen-area {
             position: relative;
             width: 100%;
@@ -143,452 +95,207 @@
             height: 100%;
             display: block;
             object-fit: contain;
-            /* deliberate quality degradation */
-            filter: contrast(1.08) brightness(0.88) saturate(0.6);
-            image-rendering: pixelated;
+            filter: contrast(1.05) brightness(0.85) saturate(0.55);
         }
 
-        /* \u2500\u2500 VHS TRACKING GLITCH LINES \u2500\u2500 */
+        /* vhs tracking line */
         #tracking-line {
             position: absolute;
             left: 0;
             width: 100%;
-            height: 3px;
-            background: rgba(110,214,50,0.18);
+            height: 2px;
+            background: rgba(110,214,50,0.12);
             pointer-events: none;
             z-index: 10;
-            animation: tracking-scroll 9s linear infinite;
+            animation: tracking 11s linear infinite;
             mix-blend-mode: screen;
         }
 
-        #tracking-line-2 {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: rgba(255,255,255,0.06);
-            pointer-events: none;
-            z-index: 10;
-            animation: tracking-scroll 13s linear infinite;
-            animation-delay: -4s;
-        }
-
-        @keyframes tracking-scroll {
+        @keyframes tracking {
             0%   { top: -4px; }
             100% { top: 100%; }
         }
 
-        /* \u2500\u2500 STATIC OVERLAY (shown when paused/idle) \u2500\u2500 */
-        #static-overlay {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 8;
-            opacity: 0;
-            transition: opacity 0.2s;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 80 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.9' numOctaves='1'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)' opacity='0.4'/%3E%3C/svg%3E");
-            animation: static-shift 0.08s steps(1) infinite;
-        }
-
-        #static-overlay.visible { opacity: 1; }
-
-        @keyframes static-shift {
-            0%   { background-position: 0 0; }
-            25%  { background-position: -10px 5px; }
-            50%  { background-position: 5px -8px; }
-            75%  { background-position: -5px 10px; }
-            100% { background-position: 8px -3px; }
-        }
-
-        /* \u2500\u2500 PAUSED LABEL \u2500\u2500 */
+        /* paused blink */
         #paused-label {
             position: absolute;
-            top: 10px;
-            right: 12px;
-            font-family: monospace;
-            font-size: 10px;
+            top: 8px;
+            right: 10px;
+            font-size: 9px;
             color: #6ed632;
             letter-spacing: 3px;
             opacity: 0;
-            transition: opacity 0.15s;
             z-index: 20;
-            text-shadow: 0 0 6px #4caf1a;
-            animation: pause-blink 1s steps(1) infinite;
+            animation: blink 1s steps(1) infinite;
+            text-shadow: 0 0 5px #4caf1a;
         }
 
         #paused-label.visible { opacity: 1; }
 
-        @keyframes pause-blink {
+        @keyframes blink {
             0%, 49%  { opacity: 1; }
-            50%, 100% { opacity: 0.2; }
+            50%, 100% { opacity: 0.15; }
         }
 
-        /* \u2500\u2500 NO SIGNAL \u2500\u2500 */
-        #no-signal {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            z-index: 15;
-            background: #000;
-        }
-
-        #no-signal.hidden { display: none; }
-
-        .ns-bars {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(
-                90deg,
-                #fff 0px, #fff 10px,
-                #ff0 10px, #ff0 20px,
-                #0ff 20px, #0ff 30px,
-                #0f0 30px, #0f0 40px,
-                #f0f 40px, #f0f 50px,
-                #f00 50px, #f00 60px,
-                #00f 60px, #00f 70px,
-                #000 70px, #000 80px
-            );
-            opacity: 0.08;
-        }
-
-        .ns-text {
-            font-family: monospace;
-            font-size: 11px;
-            color: #6ed632;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            z-index: 1;
-            animation: ns-flicker 2s steps(1) infinite;
-        }
-
-        .ns-sub {
-            font-family: monospace;
-            font-size: 8px;
-            color: #2a5c0a;
-            letter-spacing: 3px;
-            z-index: 1;
-        }
-
-        @keyframes ns-flicker {
-            0%, 89%, 91%, 93%, 100% { opacity: 1; }
-            90%, 92%                 { opacity: 0; }
-        }
-
-        /* \u2500\u2500 CONTROLS BAR \u2500\u2500 */
+        /* controls */
         #controls {
             border-top: 1px solid #1a4a06;
-            padding: 7px 10px 6px;
+            padding: 7px 10px;
             display: flex;
             flex-direction: column;
             gap: 6px;
-            background: #050505;
+            background: #040404;
         }
 
-        /* progress */
         #progress-wrap {
-            position: relative;
             width: 100%;
-            height: 6px;
+            height: 5px;
             background: #0d1f05;
             border: 1px solid #1a4a06;
             cursor: pointer;
+            position: relative;
         }
 
         #progress-fill {
             height: 100%;
             background: #4caf1a;
             width: 0%;
-            position: relative;
-            transition: width 0.1s linear;
         }
 
-        #progress-fill::after {
-            content: "";
-            position: absolute;
-            right: -1px;
-            top: -2px;
-            width: 3px;
-            height: 10px;
-            background: #6ed632;
-            box-shadow: 0 0 4px #6ed632;
-        }
-
-        #progress-wrap:hover #progress-fill {
-            background: #6ed632;
-        }
-
-        /* bottom row */
         #ctrl-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .ctrl-btn {
             font-family: monospace;
-            font-size: 9px;
-            color: #3a7a10;
+            font-size: 8px;
+            color: #2a5c0a;
             background: transparent;
             border: 1px solid #1a4a06;
             padding: 3px 7px;
             cursor: pointer;
             letter-spacing: 2px;
             text-transform: uppercase;
-            transition: color 0.08s, border-color 0.08s, text-shadow 0.08s;
-            flex-shrink: 0;
         }
 
-        .ctrl-btn:hover {
-            color: #6ed632;
-            border-color: #4caf1a;
-            text-shadow: 0 0 5px #4caf1a;
-        }
-
-        .ctrl-btn.active {
+        .ctrl-btn:hover, .ctrl-btn.active {
             color: #6ed632;
             border-color: #4caf1a;
         }
 
         #time-display {
-            font-family: monospace;
-            font-size: 9px;
-            color: #2a5c0a;
-            letter-spacing: 2px;
-            flex: 1;
-            text-align: left;
-        }
-
-        /* volume */
-        #vol-wrap {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        #vol-label {
-            font-family: monospace;
             font-size: 8px;
-            color: #2a5c0a;
-            letter-spacing: 1px;
-        }
-
-        #vol-slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 60px;
-            height: 3px;
-            background: #0d1f05;
-            border: 1px solid #1a4a06;
-            outline: none;
-            cursor: pointer;
-        }
-
-        #vol-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 7px;
-            height: 13px;
-            background: #4caf1a;
-            cursor: pointer;
-        }
-
-        #vol-slider::-moz-range-thumb {
-            width: 7px;
-            height: 13px;
-            background: #4caf1a;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* \u2500\u2500 PLAYLIST PANEL \u2500\u2500 */
-        #playlist-wrap {
-            width: 560px;
-            border: 2px solid #4caf1a;
-            border-top: none;
-            background: #030303;
-        }
-
-        #playlist-header {
-            border-bottom: 1px solid #1a4a06;
-            padding: 4px 10px;
-            font-size: 8px;
-            color: #2a5c0a;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #playlist-header span:last-child {
-            font-size: 7px;
             color: #1a4a06;
             letter-spacing: 2px;
+            margin-left: auto;
         }
 
-        #playlist {
-            list-style: none;
-            max-height: 130px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #1a4a06 #000;
-        }
-
-        #playlist li {
-            padding: 5px 10px;
-            font-size: 9px;
-            color: #2a5c0a;
-            letter-spacing: 2px;
-            border-bottom: 1px solid #0a1a03;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: color 0.08s, background 0.08s;
-        }
-
-        #playlist li:hover {
-            color: #6ed632;
-            background: #050f02;
-        }
-
-        #playlist li.active {
-            color: #6ed632;
-            background: #0a1a03;
-        }
-
-        #playlist li.active::before {
-            content: "\u25b6";
-            font-size: 7px;
-            color: #4caf1a;
-            animation: play-pulse 0.8s steps(1) infinite;
-        }
-
-        #playlist li:not(.active)::before {
-            content: "\u2013";
-            font-size: 7px;
-            color: #1a4a06;
-        }
-
-        @keyframes play-pulse {
-            0%, 49%  { opacity: 1; }
-            50%, 100% { opacity: 0.3; }
-        }
-
-        .pl-index {
-            color: #1a4a06;
-            font-size: 8px;
-            min-width: 14px;
-        }
-
-        /* \u2500\u2500 STATUS BAR \u2500\u2500 */
+        /* status */
         #status-bar {
-            width: 560px;
+            width: 480px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 5px 0 0;
-            font-size: 8px;
+            font-size: 7px;
             color: #1a4a06;
             letter-spacing: 2px;
-        }
-
-        #status-left { animation: status-drift 4s steps(1) infinite; }
-
-        @keyframes status-drift {
-            0%, 79%, 100% { opacity: 0.6; }
-            80%            { opacity: 0.2; }
-            85%            { opacity: 0.9; }
-            90%            { opacity: 0.3; }
-        }
-
-        /* \u2500\u2500 UPLOAD ZONE \u2500\u2500 */
-        #upload-zone {
-            width: 560px;
-            border: 1px dashed #1a4a06;
-            margin-top: 8px;
-            padding: 10px;
-            text-align: center;
-            font-size: 8px;
-            color: #1a4a06;
-            letter-spacing: 3px;
-            cursor: pointer;
-            transition: border-color 0.1s, color 0.1s;
-        }
-
-        #upload-zone:hover, #upload-zone.drag-over {
-            border-color: #4caf1a;
-            color: #4caf1a;
-        }
-
-        #file-input { display: none; }
-
-        /* \u2500\u2500 RANDOM GLITCH FLASHES \u2500\u2500 */
-        #glitch-flash {
-            position: fixed;
-            inset: 0;
-            background: rgba(110,214,50,0.03);
-            pointer-events: none;
-            z-index: 8998;
-            opacity: 0;
         }
     </style>
 </head>
 <body>
 
-    <div id="glitch-flash"></div>
-
-    <!-- HEADER -->
     <div id="site-header">
         <span id="site-title">// GAMEFREE.WIN // VIDEOS //</span>
-        <button id="back-btn" onclick="window.location.href='/'">\u2190 BACK</button>
+        <button id="back-btn" onclick="window.location.href='/'">← BACK</button>
     </div>
 
-    <!-- PLAYER -->
     <div id="player-wrap">
-
         <div id="screen-area" onclick="togglePlay()">
-            <video id="main-video" preload="metadata"></video>
+            <video id="main-video" src="video.mp4" preload="metadata"></video>
             <div id="tracking-line"></div>
-            <div id="tracking-line-2"></div>
-            <div id="static-overlay" class="visible"></div>
-            <div id="paused-label">\u25a0 PAUSED</div>
-
-            <!-- no signal screen -->
-            <div id="no-signal">
-                <div class="ns-bars"></div>
-                <div class="ns-text">// NO SIGNAL //</div>
-                <div class="ns-sub">select a file or drop video here</div>
-            </div>
+            <div id="paused-label">■ PAUSED</div>
         </div>
 
         <div id="controls">
-            <!-- progress bar -->
             <div id="progress-wrap" onclick="seekTo(event)">
                 <div id="progress-fill"></div>
             </div>
-
-            <!-- ctrl row -->
             <div id="ctrl-row">
-                <button class="ctrl-btn" id="play-btn" onclick="togglePlay()">\u25b6 PLAY</button>
-                <button class="ctrl-btn" onclick="skipBack()">\u25c0\u25c0</button>
-                <button class="ctrl-btn" onclick="skipForward()">\u25b6\u25b6</button>
-                <button class="ctrl-btn" id="mute-btn" onclick="toggleMute()">VOL</button>
-                <div id="vol-wrap">
-                    <input type="range" id="vol-slider" min="0" max="1" step="0.02" value="0.8" oninput="setVolume(this.value)">
-                </div>
+                <button class="ctrl-btn" id="play-btn" onclick="togglePlay()">▶ PLAY</button>
+                <button class="ctrl-btn" id="mute-btn" onclick="toggleMute()">VOL ON</button>
                 <span id="time-display">00:00 / 00:00</span>
-                <button class="ctrl-btn" id="loop-btn" onclick="toggleLoop()">LOOP</button>
-                <button class="ctrl-btn" onclick="openFile()">OPEN</button>
             </div>
         </div>
     </div>
 
-    <!-- PLAYLIST -->
-    <div id="playlist-wrap">
-        <div
+    <div id="status-bar">
+        <span id="status-left">RDY_</span>
+        <span id="status-right"></span>
+    </div>
+
+    <script>
+        const video    = document.getElementById('main-video');
+        const playBtn  = document.getElementById('play-btn');
+        const muteBtn  = document.getElementById('mute-btn');
+        const progFill = document.getElementById('progress-fill');
+        const timeDsp  = document.getElementById('time-display');
+        const pausedLbl= document.getElementById('paused-label');
+        const statusL  = document.getElementById('status-left');
+        const statusR  = document.getElementById('status-right');
+
+        function fmt(s) {
+            if (isNaN(s)) return '00:00';
+            return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(Math.floor(s%60)).padStart(2,'0');
+        }
+
+        function togglePlay() {
+            if (video.paused) {
+                video.play();
+                playBtn.textContent = '■ STOP';
+                playBtn.classList.add('active');
+                pausedLbl.classList.remove('visible');
+                statusL.textContent = 'PLAYING_';
+            } else {
+                video.pause();
+                playBtn.textContent = '▶ PLAY';
+                playBtn.classList.remove('active');
+                pausedLbl.classList.add('visible');
+                statusL.textContent = 'PAUSED_';
+            }
+        }
+
+        function toggleMute() {
+            video.muted = !video.muted;
+            muteBtn.textContent = video.muted ? 'VOL OFF' : 'VOL ON';
+            muteBtn.classList.toggle('active', video.muted);
+        }
+
+        function seekTo(e) {
+            if (!video.duration) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            video.currentTime = ((e.clientX - rect.left) / rect.width) * video.duration;
+        }
+
+        video.addEventListener('timeupdate', function () {
+            if (!video.duration) return;
+            progFill.style.width = (video.currentTime / video.duration * 100) + '%';
+            timeDsp.textContent = fmt(video.currentTime) + ' / ' + fmt(video.duration);
+            statusR.textContent = new Date().toLocaleTimeString('en-GB', {hour12:false});
+        });
+
+        video.addEventListener('ended', function () {
+            playBtn.textContent = '▶ PLAY';
+            playBtn.classList.remove('active');
+            pausedLbl.classList.remove('visible');
+            statusL.textContent = 'END_';
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+        });
+    </script>
+
+</body>
+</html>
