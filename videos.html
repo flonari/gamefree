@@ -98,6 +98,63 @@
             filter: contrast(1.05) brightness(0.85) saturate(0.55);
         }
 
+        /* no signal */
+        #no-signal {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            background: #000;
+        }
+
+        #no-signal.visible { display: flex; }
+
+        .tv-bars {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                #fff    0%,   #fff    12.5%,
+                #ff0   12.5%, #ff0    25%,
+                #0ff   25%,   #0ff    37.5%,
+                #0f0   37.5%, #0f0    50%,
+                #f0f   50%,   #f0f    62.5%,
+                #f00   62.5%, #f00    75%,
+                #00f   75%,   #00f    87.5%,
+                #000   87.5%, #000   100%
+            );
+            opacity: 0.13;
+        }
+
+        .ns-text {
+            font-family: monospace;
+            font-size: 10px;
+            color: #6ed632;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            z-index: 1;
+            text-shadow: 0 0 6px #4caf1a;
+            animation: ns-blink 3s steps(1) infinite;
+            margin-bottom: 8px;
+        }
+
+        .ns-sub {
+            font-family: monospace;
+            font-size: 8px;
+            color: #2a5c0a;
+            letter-spacing: 3px;
+            z-index: 1;
+            text-transform: uppercase;
+        }
+
+        @keyframes ns-blink {
+            0%, 80%, 84%, 88%, 100% { opacity: 1; }
+            82%, 86%                 { opacity: 0; }
+        }
+
         /* vhs tracking line */
         #tracking-line {
             position: absolute;
@@ -216,6 +273,11 @@
             <video id="main-video" src="video.mp4" preload="metadata"></video>
             <div id="tracking-line"></div>
             <div id="paused-label">■ PAUSED</div>
+            <div id="no-signal">
+                <div class="tv-bars"></div>
+                <div class="ns-text">// NO SIGNAL //</div>
+                <div class="ns-sub">check up on it later</div>
+            </div>
         </div>
 
         <div id="controls">
@@ -290,6 +352,18 @@
             playBtn.classList.remove('active');
             pausedLbl.classList.remove('visible');
             statusL.textContent = 'END_';
+        });
+
+        // show no-signal if video fails to load
+        video.addEventListener('error', function () {
+            document.getElementById('no-signal').classList.add('visible');
+            video.style.display = 'none';
+            statusL.textContent = 'NO_SIGNAL_';
+        });
+
+        video.addEventListener('loadedmetadata', function () {
+            document.getElementById('no-signal').classList.remove('visible');
+            video.style.display = 'block';
         });
 
         document.addEventListener('keydown', function (e) {
