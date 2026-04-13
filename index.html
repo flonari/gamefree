@@ -83,6 +83,24 @@
             cursor: pointer;
         }
 
+        /* ── VIDEOS BUTTON ── */
+        .videos-zone {
+            position: absolute;
+            left: 350px;
+            top: 9px;
+            width: 75px;
+            height: 31px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            font-size: 9px;
+            color: #6ed632;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
         .collection {
             display: none;
             margin-top: 8px;
@@ -309,6 +327,7 @@
             <div class="click-zone" onclick="toggleAbout()"></div>
             <div class="collection-zone" onclick="toggleCollection()"></div>
             <div class="draws-zone" onclick="goToDraws()"></div>
+            <div class="videos-zone" onclick="goToVideos()"></div>
         </div>
     </div>
 
@@ -347,9 +366,7 @@
         /* ── VISIT COUNTER ── */
         (function () {
             var BASE = 534, DIGITS = 3;
-            function getCount() {
-                return BASE;
-            }
+            function getCount() { return BASE; }
             function render() {
                 var n = String(getCount()).padStart(DIGITS, '0');
                 var gi = Math.random() < 0.25 ? Math.floor(Math.random() * DIGITS) : -1;
@@ -492,6 +509,66 @@
             setTimeout(function () {
                 window.location.href = "/draws";
             }, 2000);
+        }
+
+        /* ── VIDEOS FREAK-OUT ── */
+        function goToVideos() {
+            const blackout = document.getElementById("blackout");
+            const container = document.querySelector(".container");
+            const about = document.getElementById("about");
+            const collection = document.getElementById("collection");
+            const counter = document.getElementById("visit-counter");
+            const allEls = [container, about, collection, counter];
+
+            let flickerInterval = null;
+            let shakeInterval = null;
+            let flickerPeriod = 120;
+            let visible = true;
+            let elapsed = 0;
+            const freakDuration = 2800; // ms of chaos
+            const pauseDuration = 600;  // ms of pure black silence
+
+            // start shaking everything
+            shakeInterval = setInterval(function () {
+                allEls.forEach(function (el) {
+                    if (!el) return;
+                    const x = (Math.random() - 0.5) * 80;
+                    const y = (Math.random() - 0.5) * 50;
+                    const skew = (Math.random() - 0.5) * 6;
+                    el.style.transform = "translate(" + x + "px," + y + "px) skewX(" + skew + "deg)";
+                });
+            }, 60);
+
+            // flicker the blackout overlay, getting faster over time
+            function runFlicker() {
+                flickerInterval = setInterval(function () {
+                    elapsed += flickerPeriod;
+                    visible = !visible;
+                    blackout.style.display = visible ? "none" : "block";
+
+                    // accelerate flicker as we go
+                    flickerPeriod = Math.max(30, flickerPeriod * 0.92);
+                    clearInterval(flickerInterval);
+
+                    if (elapsed >= freakDuration) {
+                        // chaos over — go full black, pause, then redirect
+                        clearInterval(shakeInterval);
+                        allEls.forEach(function (el) {
+                            if (!el) return;
+                            el.style.transform = "";
+                            el.style.visibility = "hidden";
+                        });
+                        blackout.style.display = "block";
+                        setTimeout(function () {
+                            window.location.href = "/videos";
+                        }, pauseDuration);
+                    } else {
+                        runFlicker();
+                    }
+                }, flickerPeriod);
+            }
+
+            runFlicker();
         }
 
         function toggleCollection() {
