@@ -100,149 +100,7 @@
             text-transform: uppercase;
         }
 
-        /* ── COLLECTION ── */
-        .collection {
-            display: none;
-            margin-top: 8px;
-            width: 370px;
-            border: 1.5px solid #3a7a10;
-            background: #000;
-            font-family: monospace;
-            color: #6ed632;
-        }
 
-        .collection-header {
-            border-bottom: 1.5px solid #3a7a10;
-            padding: 7px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            letter-spacing: 5px;
-            font-size: 9px;
-            color: #4caf1a;
-            text-transform: uppercase;
-        }
-
-        .collection-header-dot {
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: #4caf1a;
-            animation: col-blink 1.2s steps(1) infinite;
-        }
-
-        @keyframes col-blink {
-            0%, 49%  { opacity: 1; }
-            50%, 100% { opacity: 0.15; }
-        }
-
-        .collection-row {
-            display: flex;
-            border-bottom: 1px solid #1e4008;
-            padding: 14px;
-            align-items: flex-start;
-            gap: 0;
-        }
-
-        .collection-row:last-child { border-bottom: none; }
-
-        .collection-img {
-            width: 88px;
-            min-width: 88px;
-            height: 80px;
-            border: 1px solid #2a5c0a;
-            background: #050f02;
-            position: relative;
-            flex-shrink: 0;
-            overflow: hidden;
-            margin-right: 14px;
-        }
-
-        .collection-img-grid {
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(rgba(106,214,50,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(106,214,50,0.05) 1px, transparent 1px);
-            background-size: 12px 12px;
-        }
-
-        .collection-img-corner {
-            position: absolute;
-            width: 7px;
-            height: 7px;
-            border-color: #3a7a10;
-            border-style: solid;
-            border-width: 0;
-        }
-
-        .collection-img-corner.tl { top:4px; left:4px; border-top-width:1.5px; border-left-width:1.5px; }
-        .collection-img-corner.tr { top:4px; right:4px; border-top-width:1.5px; border-right-width:1.5px; }
-        .collection-img-corner.bl { bottom:4px; left:4px; border-bottom-width:1.5px; border-left-width:1.5px; }
-        .collection-img-corner.br { bottom:4px; right:4px; border-bottom-width:1.5px; border-right-width:1.5px; }
-
-        .collection-img-num {
-            position: absolute;
-            bottom: 4px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 7px;
-            letter-spacing: 1.5px;
-            color: #1e4a08;
-            text-transform: uppercase;
-        }
-
-        .collection-right {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .collection-line-a { height: 1px; background: #3a7a10; width: 100%; }
-        .collection-line-b { height: 1px; background: #2a5c0a; width: 72%; }
-
-        .collection-text {
-            font-size: 9px;
-            color: #2a5c0a;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .collection-play {
-            font-family: monospace;
-            font-size: 8px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #2a5c0a;
-            border: 1px dashed #2a5c0a;
-            background: transparent;
-            padding: 3px 0;
-            cursor: default;
-            align-self: stretch;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 1px;
-            filter: blur(0.3px);
-        }
-
-        .collection-play-tri {
-            width: 0;
-            height: 0;
-            border-top: 3px solid transparent;
-            border-bottom: 3px solid transparent;
-            border-left: 5px solid #2a5c0a;
-            flex-shrink: 0;
-            opacity: 0.6;
-        }
 
         /* ── ABOUT ── */
         .about {
@@ -389,7 +247,7 @@
             <div class="game-zone" onclick="playGameSound()"></div>
         </div>
         <div class="taskbar">
-            <img src="takbasrceacsd.png" alt="taskbar">
+            <img src="takbasr14.png" alt="taskbar">
             <div class="click-zone" onclick="toggleAbout()"></div>
             <div class="collection-zone" onclick="toggleCollection()"></div>
             <div class="draws-zone" onclick="goToDraws()"></div>
@@ -407,73 +265,7 @@
         </div>
     </div>
 
-    <div class="collection" id="collection">
-        <div class="collection-header">
-            <div class="collection-header-dot"></div>
-            // collection //
-            <div class="collection-header-dot"></div>
-        </div>
 
-        <div class="collection-row">
-            <div class="collection-img">
-                <div class="collection-img-grid"></div>
-                <div class="collection-img-corner tl"></div>
-                <div class="collection-img-corner tr"></div>
-                <div class="collection-img-corner bl"></div>
-                <div class="collection-img-corner br"></div>
-                <div class="collection-img-num">slot_01</div>
-            </div>
-            <div class="collection-right">
-                <div class="collection-line-a"></div>
-                <div class="collection-text">GOLF GAME SPECIAL EDIION</div>
-                <div class="collection-line-b"></div>
-                <div class="collection-text">the first game by the game company© !! remastered in a new coat of paint!</div>
-                <button class="collection-play">
-                    <div class="collection-play-tri"></div>cmng_soon
-                </button>
-            </div>
-        </div>
-
-        <div class="collection-row">
-            <div class="collection-img">
-                <div class="collection-img-grid"></div>
-                <div class="collection-img-corner tl"></div>
-                <div class="collection-img-corner tr"></div>
-                <div class="collection-img-corner bl"></div>
-                <div class="collection-img-corner br"></div>
-                <div class="collection-img-num">slot_02</div>
-            </div>
-            <div class="collection-right">
-                <div class="collection-line-a"></div>
-                <div class="collection-text">MAHJONG988</div>
-                <div class="collection-line-b"></div>
-                <div class="collection-text">pending</div>
-                <button class="collection-play">
-                    <div class="collection-play-tri"></div>cmng_soon
-                </button>
-            </div>
-        </div>
-
-        <div class="collection-row">
-            <div class="collection-img">
-                <div class="collection-img-grid"></div>
-                <div class="collection-img-corner tl"></div>
-                <div class="collection-img-corner tr"></div>
-                <div class="collection-img-corner bl"></div>
-                <div class="collection-img-corner br"></div>
-                <div class="collection-img-num">slot_03</div>
-            </div>
-            <div class="collection-right">
-                <div class="collection-line-a"></div>
-                <div class="collection-text">GAME</div>
-                <div class="collection-line-b"></div>
-                <div class="collection-text">the game© we made it free©</div>
-                <button class="collection-play">
-                    <div class="collection-play-tri"></div>cmng_soon
-                </button>
-            </div>
-        </div>
-    </div>
 
     <div id="fade-overlay"></div>
     <div id="blackout"></div>
@@ -481,7 +273,7 @@
     <script>
         /* ── VISIT COUNTER ── */
         (function () {
-            var BASE = 733, DIGITS = 3;
+            var BASE = 744, DIGITS = 3;
             function getCount() { return BASE; }
             function render() {
                 var n = String(getCount()).padStart(DIGITS, '0');
@@ -633,9 +425,7 @@
             const blackout = document.getElementById("blackout");
             const container = document.querySelector(".container");
             const about = document.getElementById("about");
-            const collection = document.getElementById("collection");
-            const counter = document.getElementById("visit-counter");
-            const allEls = [container, about, collection, counter];
+            const allEls = [container, about, counter];
 
             let flickerInterval = null;
             let shakeInterval = null;
@@ -685,10 +475,7 @@
         /* ── TOGGLE PANELS ── */
         function toggleCollection() {
             playClickSound();
-            const col = document.getElementById("collection");
-            const about = document.getElementById("about");
-            about.style.display = "none";
-            col.style.display = (col.style.display === "block") ? "none" : "block";
+            window.location.href = "/discs";
         }
 
         function toggleAbout() {
@@ -699,18 +486,7 @@
             about.style.display = (about.style.display === "block") ? "none" : "block";
         }
 
-        /* ── COLLECTION AUDIO ── */
-        const collectionTracks = ["col1.ogg", "col2.ogg", "col3.ogg"];
-        let currentCollectionAudio = null;
 
-        function playCollectionItem(index) {
-            if (currentCollectionAudio && !currentCollectionAudio.ended) {
-                currentCollectionAudio.pause();
-                currentCollectionAudio.currentTime = 0;
-            }
-            currentCollectionAudio = new Audio(collectionTracks[index]);
-            currentCollectionAudio.play();
-        }
     </script>
 
 </body>
