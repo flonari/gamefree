@@ -100,8 +100,6 @@
             text-transform: uppercase;
         }
 
-
-
         /* ── ABOUT ── */
         .about {
             display: none;
@@ -265,8 +263,6 @@
         </div>
     </div>
 
-
-
     <div id="fade-overlay"></div>
     <div id="blackout"></div>
 
@@ -425,6 +421,7 @@
             const blackout = document.getElementById("blackout");
             const container = document.querySelector(".container");
             const about = document.getElementById("about");
+            const counter = document.getElementById("visit-counter"); // FIXED: was undefined variable
             const allEls = [container, about, counter];
 
             let flickerInterval = null;
@@ -480,13 +477,9 @@
 
         function toggleAbout() {
             playClickSound();
-            const about = document.getElementById("about");
-            const col = document.getElementById("collection");
-            col.style.display = "none";
+            const about = document.getElementById("about"); // FIXED: removed reference to non-existent #collection
             about.style.display = (about.style.display === "block") ? "none" : "block";
         }
-
-
     </script>
 
 </body>
