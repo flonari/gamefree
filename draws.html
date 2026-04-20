@@ -9,22 +9,43 @@
             margin: 0;
             padding: 0;
         }
-
         html, body {
             background-color: black;
             min-height: 100vh;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
             padding-top: 32px;
         }
 
+        /* The panel is the root container — everything sits on/inside it */
+        #panel {
+            position: relative;
+            display: inline-block;
+            line-height: 0; /* collapse image whitespace */
+        }
+
+        #panel-img {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        /* Links box: positioned at (45,134), size 191×305 inside the panel */
         .links {
+            position: absolute;
+            left: 45px;
+            top: 134px;
+            width: 191px;
+            height: 305px;
             display: flex;
             flex-direction: column-reverse;
+            justify-content: flex-start;  /* column-reverse so bottom = oldest */
             gap: 20px;
             font-family: monospace;
             font-size: 13px;
-            height: fit-content;
+            overflow: hidden;
+            padding: 8px 4px;
         }
 
         .links a {
@@ -32,21 +53,28 @@
             text-decoration: underline;
             letter-spacing: 1px;
             cursor: pointer;
+            line-height: 1.2;
         }
-
         .links a:visited {
             color: #3a7a10;
         }
-
         .links a:hover {
             color: #9fff4c;
         }
 
+        /* Image view: absolutely covers the same panel area */
         #image-view {
             display: none;
+            position: absolute;
+            left: 45px;
+            top: 134px;
+            width: 191px;
+            height: 305px;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            justify-content: flex-start;
+            gap: 10px;
+            overflow: hidden;
         }
 
         #image-view img {
@@ -66,8 +94,8 @@
             background: none;
             border: none;
             padding: 0;
+            line-height: 1;
         }
-
         #back-btn:hover {
             color: #6ed632;
         }
@@ -75,15 +103,20 @@
 </head>
 <body>
     <audio src="ambient2.ogg" autoplay loop></audio>
-    <div class="links" id="links">
-        <a onclick="showImage('49.png')">11.04.2026</a>
-        <a onclick="showImage('thisday.png')">12.04.2026</a>
-        <a onclick="showImage('geniuswayaheadhistime.png')">20.04.2026</a>
-    </div>
 
-    <div id="image-view">
-        <img id="draw-img" src="" alt="">
-        <button id="back-btn" onclick="goBack()">← back</button>
+    <div id="panel">
+        <img id="panel-img" src="drawspanel.png" alt="">
+
+        <div class="links" id="links">
+            <a onclick="showImage('49.png')">11.04.2026</a>
+            <a onclick="showImage('thisday.png')">12.04.2026</a>
+            <a onclick="showImage('geniuswayaheadhistime.png')">20.04.2026</a>
+        </div>
+
+        <div id="image-view">
+            <img id="draw-img" src="" alt="">
+            <button id="back-btn" onclick="goBack()">← back</button>
+        </div>
     </div>
 
     <script>
@@ -91,11 +124,9 @@
             const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
             new Audio(file).play();
             document.getElementById("links").style.display = "none";
-            const view = document.getElementById("image-view");
             document.getElementById("draw-img").src = src;
-            view.style.display = "flex";
+            document.getElementById("image-view").style.display = "flex";
         }
-
         function goBack() {
             document.getElementById("image-view").style.display = "none";
             document.getElementById("draw-img").src = "";
