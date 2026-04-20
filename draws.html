@@ -43,42 +43,48 @@
             width: 191px;
             height: 305px;
             display: flex;
-            flex-direction: column-reverse;  /* visually bottom-to-top */
-            justify-content: flex-end;        /* anchors stack to the top visually */
-            align-items: flex-start;
-            gap: 14px;
-            padding: 10px 10px;
+            flex-direction: column-reverse;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
             overflow: hidden;
         }
 
         #links a {
-            color: #6ed632;
+            color: #a8ff5a;
             text-decoration: underline;
             font-family: monospace;
-            font-size: 13px;
-            letter-spacing: 1px;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 2px;
             cursor: pointer;
             line-height: 1.2;
             text-shadow:
-                0 0 6px #6ed632,
-                0 0 12px #4aad1a,
-                2px 2px 4px #000;
+                0 0 4px #000,
+                0 0 8px #000,
+                0 0 10px #6ed632,
+                0 0 20px #6ed632,
+                0 0 30px #4aad1a,
+                2px 2px 6px #000;
         }
         #links a:visited {
-            color: #3a7a10;
+            color: #6ed632;
             text-shadow:
-                0 0 6px #3a7a10,
-                2px 2px 4px #000;
+                0 0 4px #000,
+                0 0 8px #3a7a10,
+                0 0 16px #3a7a10,
+                2px 2px 6px #000;
         }
         #links a:hover {
-            color: #9fff4c;
+            color: #dfffaa;
             text-shadow:
-                0 0 8px #9fff4c,
-                0 0 16px #6ed632,
-                2px 2px 4px #000;
+                0 0 4px #000,
+                0 0 10px #9fff4c,
+                0 0 22px #9fff4c,
+                0 0 40px #6ed632,
+                2px 2px 6px #000;
         }
 
-        /* ── IMAGE VIEW ── */
         #image-view {
             display: none;
             position: fixed;
