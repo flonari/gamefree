@@ -108,6 +108,12 @@
             image-rendering: crisp-edges;
         }
 
+        #img-wrapper img.big {
+            max-width: 160vw;
+            max-height: 160vh;
+            width: 160vw;
+        }
+
         #back-btn {
             position: absolute;
             top: -20px;
@@ -132,9 +138,9 @@
     <div id="panel">
         <img id="panel-img" src="drawspanel.png" alt="">
         <div id="links">
-            <a onclick="showImage('49.png')">11.04.2026</a>
-            <a onclick="showImage('thisday.png')">12.04.2026</a>
-            <a onclick="showImage('geniuswayaheadhistime.png')">20.04.2026</a>
+            <a onclick="showImage('49.png', true)">11.04.2026</a>
+            <a onclick="showImage('thisday.png', true)">12.04.2026</a>
+            <a onclick="showImage('geniuswayaheadhistime.png', false)">20.04.2026</a>
         </div>
     </div>
 
@@ -146,10 +152,12 @@
     </div>
 
     <script>
-        function showImage(src) {
+        function showImage(src, big) {
             const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
             new Audio(file).play();
-            document.getElementById("draw-img").src = src;
+            const img = document.getElementById("draw-img");
+            img.src = src;
+            img.className = big ? "big" : "";
             document.getElementById("image-view").style.display = "flex";
         }
         function goBack() {
