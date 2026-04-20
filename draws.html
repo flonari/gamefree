@@ -19,7 +19,6 @@
             padding-top: 32px;
         }
 
-        /* ── PANEL VIEW ── */
         #panel {
             position: relative;
             width: 250px;
@@ -32,12 +31,11 @@
             top: 0; left: 0;
             width: 250px;
             height: 463px;
+            display: block;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
-            display: block;
         }
 
-        /* Links sit inside the notebook rect: x=45 y=134, 191x305 */
         #links {
             position: absolute;
             left: 45px;
@@ -45,10 +43,11 @@
             width: 191px;
             height: 305px;
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            gap: 18px;
-            padding: 12px 10px;
+            flex-direction: column-reverse;  /* visually bottom-to-top */
+            justify-content: flex-end;        /* anchors stack to the top visually */
+            align-items: flex-start;
+            gap: 14px;
+            padding: 10px 10px;
             overflow: hidden;
         }
 
@@ -60,10 +59,24 @@
             letter-spacing: 1px;
             cursor: pointer;
             line-height: 1.2;
-            display: block;
+            text-shadow:
+                0 0 6px #6ed632,
+                0 0 12px #4aad1a,
+                2px 2px 4px #000;
         }
-        #links a:visited { color: #3a7a10; }
-        #links a:hover   { color: #9fff4c; }
+        #links a:visited {
+            color: #3a7a10;
+            text-shadow:
+                0 0 6px #3a7a10,
+                2px 2px 4px #000;
+        }
+        #links a:hover {
+            color: #9fff4c;
+            text-shadow:
+                0 0 8px #9fff4c,
+                0 0 16px #6ed632,
+                2px 2px 4px #000;
+        }
 
         /* ── IMAGE VIEW ── */
         #image-view {
@@ -110,7 +123,6 @@
 <body>
     <audio src="ambient2.ogg" autoplay loop></audio>
 
-    <!-- Panel view -->
     <div id="panel">
         <img id="panel-img" src="drawspanel.png" alt="">
         <div id="links">
@@ -120,7 +132,6 @@
         </div>
     </div>
 
-    <!-- Fullscreen black image view -->
     <div id="image-view">
         <div id="img-wrapper">
             <button id="back-btn" onclick="goBack()">← back</button>
