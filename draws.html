@@ -9,6 +9,7 @@
             margin: 0;
             padding: 0;
         }
+
         html, body {
             background-color: black;
             min-height: 100vh;
@@ -18,73 +19,80 @@
             padding-top: 32px;
         }
 
-        /* The panel is the root container — everything sits on/inside it */
+        /* ── PANEL VIEW ── */
         #panel {
             position: relative;
-            display: inline-block;
-            line-height: 0; /* collapse image whitespace */
+            width: 250px;
+            height: 463px;
+            flex-shrink: 0;
         }
 
         #panel-img {
-            display: block;
+            position: absolute;
+            top: 0; left: 0;
+            width: 250px;
+            height: 463px;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+            display: block;
         }
 
-        /* Links box: positioned at (45,134), size 191×305 inside the panel */
-        .links {
+        /* Links sit inside the notebook rect: x=45 y=134, 191x305 */
+        #links {
             position: absolute;
             left: 45px;
             top: 134px;
             width: 191px;
             height: 305px;
             display: flex;
-            flex-direction: column-reverse;
-            justify-content: flex-start;  /* column-reverse so bottom = oldest */
-            gap: 20px;
-            font-family: monospace;
-            font-size: 13px;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 18px;
+            padding: 12px 10px;
             overflow: hidden;
-            padding: 8px 4px;
         }
 
-        .links a {
+        #links a {
             color: #6ed632;
             text-decoration: underline;
+            font-family: monospace;
+            font-size: 13px;
             letter-spacing: 1px;
             cursor: pointer;
             line-height: 1.2;
+            display: block;
         }
-        .links a:visited {
-            color: #3a7a10;
-        }
-        .links a:hover {
-            color: #9fff4c;
-        }
+        #links a:visited { color: #3a7a10; }
+        #links a:hover   { color: #9fff4c; }
 
-        /* Image view: absolutely covers the same panel area */
+        /* ── IMAGE VIEW ── */
         #image-view {
             display: none;
-            position: absolute;
-            left: 45px;
-            top: 134px;
-            width: 191px;
-            height: 305px;
-            flex-direction: column;
+            position: fixed;
+            inset: 0;
+            background: black;
+            justify-content: center;
             align-items: center;
-            justify-content: flex-start;
-            gap: 10px;
-            overflow: hidden;
         }
 
-        #image-view img {
-            width: 200%;
+        #img-wrapper {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+        }
+
+        #img-wrapper img {
+            max-width: 90vw;
+            max-height: 90vh;
             display: block;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
         }
 
         #back-btn {
+            position: absolute;
+            top: -20px;
+            right: 0;
             font-family: monospace;
             font-size: 11px;
             color: #3a7a10;
@@ -96,26 +104,27 @@
             padding: 0;
             line-height: 1;
         }
-        #back-btn:hover {
-            color: #6ed632;
-        }
+        #back-btn:hover { color: #6ed632; }
     </style>
 </head>
 <body>
     <audio src="ambient2.ogg" autoplay loop></audio>
 
+    <!-- Panel view -->
     <div id="panel">
         <img id="panel-img" src="drawspanel.png" alt="">
-
-        <div class="links" id="links">
+        <div id="links">
             <a onclick="showImage('49.png')">11.04.2026</a>
             <a onclick="showImage('thisday.png')">12.04.2026</a>
             <a onclick="showImage('geniuswayaheadhistime.png')">20.04.2026</a>
         </div>
+    </div>
 
-        <div id="image-view">
-            <img id="draw-img" src="" alt="">
+    <!-- Fullscreen black image view -->
+    <div id="image-view">
+        <div id="img-wrapper">
             <button id="back-btn" onclick="goBack()">← back</button>
+            <img id="draw-img" src="" alt="">
         </div>
     </div>
 
@@ -123,14 +132,12 @@
         function showImage(src) {
             const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
             new Audio(file).play();
-            document.getElementById("links").style.display = "none";
             document.getElementById("draw-img").src = src;
             document.getElementById("image-view").style.display = "flex";
         }
         function goBack() {
             document.getElementById("image-view").style.display = "none";
             document.getElementById("draw-img").src = "";
-            document.getElementById("links").style.display = "flex";
         }
     </script>
 </body>
