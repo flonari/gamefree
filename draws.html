@@ -131,6 +131,35 @@
             line-height: 1;
         }
         #back-btn:hover { color: #6ed632; }
+
+        /* ── blue caption box ── */
+        #caption-box {
+            position: fixed;
+            bottom: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(460px, 88vw);
+            background: #0a1a6e;
+            border: 2px solid #1a3aaa;
+            padding: 18px 22px;
+
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.7s ease;
+        }
+
+        #caption-box.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #caption-box p {
+            font-family: monospace;
+            font-size: 13px;
+            color: #fff5bb;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
@@ -139,9 +168,9 @@
     <div id="panel">
         <img id="panel-img" src="drawspanel.png" alt="">
         <div id="links">
-            <a onclick="showImage('49.png', true)">11.04.2026</a>
-            <a onclick="showImage('thisday.png', true)">12.04.2026</a>
-            <a onclick="showImage('geniuswayaheadhistime.png', false)">20.04.2026</a>
+            <a onclick="showImage('49.png', true, 0)">11.04.2026</a>
+            <a onclick="showImage('thisday.png', true, 1)">12.04.2026</a>
+            <a onclick="showImage('geniuswayaheadhistime.png', false, 2)">20.04.2026</a>
         </div>
     </div>
 
@@ -152,18 +181,50 @@
         </div>
     </div>
 
+    <!-- caption box lives outside image-view so it layers on top -->
+    <div id="caption-box">
+        <p id="caption-text"></p>
+    </div>
+
     <script>
-        function showImage(src, big) {
+        const captions = [
+            "placeholder text for 11.04.2026 — something happened here that words can barely hold.",
+            "placeholder text for 12.04.2026 — the image remembers what the mind forgets.",
+            "placeholder text for 20.04.2026 — ahead of its time, behind all meaning."
+        ];
+
+        let captionTimer = null;
+
+        function showImage(src, big, index) {
             const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
             new Audio(file).play();
+
             const img = document.getElementById("draw-img");
             img.src = src;
             img.className = big ? "big" : "";
             document.getElementById("image-view").style.display = "flex";
+
+            // reset caption
+            const box = document.getElementById("caption-box");
+            const text = document.getElementById("caption-text");
+            box.classList.remove("visible");
+            clearTimeout(captionTimer);
+
+            text.textContent = captions[index];
+
+            // fade in after 2s
+            captionTimer = setTimeout(() => {
+                box.classList.add("visible");
+            }, 2000);
         }
+
         function goBack() {
             document.getElementById("image-view").style.display = "none";
             document.getElementById("draw-img").src = "";
+
+            const box = document.getElementById("caption-box");
+            box.classList.remove("visible");
+            clearTimeout(captionTimer);
         }
     </script>
 </body>
