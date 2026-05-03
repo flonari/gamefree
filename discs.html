@@ -1,2 +1,270 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RED ZONE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  #title {
+    color: #ff0000;
+    font-size: 13px;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-shadow: 0 0 10px #ff0000, 0 0 30px #ff000066;
+    animation: flicker 3s infinite;
+  }
+
+  @keyframes flicker {
+    0%,95%,100% { opacity: 1; }
+    96% { opacity: 0.4; }
+    97% { opacity: 1; }
+    98% { opacity: 0.2; }
+    99% { opacity: 1; }
+  }
+
+  #canvas {
+    display: block;
+    image-rendering: pixelated;
+    border: 1px solid #ff000044;
+    box-shadow: 0 0 40px #ff000033, inset 0 0 60px #1a000088;
+    background: #060000;
+  }
+
+  #hint {
+    color: #660000;
+    font-size: 9px;
+    letter-spacing: 3px;
+    margin-top: 10px;
+    text-shadow: 0 0 6px #ff000033;
+  }
+
+  #score {
+    color: #ff3300;
+    font-size: 10px;
+    letter-spacing: 5px;
+    margin-bottom: 6px;
+    text-shadow: 0 0 8px #ff330066;
+  }
+</style>
+</head>
+<body>
+
+<div id="title">[ RED ZONE ]</div>
+<div id="score">MOVES: <span id="moveCount">0</span></div>
+<canvas id="canvas"></canvas>
+<div id="hint">↑ ↓ ← → to move &nbsp;|&nbsp; R to regenerate</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+const CELL = 10;
+const COLS = 80;
+const ROWS = 60;
+
+canvas.width = COLS * CELL;
+canvas.height = ROWS * CELL;
+
+// Box parameters (inner playable area)
+const BOX_X = 10;
+const BOX_Y = 10;
+const BOX_W = 20; // cells wide
+const BOX_H = 16; // cells tall
+
+const WALL_CHARS = ['@','%','&','$','?','!','~','^','*','+','=','<','>','/','\\','|','§','¶','Ω','Δ','Σ','Ψ','π','λ','░','▒','▓','×','÷','±'];
+const DENSITY = 0.18;
+
+let walls = new Set();
+let symbolMap = {}; // key -> char
+let player = { x: BOX_X + Math.floor(BOX_W/2), y: BOX_Y + Math.floor(BOX_H/2) };
+let moves = 0;
+
+function cellKey(x, y) { return `${x},${y}`; }
+
+function isInBox(x, y) {
+  return x >= BOX_X && x < BOX_X + BOX_W && y >= BOX_Y && y < BOX_Y + BOX_H;
+}
+
+function isBoxBorder(x, y) {
+  return (
+    (x === BOX_X - 1 || x === BOX_X + BOX_W) && y >= BOX_Y - 1 && y <= BOX_Y + BOX_H ||
+    (y === BOX_Y - 1 || y === BOX_Y + BOX_H) && x >= BOX_X - 1 && x <= BOX_X + BOX_W
+  );
+}
+
+function generate() {
+  walls.clear();
+  symbolMap = {};
+  moves = 0;
+  document.getElementById('moveCount').textContent = 0;
+  player = { x: BOX_X + Math.floor(BOX_W / 2), y: BOX_Y + Math.floor(BOX_H / 2) };
+
+  // Place random symbol walls OUTSIDE the box (and not on box border)
+  for (let y = 0; y < ROWS; y++) {
+    for (let x = 0; x < COLS; x++) {
+      if (isInBox(x, y)) continue;
+      if (isBoxBorder(x, y)) continue;
+      // buffer of 1 around box
+      if (x >= BOX_X - 2 && x <= BOX_X + BOX_W + 1 && y >= BOX_Y - 2 && y <= BOX_Y + BOX_H + 1) continue;
+
+      if (Math.random() < DENSITY) {
+        const k = cellKey(x, y);
+        walls.add(k);
+        symbolMap[k] = WALL_CHARS[Math.floor(Math.random() * WALL_CHARS.length)];
+      }
+    }
+  }
+}
+
+function draw() {
+  // Background
+  ctx.fillStyle = '#060000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Subtle scanlines
+  for (let y = 0; y < ROWS; y++) {
+    if (y % 2 === 0) {
+      ctx.fillStyle = 'rgba(0,0,0,0.15)';
+      ctx.fillRect(0, y * CELL, canvas.width, CELL);
+    }
+  }
+
+  // Random symbol walls (outside)
+  ctx.font = `bold ${CELL - 1}px 'Share Tech Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  for (const key of walls) {
+    const [wx, wy] = key.split(',').map(Number);
+    const ch = symbolMap[key];
+
+    // Vary red shades for chaos feel
+    const shade = 80 + Math.floor((wx * 13 + wy * 7) % 100);
+    ctx.fillStyle = `rgb(${shade + 60}, 0, 0)`;
+    ctx.shadowColor = '#ff000055';
+    ctx.shadowBlur = 4;
+    ctx.fillText(ch, wx * CELL + CELL / 2, wy * CELL + CELL / 2);
+  }
+
+  ctx.shadowBlur = 0;
+
+  // Draw hashtag box border
+  ctx.fillStyle = '#cc0000';
+  ctx.shadowColor = '#ff000099';
+  ctx.shadowBlur = 8;
+  ctx.font = `bold ${CELL - 1}px 'Share Tech Mono', monospace`;
+
+  for (let x = BOX_X - 1; x <= BOX_X + BOX_W; x++) {
+    drawChar('#', x, BOX_Y - 1);
+    drawChar('#', x, BOX_Y + BOX_H);
+  }
+  for (let y = BOX_Y; y < BOX_Y + BOX_H; y++) {
+    drawChar('#', BOX_X - 1, y);
+    drawChar('#', BOX_X + BOX_W, y);
+  }
+
+  ctx.shadowBlur = 0;
+
+  // Player: glowing red dot
+  const px = player.x * CELL + CELL / 2;
+  const py = player.y * CELL + CELL / 2;
+
+  // Glow layers
+  ctx.shadowColor = '#ff0000';
+  ctx.shadowBlur = 20;
+  ctx.fillStyle = '#ff4400';
+  ctx.beginPath();
+  ctx.arc(px, py, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.shadowBlur = 10;
+  ctx.fillStyle = '#ff8866';
+  ctx.beginPath();
+  ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(px, py, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawChar(ch, cx, cy) {
+  ctx.fillText(ch, cx * CELL + CELL / 2, cy * CELL + CELL / 2);
+}
+
+function tryMove(dx, dy) {
+  const nx = player.x + dx;
+  const ny = player.y + dy;
+
+  // Must stay inside the box
+  if (nx < BOX_X || nx >= BOX_X + BOX_W) return;
+  if (ny < BOX_Y || ny >= BOX_Y + BOX_H) return;
+  // No walls inside box anyway, so just move
+  player.x = nx;
+  player.y = ny;
+  moves++;
+  document.getElementById('moveCount').textContent = moves;
+  draw();
+}
+
+document.addEventListener('keydown', (e) => {
+  switch (e.key) {
+    case 'ArrowUp':    e.preventDefault(); tryMove(0, -1); break;
+    case 'ArrowDown':  e.preventDefault(); tryMove(0,  1); break;
+    case 'ArrowLeft':  e.preventDefault(); tryMove(-1, 0); break;
+    case 'ArrowRight': e.preventDefault(); tryMove( 1, 0); break;
+    case 'r': case 'R': generate(); draw(); break;
+  }
+});
+
+// Touch/swipe support
+let touchStartX = 0, touchStartY = 0;
+canvas.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+canvas.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy)) {
+    tryMove(dx > 0 ? 1 : -1, 0);
+  } else {
+    tryMove(0, dy > 0 ? 1 : -1);
+  }
+}, { passive: true });
+
+// Animate the background symbols with a slow pulse
+let pulse = 0;
+function animLoop() {
+  pulse++;
+  if (pulse % 40 === 0) {
+    // Occasionally re-randomize a few symbol colors (handled in draw by coord hash)
+    draw();
+  }
+  requestAnimationFrame(animLoop);
+}
+
+generate();
+draw();
+animLoop();
+</script>
+</body>
 </html>
