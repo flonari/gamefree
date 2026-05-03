@@ -115,10 +115,12 @@
             height: 17vw;
         }
 
+        /* back button — bottom center of image */
         #back-btn {
             position: absolute;
-            top: -20px;
-            right: 0;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
             font-family: monospace;
             font-size: 11px;
             color: #3a7a10;
@@ -129,19 +131,21 @@
             border: none;
             padding: 0;
             line-height: 1;
+            white-space: nowrap;
         }
         #back-btn:hover { color: #6ed632; }
 
-        /* ── blue caption box ── */
+        /* ── blue caption box — above the image ── */
         #caption-box {
             position: fixed;
-            bottom: 48px;
+            /* will be repositioned by JS relative to image top */
             left: 50%;
             transform: translateX(-50%);
-            width: min(460px, 88vw);
+            width: max-content;
+            max-width: min(460px, 88vw);
             background: #0400FF;
             border: 2px solid #0400FF;
-            padding: 18px 22px;
+            padding: 30px;
 
             opacity: 0;
             pointer-events: none;
@@ -159,6 +163,7 @@
             color: #FFD400;
             line-height: 1.6;
             letter-spacing: 0.5px;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -176,8 +181,8 @@
 
     <div id="image-view">
         <div id="img-wrapper">
-            <button id="back-btn" onclick="goBack()">← back</button>
             <img id="draw-img" src="" alt="">
+            <button id="back-btn" onclick="goBack()">← back</button>
         </div>
     </div>
 
@@ -194,6 +199,19 @@
         ];
 
         let captionTimer = null;
+
+        function positionCaptionAboveImage() {
+            const img = document.getElementById("draw-img");
+            const box = document.getElementById("caption-box");
+            const rect = img.getBoundingClientRect();
+            // place caption so its bottom sits ~36px above the image top
+            const gap = 36;
+            const boxHeight = box.offsetHeight;
+            const topPos = rect.top - boxHeight - gap;
+            box.style.top = Math.max(8, topPos) + "px";
+            // remove any bottom positioning
+            box.style.bottom = "auto";
+        }
 
         function showImage(src, big, index) {
             const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
@@ -212,8 +230,9 @@
 
             text.textContent = captions[index];
 
-            // fade in after 2s
+            // wait for image to load so we can measure its position
             captionTimer = setTimeout(() => {
+                positionCaptionAboveImage();
                 box.classList.add("visible");
             }, 1000);
         }
