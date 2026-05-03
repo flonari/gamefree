@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>RED ZONE</title>
+<title>ALL I SEE IS RED</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -36,10 +36,27 @@
 <body>
 <canvas id="canvas"></canvas>
 <div id="hint">↑ ↓ ← → to move</div>
+<audio id="bgMusic" src="10pmcrunchy.ogg" loop></audio>
 
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const bgMusic = document.getElementById('bgMusic');
+
+// Try to play music immediately; browsers may require a user gesture first
+bgMusic.volume = 0.6;
+bgMusic.play().catch(() => {
+  // Autoplay blocked — wait for first interaction
+  const unlock = () => {
+    bgMusic.play();
+    window.removeEventListener('keydown', unlock);
+    window.removeEventListener('click', unlock);
+    window.removeEventListener('touchstart', unlock);
+  };
+  window.addEventListener('keydown', unlock);
+  window.addEventListener('click', unlock);
+  window.addEventListener('touchstart', unlock);
+});
 
 const CELL = 10;
 const WALL_CHARS = ['@','%','&','$','?','!','~','^','*','+','=','<','>','/','\\','|','§','¶','Ω','Δ','Σ','Ψ','π','λ','░','▒','▓','×','÷','±','€','£','√','∞','≈','≠','∑'];
@@ -53,6 +70,13 @@ let walls = new Set();
 let symbolMap = {};
 let player = { x: 0, y: 0 };
 
+// Message state
+let showMessage = false;
+let messageOpacity = 0;
+let startTime = Date.now();
+const MESSAGE_DELAY = 2 * 60 * 1000; // 2 minutes in ms
+let messageTriggered = false;
+
 function cellKey(x, y) { return `${x},${y}`; }
 
 function isInBox(x, y) {
@@ -60,10 +84,10 @@ function isInBox(x, y) {
 }
 
 function isBoxBorder(x, y) {
-  const onLeft  = x === BOX_X - 1;
-  const onRight = x === BOX_X + BOX_W;
-  const onTop   = y === BOX_Y - 1;
-  const onBot   = y === BOX_Y + BOX_H;
+  const onLeft   = x === BOX_X - 1;
+  const onRight  = x === BOX_X + BOX_W;
+  const onTop    = y === BOX_Y - 1;
+  const onBot    = y === BOX_Y + BOX_H;
   const inXRange = x >= BOX_X - 1 && x <= BOX_X + BOX_W;
   const inYRange = y >= BOX_Y - 1 && y <= BOX_Y + BOX_H;
   return (onLeft || onRight) && inYRange || (onTop || onBot) && inXRange;
@@ -77,7 +101,6 @@ function resize() {
   BOX_X = Math.floor((COLS - BOX_W) / 2);
   BOX_Y = Math.floor((ROWS - BOX_H) / 2);
   generate();
-  draw();
 }
 
 function generate() {
@@ -168,6 +191,38 @@ function draw() {
   ctx.beginPath();
   ctx.arc(px, py, 1.2, 0, Math.PI * 2);
   ctx.fill();
+
+  // "come back... later" message inside the box
+  if (showMessage && messageOpacity > 0) {
+    const boxCenterX = (BOX_X + BOX_W / 2) * CELL;
+    const boxCenterY = (BOX_Y + BOX_H / 2) * CELL;
+
+    // Slow flicker on top of the fade
+    const flicker = 0.85 + Math.sin(Date.now() * 0.003) * 0.15;
+    const alpha = messageOpacity * flicker;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Glow pass
+    ctx.font = `bold 11px 'Share Tech Mono', monospace`;
+    ctx.fillStyle = '#ff0000';
+    ctx.shadowColor = '#ff0000';
+    ctx.shadowBlur = 18;
+    ctx.fillText('come back...', boxCenterX, boxCenterY - 10);
+    ctx.fillText('later', boxCenterX, boxCenterY + 8);
+
+    // Crisp pass
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ff6644';
+    ctx.fillText('come back...', boxCenterX, boxCenterY - 10);
+    ctx.fillStyle = '#ff6644';
+    ctx.fillText('later', boxCenterX, boxCenterY + 8);
+
+    ctx.restore();
+  }
 }
 
 function drawChar(ch, cx, cy) {
@@ -181,7 +236,6 @@ function tryMove(dx, dy) {
   if (ny < BOX_Y || ny >= BOX_Y + BOX_H) return;
   player.x = nx;
   player.y = ny;
-  draw();
 }
 
 document.addEventListener('keydown', e => {
@@ -204,10 +258,22 @@ window.addEventListener('touchend', e => {
 
 window.addEventListener('resize', resize);
 
-let frame = 0;
+// Main loop
 (function loop() {
-  frame++;
-  if (frame % 45 === 0) draw();
+  const elapsed = Date.now() - startTime;
+
+  // Trigger message after 2 minutes
+  if (!messageTriggered && elapsed >= MESSAGE_DELAY) {
+    messageTriggered = true;
+    showMessage = true;
+  }
+
+  // Fade in message over ~3 seconds once triggered
+  if (showMessage && messageOpacity < 1) {
+    messageOpacity = Math.min(1, messageOpacity + 0.005);
+  }
+
+  draw();
   requestAnimationFrame(loop);
 })();
 
