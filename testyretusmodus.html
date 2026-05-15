@@ -10,7 +10,6 @@
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       background-color: #d0d0d0;
       font-family: monospace;
@@ -21,18 +20,17 @@
       min-height: 100vh;
       padding: 24px;
     }
-
     /* Outer gray frame */
     .frame {
-  background-color: #b8b8b8;
-  border: 3px solid #999;
-  padding: 20px;
-  box-shadow: none;
-  width: fit-content; /* shrinks exactly to content */
-}
+      background-color: #b8b8b8;
+      border: 3px solid #999;
+      padding: 20px;
+      box-shadow: none;
+      width: fit-content;
+    }
     /* Top bar */
     .top-bar {
-      width: 100%;
+      width: 650px;
       background-color: #b8b8b8;
       text-align: center;
       padding: 8px 0 14px 0;
@@ -41,28 +39,26 @@
       letter-spacing: 1px;
       color: #222;
     }
-
     /* Image area */
-.image-container {
-  width: 650px;
-  height: 450px;
-  border: 2px solid #888;
-}
-
-    .image-placeholder {
+    .image-container {
+      width: 650px;
+      border: 2px solid #888;
+      display: block;
+      line-height: 0;
+    }
+    .image-container img {
+      display: block;
       width: 650px;
       height: 450px;
-      background-color: #ff0000;
-      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
     }
-
     /* Caption / text area below image */
     .caption-area {
-      width: 100%;
+      width: 650px;
       background-color: #b8b8b8;
       padding: 14px 4px 4px 4px;
     }
-
     .caption-area .arrow-link {
       display: inline-flex;
       align-items: center;
@@ -73,7 +69,6 @@
       text-decoration: underline;
       cursor: pointer;
     }
-
     .caption-area .prompt {
       color: #333;
       font-family: monospace;
@@ -83,23 +78,15 @@
   </style>
 </head>
 <body>
-
   <div class="frame">
-    <!-- Top navigation arrow -->
     <div class="top-bar">20.</div>
-
-    <!-- Image area (red placeholder) -->
     <div class="image-container">
-      <!-- Replace the div below with an <img> tag when you have an image -->
-<img src="uninterestingpatterns.png" width="650" height="450">
+      <img src="uninterestingpatterns.png" width="650" height="450">
     </div>
-
-    <!-- Text / caption below image -->
     <div class="caption-area">
       <span class="prompt">You are the Everyman, and you have 20 pages to live.</span>
       <a class="arrow-link" href="#">Examine your surroundings.</a>
     </div>
   </div>
-
 </body>
 </html>
