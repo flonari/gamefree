@@ -11,12 +11,29 @@
         }
 
         html, body {
-            background-color: black;
+            background-color: #000;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             padding-top: 32px;
+            overflow-x: hidden;
+        }
+
+        /* subtle scanline overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.08) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
         }
 
         #panel {
@@ -24,6 +41,20 @@
             width: 250px;
             height: 463px;
             flex-shrink: 0;
+            animation: flicker-in 2.2s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes flicker-in {
+            0%   { opacity: 0; }
+            10%  { opacity: 0.6; }
+            12%  { opacity: 0; }
+            20%  { opacity: 0.8; }
+            22%  { opacity: 0.1; }
+            40%  { opacity: 0.9; }
+            42%  { opacity: 0.3; }
+            60%  { opacity: 1; }
+            100% { opacity: 1; }
         }
 
         #panel-img {
@@ -52,52 +83,71 @@
 
         #links a {
             color: #a8ff5a;
-            text-decoration: underline;
+            text-decoration: none;
             font-family: monospace;
             font-size: 14px;
             font-weight: bold;
             letter-spacing: 2px;
             cursor: pointer;
             line-height: 1.2;
+            position: relative;
+            transition: color 0.4s ease, letter-spacing 0.4s ease;
             text-shadow:
-                0 0 4px #000,
-                0 0 8px #000,
-                0 0 10px #6ed632,
-                0 0 20px #6ed632,
-                0 0 30px #4aad1a,
-                2px 2px 6px #000;
-        }
-        #links a:visited {
-            color: #6ed632;
-            text-shadow:
-                0 0 4px #000,
-                0 0 8px #3a7a10,
-                0 0 16px #3a7a10,
-                2px 2px 6px #000;
-        }
-        #links a:hover {
-            color: #dfffaa;
-            text-shadow:
-                0 0 4px #000,
-                0 0 10px #9fff4c,
-                0 0 22px #9fff4c,
-                0 0 40px #6ed632,
-                2px 2px 6px #000;
+                0 0 6px rgba(110, 214, 50, 0.5),
+                0 0 14px rgba(110, 214, 50, 0.2);
         }
 
+        #links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #a8ff5a;
+            transition: width 0.5s ease;
+        }
+
+        #links a:hover {
+            color: #dfffaa;
+            letter-spacing: 3px;
+            text-shadow:
+                0 0 6px rgba(168, 255, 90, 0.8),
+                0 0 20px rgba(168, 255, 90, 0.4),
+                0 0 40px rgba(110, 214, 50, 0.2);
+        }
+
+        #links a:hover::after {
+            width: 100%;
+        }
+
+        /* ── image view overlay ── */
         #image-view {
             display: none;
             position: fixed;
             inset: 0;
-            background: black;
+            background: rgba(0, 0, 0, 0);
             justify-content: center;
             align-items: center;
+            transition: background 0.8s ease;
+        }
+
+        #image-view.open {
+            background: rgba(0, 0, 0, 0.97);
         }
 
         #img-wrapper {
             position: relative;
             display: inline-block;
             line-height: 0;
+            opacity: 0;
+            transform: scale(0.96);
+            transition: opacity 1s ease 0.3s, transform 1s ease 0.3s;
+        }
+
+        #image-view.open #img-wrapper {
+            opacity: 1;
+            transform: scale(1);
         }
 
         #img-wrapper img {
@@ -106,6 +156,7 @@
             display: block;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+            filter: brightness(0.95) contrast(1.05);
         }
 
         #img-wrapper img.big {
@@ -115,41 +166,49 @@
             height: 17vw;
         }
 
-        /* back button — bottom center of image */
+        /* ── back button ── */
         #back-btn {
             position: absolute;
-            bottom: -22px;
+            bottom: -28px;
             left: 50%;
             transform: translateX(-50%);
             font-family: monospace;
             font-size: 11px;
-            color: #3a7a10;
+            color: #2a5a08;
             letter-spacing: 2px;
             cursor: pointer;
-            text-decoration: underline;
+            text-decoration: none;
             background: none;
             border: none;
             padding: 0;
             line-height: 1;
             white-space: nowrap;
+            transition: color 0.4s ease, letter-spacing 0.4s ease;
+            opacity: 0;
         }
-        #back-btn:hover { color: #6ed632; }
 
-        /* ── blue caption box — above the image ── */
+        #image-view.open #back-btn {
+            opacity: 1;
+            transition: color 0.4s ease, letter-spacing 0.4s ease, opacity 0.8s ease 1s;
+        }
+
+        #back-btn:hover {
+            color: #6ed632;
+            letter-spacing: 3px;
+        }
+
+        /* ── caption box ── */
         #caption-box {
             position: fixed;
-            /* will be repositioned by JS relative to image top */
             left: 50%;
             transform: translateX(-50%);
             width: max-content;
             max-width: min(460px, 88vw);
             background: #0400FF;
-            border: 2px solid #0400FF;
-            padding: 30px;
-
+            padding: 28px 30px;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.7s ease;
+            transition: opacity 1.2s ease;
         }
 
         #caption-box.visible {
@@ -164,6 +223,22 @@
             line-height: 1.6;
             letter-spacing: 0.5px;
             white-space: nowrap;
+        }
+
+        /* typewriter cursor blink */
+        #caption-box p::after {
+            content: '█';
+            animation: blink 1.1s step-end infinite;
+            opacity: 0;
+        }
+
+        #caption-box.visible p::after {
+            opacity: 1;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
         }
     </style>
 </head>
@@ -186,7 +261,6 @@
         </div>
     </div>
 
-    <!-- caption box lives outside image-view so it layers on top -->
     <div id="caption-box">
         <p id="caption-text"></p>
     </div>
@@ -199,18 +273,30 @@
         ];
 
         let captionTimer = null;
+        let captionTypeTimer = null;
 
         function positionCaptionAboveImage() {
             const img = document.getElementById("draw-img");
             const box = document.getElementById("caption-box");
             const rect = img.getBoundingClientRect();
-            // place caption so its bottom sits ~36px above the image top
-            const gap = 36;
+            const gap = 40;
             const boxHeight = box.offsetHeight;
             const topPos = rect.top - boxHeight - gap;
             box.style.top = Math.max(8, topPos) + "px";
-            // remove any bottom positioning
             box.style.bottom = "auto";
+        }
+
+        function typeCaption(text) {
+            const el = document.getElementById("caption-text");
+            el.textContent = "";
+            let i = 0;
+            function next() {
+                if (i < text.length) {
+                    el.textContent += text[i++];
+                    captionTypeTimer = setTimeout(next, 38 + Math.random() * 30);
+                }
+            }
+            next();
         }
 
         function showImage(src, big, index) {
@@ -218,32 +304,43 @@
             new Audio(file).play();
 
             const img = document.getElementById("draw-img");
+            const view = document.getElementById("image-view");
+            const box = document.getElementById("caption-box");
+
             img.src = src;
             img.className = big ? "big" : "";
-            document.getElementById("image-view").style.display = "flex";
 
-            // reset caption
-            const box = document.getElementById("caption-box");
-            const text = document.getElementById("caption-text");
             box.classList.remove("visible");
             clearTimeout(captionTimer);
+            clearTimeout(captionTypeTimer);
 
-            text.textContent = captions[index];
+            view.style.display = "flex";
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    view.classList.add("open");
+                });
+            });
 
-            // wait for image to load so we can measure its position
             captionTimer = setTimeout(() => {
                 positionCaptionAboveImage();
+                typeCaption(captions[index]);
                 box.classList.add("visible");
-            }, 1000);
+            }, 1100);
         }
 
         function goBack() {
-            document.getElementById("image-view").style.display = "none";
-            document.getElementById("draw-img").src = "";
-
+            const view = document.getElementById("image-view");
             const box = document.getElementById("caption-box");
+
             box.classList.remove("visible");
+            view.classList.remove("open");
             clearTimeout(captionTimer);
+            clearTimeout(captionTypeTimer);
+
+            setTimeout(() => {
+                view.style.display = "none";
+                document.getElementById("draw-img").src = "";
+            }, 800);
         }
     </script>
 </body>
