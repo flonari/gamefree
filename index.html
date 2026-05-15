@@ -20,7 +20,7 @@ html, body {
     flex-direction: column;
 }
 
-/* ── MAIN LAYOUT ── */
+/* ── LAYOUT ── */
 .container {
     display: flex;
     flex-direction: column;
@@ -29,16 +29,14 @@ html, body {
 
 .main-image-wrap {
     position: relative;
-    display: block;
-    line-height: 0;
 }
 
 .main-image {
     display: block;
     max-width: 100%;
-    height: auto;
 }
 
+/* CLICK ZONES */
 .game-zone {
     position: absolute;
     left: 164px;
@@ -48,7 +46,6 @@ html, body {
     cursor: pointer;
 }
 
-/* ── TASKBAR ── */
 .taskbar {
     position: relative;
     width: 100%;
@@ -96,11 +93,9 @@ html, body {
     font-family: monospace;
     font-size: 9px;
     color: #6ed632;
-    letter-spacing: 2px;
-    text-transform: uppercase;
 }
 
-/* ── ABOUT (FULL SCUFFED / CORRUPTED VERSION) ── */
+/* ── ABOUT (SCUFFED + BROKEN) ── */
 .about {
     display: none;
     margin-top: 6px;
@@ -108,180 +103,64 @@ html, body {
 
     background: linear-gradient(
         180deg,
-        rgba(90,120,180,0.28) 0%,
-        rgba(30,40,70,0.82) 52%,
-        rgba(10,10,20,0.94) 100%
+        rgba(90,120,180,0.28),
+        rgba(10,10,20,0.95)
     );
 
     border-top: 1px solid rgba(255,255,255,0.18);
     border-left: 1px solid rgba(255,255,255,0.07);
     border-right: 1px solid rgba(0,0,0,0.9);
-    border-bottom: 1px solid rgba(0,0,0,1);
+    border-bottom: 1px solid black;
 
     border-radius: 8px 13px 5px 10px;
 
-    box-shadow:
-        0 0 0 1px rgba(255,255,255,0.03) inset,
-        0 0 14px rgba(90,140,255,0.14),
-        0 12px 18px rgba(0,0,0,0.72);
+    box-shadow: 0 0 18px rgba(80,120,255,0.15);
 
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-
-    overflow: hidden;
-    position: relative;
-
-    font-family: Tahoma, Verdana, sans-serif;
+    font-family: Tahoma;
     color: #aebfd3;
 
     transform: rotate(-0.35deg);
-    animation: about-drift 3s steps(2) infinite;
+    animation: drift 3s infinite steps(2);
+
+    position: relative;
+    overflow: hidden;
 }
 
-/* scanlines + noise */
+/* scanline corruption */
 .about::before {
     content: '';
     position: absolute;
     inset: 0;
-
-    background:
-        repeating-linear-gradient(
-            0deg,
-            rgba(255,255,255,0.02) 0px,
-            rgba(255,255,255,0.02) 1px,
-            transparent 1px,
-            transparent 3px
-        ),
-        repeating-linear-gradient(
-            90deg,
-            rgba(0,0,0,0.06) 0px,
-            rgba(0,0,0,0.06) 1px,
-            transparent 1px,
-            transparent 2px
-        );
-
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-/* broken highlight */
-.about::after {
-    content: '';
-    position: absolute;
-    top: -25%;
-    left: -10%;
-    width: 120%;
-    height: 60%;
-
-    background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.18),
-        rgba(255,255,255,0.02)
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,0.02) 0px,
+        transparent 2px,
+        transparent 4px
     );
-
-    transform: rotate(-2deg);
-    opacity: 0.45;
+    opacity: 0.6;
     pointer-events: none;
 }
 
 .about-header {
     padding: 5px 9px;
-
-    background: linear-gradient(
-        180deg,
-        rgba(140,180,255,0.23),
-        rgba(20,40,90,0.45)
-    );
-
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-
     font-size: 9px;
     letter-spacing: 2px;
     color: #d8e6ff;
-
-    text-shadow:
-        0 0 3px rgba(120,170,255,0.8),
-        1px 1px 0 rgba(0,0,0,0.9);
-
-    position: relative;
-}
-
-.about-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 7px;
-
-    width: 74%;
-    height: 1px;
-
-    background: repeating-linear-gradient(
-        90deg,
-        rgba(255,255,255,0.15) 0 4px,
-        transparent 4px 8px
-    );
+    background: rgba(20,40,90,0.4);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 .about-body {
-    padding: 10px 12px 14px;
+    padding: 10px 12px;
     font-size: 11px;
     line-height: 1.7;
-    position: relative;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.9);
 }
 
-/* fake corruption text */
-.about-body::after {
-    content: 'ERR://memory_fragment_04X // sync lost';
-    position: absolute;
-    bottom: 6px;
-    right: 8px;
-    font-size: 8px;
-    color: rgba(255,255,255,0.08);
+@keyframes drift {
+    0% { transform: translate(0,0); }
+    50% { transform: translate(0.5px,-0.4px); }
+    100% { transform: translate(0,0); }
 }
-
-/* drift glitch */
-@keyframes about-drift {
-    0% { transform: translate(0px,0px); }
-    25% { transform: translate(0.5px,-0.4px); }
-    50% { transform: translate(-0.4px,0.6px); }
-    75% { transform: translate(0.6px,0.2px); }
-    100% { transform: translate(0px,0px); }
-}
-
-/* ── VISIT COUNTER ── (unchanged) ── */
-#visit-counter {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    padding: 10px 0 4px;
-}
-
-#vc-wrap {
-    background: transparent;
-    font-family: monospace;
-    color: #888780;
-    padding: 4px 10px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-#vc-digits { display: flex; gap: 1px; }
-
-.vc-digit {
-    font-family: monospace;
-    font-size: 18px;
-    width: 13px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* glitch */
-.vc-digit.glitch { color: #B4B2A9; }
-.vc-digit.dead { color: #2C2C2A; }
 
 /* overlays */
 #blackout {
@@ -308,38 +187,31 @@ html, body {
 
 <audio src="ambient2.ogg" autoplay loop></audio>
 
-<!-- VISIT COUNTER -->
-<div id="visit-counter">
-    <div id="vc-wrap">
-        <div id="vc-digits"></div>
-    </div>
-</div>
-
 <div class="container">
     <div class="main-image-wrap">
-        <img src="gamerfre.png" class="main-image">
+        <img src="gamerfre.png">
         <div class="game-zone" onclick="playGameSound()"></div>
     </div>
 
     <div class="taskbar">
         <img src="takbasrceacsd.png">
+
         <div class="click-zone" onclick="toggleAbout()"></div>
         <div class="collection-zone" onclick="toggleCollection()"></div>
         <div class="draws-zone" onclick="goToDraws()"></div>
-        <div class="videos-zone" onclick="goToVideos()">VIDEOS</div>
+        <div class="videos-zone" onclick="goToVideos()">VID</div>
     </div>
 </div>
 
-<!-- ABOUT (CORRUPTED TEXT) -->
 <div class="about" id="about">
     <div class="about-header">AB0UT__GAMEFREE//WIN</div>
     <div class="about-body">
-        the gamefree domain has been restored to its rightful owner on 04.14.<br>
-        gamerfree.win is for every0ne and everyb0dy<br><br>
+        the domain was restored on 04.14<br>
+        gamerfree.win is for every0ne<br><br>
         y0u are welc0me here.<br>
-        play the games // watch the films<br>
-        NNaNNaNNaNNaNNaNNaNNa<br>
-        ERR://buffer overflow detected
+        play / watch / break things<br>
+        NNaNNaNNaNNaNNa<br>
+        ERR://buffer overflow
     </div>
 </div>
 
@@ -347,10 +219,59 @@ html, body {
 <div id="blackout"></div>
 
 <script>
-function toggleAbout() {
-    const about = document.getElementById("about");
-    about.style.display = (about.style.display === "block") ? "none" : "block";
+let currentGameAudio = null;
+
+/* ── GAME SOUND ── */
+function playGameSound() {
+    if (currentGameAudio && !currentGameAudio.ended) return;
+
+    const pool = [1,2,4,5,6,7];
+    const track = pool[Math.floor(Math.random()*pool.length)];
+
+    currentGameAudio = new Audio("game" + track + ".ogg");
+    currentGameAudio.play();
 }
+
+/* ── CLICK SOUND ── */
+function playClickSound() {
+    new Audio(Math.random() < 0.5 ? "c1.ogg" : "c2.ogg").play();
+}
+
+/* ── ABOUT ── */
+function toggleAbout() {
+    playClickSound();
+    const a = document.getElementById("about");
+    a.style.display = (a.style.display === "block") ? "none" : "block";
+}
+
+/* ── NAVIGATION ── */
+function toggleCollection() {
+    playClickSound();
+    window.location.href = "/discs";
+}
+
+function goToDraws() {
+    const overlay = document.getElementById("fade-overlay");
+    overlay.style.display = "block";
+    requestAnimationFrame(()=>overlay.style.opacity="1");
+
+    setTimeout(()=>window.location.href="/draws", 2000);
+}
+
+function goToVideos() {
+    const blackout = document.getElementById("blackout");
+    blackout.style.display = "block";
+
+    setTimeout(()=>window.location.href="/videos", 1200);
+}
+
+/* glitch trigger (Tab optional) */
+document.addEventListener("keydown", (e)=>{
+    if(e.key === "Tab") {
+        e.preventDefault();
+        new Audio("game3.ogg").play();
+    }
+});
 </script>
 
 </body>
