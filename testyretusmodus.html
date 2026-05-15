@@ -1,1 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Viewer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    body {
+      background-color: #d0d0d0;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* Outer gray frame */
+    .frame {
+      background-color: #b8b8b8;
+      border: 3px solid #999;
+      padding: 18px;
+      box-shadow: none;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    /* Top bar */
+    .top-bar {
+      width: 100%;
+      background-color: #b8b8b8;
+      text-align: center;
+      padding: 8px 0 14px 0;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #222;
+    }
+
+    /* Image area */
+    .image-container {
+      width: 100%;
+      border: 2px solid #888;
+
+    }
+
+    .image-placeholder {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background-color: #ff0000;
+      display: block;
+    }
+
+    /* Caption / text area below image */
+    .caption-area {
+      width: 100%;
+      background-color: #b8b8b8;
+      padding: 14px 4px 4px 4px;
+    }
+
+    .caption-area .arrow-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-family: monospace;
+      color: #0000cc;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .caption-area .prompt {
+      color: #333;
+      font-family: monospace;
+      font-size: 14px;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="frame">
+    <!-- Top navigation arrow -->
+    <div class="top-bar">==&gt;</div>
+
+    <!-- Image area (red placeholder) -->
+    <div class="image-container">
+      <!-- Replace the div below with an <img> tag when you have an image -->
+      <div class="image-placeholder"></div>
+    </div>
+
+    <!-- Text / caption below image -->
+    <div class="caption-area">
+      <span class="prompt">&gt;</span>
+      <a class="arrow-link" href="#">==&gt;</a>
+    </div>
+  </div>
+
+</body>
+</html>
