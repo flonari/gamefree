@@ -2,282 +2,396 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>ALL I SEE IS RED</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAZE — 1993</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    width: 100%; height: 100%;
-    background: #060000;
-    overflow: hidden;
-    font-family: 'Share Tech Mono', monospace;
-    user-select: none;
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0a;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.015) 2px, rgba(0,255,0,0.015) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,255,0,0.015) 2px, rgba(0,255,0,0.015) 4px);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'VT323', monospace;
+    color: #00ff41;
+    gap: 18px;
   }
+
+  h1 {
+    font-size: 3rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #00ff41, 0 0 30px #00ff41aa;
+    animation: flicker 4s infinite;
+  }
+
+  @keyframes flicker {
+    0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:0.7} 94%{opacity:1} 97%{opacity:0.85} 98%{opacity:1}
+  }
+
+  #viewport-wrap {
+    border: 2px solid #00ff41;
+    width: 400px;
+    height: 400px;
+    position: relative;
+    box-shadow: 0 0 12px #00ff41, inset 0 0 8px rgba(0,255,0,0.08);
+    overflow: hidden;
+    image-rendering: pixelated;
+  }
+
+  /* CRT scanline overlay */
+  #viewport-wrap::after {
+    content:'';
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);
+    pointer-events: none;
+    z-index: 10;
+  }
+
   canvas {
     display: block;
-    position: fixed;
-    top: 0; left: 0;
+    width: 400px;
+    height: 400px;
+    image-rendering: pixelated;
   }
-  #hint {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #550000;
-    font-size: 9px;
-    letter-spacing: 3px;
+
+  #hud {
     font-family: 'Share Tech Mono', monospace;
-    text-shadow: 0 0 6px #ff000033;
-    pointer-events: none;
-    white-space: nowrap;
+    font-size: 0.85rem;
+    color: #00cc33;
+    letter-spacing: 0.1em;
+    display: flex;
+    gap: 30px;
+    opacity: 0.75;
   }
+
+  #keys-hint {
+    font-size: 0.9rem;
+    color: #006622;
+    letter-spacing: 0.15em;
+    text-align: center;
+  }
+
+  #win-msg {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 20;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    letter-spacing: 0.2em;
+    color: #00ff41;
+    text-shadow: 0 0 20px #00ff41;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #win-msg small { font-size: 1rem; letter-spacing: 0.1em; color: #00cc33; }
 </style>
 </head>
 <body>
-<canvas id="canvas"></canvas>
-<div id="hint">↑ ↓ ← → to move</div>
-<audio id="bgMusic" src="10pmcrunchy.ogg" loop></audio>
+
+<h1>◈ MAZE ◈</h1>
+
+<div id="viewport-wrap">
+  <canvas id="c" width="400" height="400"></canvas>
+  <div id="win-msg">
+    <span>YOU ESCAPED</span>
+    <small>PRESS R TO RESTART</small>
+  </div>
+</div>
+
+<div id="hud">
+  <span>POS: <span id="hud-pos">0,0</span></span>
+  <span>DIR: <span id="hud-dir">N</span></span>
+  <span>STEPS: <span id="hud-steps">0</span></span>
+</div>
+
+<div id="keys-hint">[ ↑ FORWARD ] [ ↓ BACK ] [ ← TURN LEFT ] [ → TURN RIGHT ]</div>
 
 <script>
-const canvas = document.getElementById('canvas');
+// ── MAZE MAP (1=wall, 0=floor, E=exit) ──────────────────────────────────────
+const MAP_W = 16, MAP_H = 16;
+const RAW = [
+  "1111111111111111",
+  "1000000000000001",
+  "1011111011110101",
+  "1010001010000101",
+  "1010101110111101",
+  "1000101000100001",
+  "1110101110101111",
+  "1000000010100001",
+  "1011110010111101",
+  "1010000010000101",
+  "1010111011011101",
+  "1010100000010001",
+  "1011101111010111",
+  "1000001000010001",
+  "1011110111111001",
+  "1111111111111101",  // exit at [15][14]
+];
+const map = RAW.map(r => r.split(''));
+// Mark exit
+map[15][14] = 'E';
+
+function isWall(x, y) {
+  const mx = Math.floor(x), my = Math.floor(y);
+  if (mx < 0 || my < 0 || mx >= MAP_W || my >= MAP_H) return true;
+  return map[my][mx] === '1';
+}
+function isExit(x, y) {
+  return map[Math.floor(y)][Math.floor(x)] === 'E';
+}
+
+// ── PLAYER ──────────────────────────────────────────────────────────────────
+let px = 1.5, py = 1.5;      // position
+let pa = 0;                   // angle in radians (0 = East)
+let steps = 0;
+let won = false;
+
+// ── CANVAS & CTX ────────────────────────────────────────────────────────────
+const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
-const bgMusic = document.getElementById('bgMusic');
+const W = 400, H = 400;
+const HALF_H = H / 2;
+const FOV = Math.PI / 3;     // 60°
+const NUM_RAYS = W;
+const MAX_DEPTH = 16;
+const MOVE_SPEED = 0.07;
+const ROT_SPEED  = 0.06;
 
-// Try to play music immediately; browsers may require a user gesture first
-bgMusic.volume = 0.6;
-bgMusic.play().catch(() => {
-  // Autoplay blocked — wait for first interaction
-  const unlock = () => {
-    bgMusic.play();
-    window.removeEventListener('keydown', unlock);
-    window.removeEventListener('click', unlock);
-    window.removeEventListener('touchstart', unlock);
-  };
-  window.addEventListener('keydown', unlock);
-  window.addEventListener('click', unlock);
-  window.addEventListener('touchstart', unlock);
-});
+// ── TEXTURE LOADING ──────────────────────────────────────────────────────────
+const wallImg = new Image();
+wallImg.src = 'geasd.png';
+let texReady = false;
+let offscreen, otx;
 
-const CELL = 10;
-const WALL_CHARS = ['@','%','&','$','?','!','~','^','*','+','=','<','>','/','\\','|','§','¶','Ω','Δ','Σ','Ψ','π','λ','░','▒','▓','×','÷','±','€','£','√','∞','≈','≠','∑'];
-const DENSITY = 0.2;
+wallImg.onload = () => {
+  texReady = true;
+  // draw texture once to offscreen canvas for pixel sampling
+  offscreen = document.createElement('canvas');
+  offscreen.width  = wallImg.naturalWidth  || 64;
+  offscreen.height = wallImg.naturalHeight || 64;
+  otx = offscreen.getContext('2d');
+  otx.drawImage(wallImg, 0, 0);
+  loop();
+};
+wallImg.onerror = () => {
+  // Fallback: generate a brick-like procedural texture
+  texReady = 'proc';
+  loop();
+};
 
-const BOX_W = 20;
-const BOX_H = 16;
-
-let COLS, ROWS, BOX_X, BOX_Y;
-let walls = new Set();
-let symbolMap = {};
-let player = { x: 0, y: 0 };
-
-// Message state
-let showMessage = false;
-let messageOpacity = 0;
-let startTime = Date.now();
-const MESSAGE_DELAY = 0.5 * 60 * 1000; // 2 minutes in ms
-let messageTriggered = false;
-
-function cellKey(x, y) { return `${x},${y}`; }
-
-function isInBox(x, y) {
-  return x >= BOX_X && x < BOX_X + BOX_W && y >= BOX_Y && y < BOX_Y + BOX_H;
+function getTexColor(u, v) {
+  // u, v in [0,1]
+  if (texReady === 'proc') return procTexColor(u, v);
+  const tw = offscreen.width, th = offscreen.height;
+  const px = Math.floor(((u % 1 + 1) % 1) * tw);
+  const py = Math.floor(((v % 1 + 1) % 1) * th);
+  const d = otx.getImageData(px, py, 1, 1).data;
+  return `rgb(${d[0]},${d[1]},${d[2]})`;
 }
 
-function isBoxBorder(x, y) {
-  const onLeft   = x === BOX_X - 1;
-  const onRight  = x === BOX_X + BOX_W;
-  const onTop    = y === BOX_Y - 1;
-  const onBot    = y === BOX_Y + BOX_H;
-  const inXRange = x >= BOX_X - 1 && x <= BOX_X + BOX_W;
-  const inYRange = y >= BOX_Y - 1 && y <= BOX_Y + BOX_H;
-  return (onLeft || onRight) && inYRange || (onTop || onBot) && inXRange;
-}
-
-function resize() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
-  COLS = Math.floor(canvas.width  / CELL);
-  ROWS = Math.floor(canvas.height / CELL);
-  BOX_X = Math.floor((COLS - BOX_W) / 2);
-  BOX_Y = Math.floor((ROWS - BOX_H) / 2);
-  generate();
-}
-
-function generate() {
-  walls.clear();
-  symbolMap = {};
-  player = {
-    x: BOX_X + Math.floor(BOX_W / 2),
-    y: BOX_Y + Math.floor(BOX_H / 2)
-  };
-
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
-      if (isInBox(x, y))     continue;
-      if (isBoxBorder(x, y)) continue;
-      if (x >= BOX_X - 2 && x <= BOX_X + BOX_W + 1 &&
-          y >= BOX_Y - 2 && y <= BOX_Y + BOX_H + 1) continue;
-
-      if (Math.random() < DENSITY) {
-        const k = cellKey(x, y);
-        walls.add(k);
-        symbolMap[k] = WALL_CHARS[Math.floor(Math.random() * WALL_CHARS.length)];
-      }
-    }
+function procTexColor(u, v) {
+  u = ((u % 1) + 1) % 1;
+  v = ((v % 1) + 1) % 1;
+  const brickH = 0.125, brickW = 0.25;
+  const row = Math.floor(v / brickH);
+  const offset = (row % 2) * 0.125;
+  const col = Math.floor((u + offset) / brickW);
+  const lu = ((u + offset) % brickW) / brickW;
+  const lv = (v % brickH) / brickH;
+  const mortar = 0.04;
+  if (lu < mortar || lu > 1 - mortar || lv < mortar || lv > 1 - mortar) {
+    return `rgb(60,55,50)`;
   }
+  const shade = 120 + ((row * 7 + col * 13) % 40);
+  return `rgb(${shade},${Math.floor(shade*0.6)},${Math.floor(shade*0.45)})`;
 }
 
-function draw() {
-  ctx.fillStyle = '#060000';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Scanlines
-  for (let y = 0; y < ROWS; y++) {
-    if (y % 2 === 0) {
-      ctx.fillStyle = 'rgba(0,0,0,0.12)';
-      ctx.fillRect(0, y * CELL, canvas.width, CELL);
-    }
-  }
-
-  ctx.font = `bold ${CELL - 1}px 'Share Tech Mono', monospace`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  // Symbol walls
-  for (const key of walls) {
-    const [wx, wy] = key.split(',').map(Number);
-    const shade = 60 + ((wx * 17 + wy * 11) % 90);
-    ctx.fillStyle = `rgb(${shade + 50}, 0, 0)`;
-    ctx.shadowColor = '#ff000044';
-    ctx.shadowBlur = 3;
-    ctx.fillText(symbolMap[key], wx * CELL + CELL / 2, wy * CELL + CELL / 2);
-  }
-  ctx.shadowBlur = 0;
-
-  // Hashtag box border
-  ctx.fillStyle = '#dd0000';
-  ctx.shadowColor = '#ff0000cc';
-  ctx.shadowBlur = 10;
-
-  for (let x = BOX_X - 1; x <= BOX_X + BOX_W; x++) {
-    drawChar('#', x, BOX_Y - 1);
-    drawChar('#', x, BOX_Y + BOX_H);
-  }
-  for (let y = BOX_Y; y < BOX_Y + BOX_H; y++) {
-    drawChar('#', BOX_X - 1, y);
-    drawChar('#', BOX_X + BOX_W, y);
-  }
-  ctx.shadowBlur = 0;
-
-  // Player dot
-  const px = player.x * CELL + CELL / 2;
-  const py = player.y * CELL + CELL / 2;
-
-  ctx.shadowColor = '#ff0000';
-  ctx.shadowBlur = 22;
-  ctx.fillStyle = '#ff3300';
-  ctx.beginPath();
-  ctx.arc(px, py, 4, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.shadowBlur = 8;
-  ctx.fillStyle = '#ff7755';
-  ctx.beginPath();
-  ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.shadowBlur = 0;
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  ctx.arc(px, py, 1.2, 0, Math.PI * 2);
-  ctx.fill();
-
-  // "come back... later" message inside the box
-  if (showMessage && messageOpacity > 0) {
-    const boxCenterX = (BOX_X + BOX_W / 2) * CELL;
-    const boxCenterY = (BOX_Y + BOX_H / 2) * CELL;
-
-    // Slow flicker on top of the fade
-    const flicker = 0.85 + Math.sin(Date.now() * 0.003) * 0.15;
-    const alpha = messageOpacity * flicker;
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    // Glow pass
-    ctx.font = `bold 11px 'Share Tech Mono', monospace`;
-    ctx.fillStyle = '#ff0000';
-    ctx.shadowColor = '#ff0000';
-    ctx.shadowBlur = 18;
-    ctx.fillText('come back...', boxCenterX, boxCenterY - 10);
-    ctx.fillText('later', boxCenterX, boxCenterY + 8);
-
-    // Crisp pass
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#ff6644';
-    ctx.fillText('come back...', boxCenterX, boxCenterY - 10);
-    ctx.fillStyle = '#ff6644';
-    ctx.fillText('later', boxCenterX, boxCenterY + 8);
-
-    ctx.restore();
-  }
-}
-
-function drawChar(ch, cx, cy) {
-  ctx.fillText(ch, cx * CELL + CELL / 2, cy * CELL + CELL / 2);
-}
-
-function tryMove(dx, dy) {
-  const nx = player.x + dx;
-  const ny = player.y + dy;
-  if (nx < BOX_X || nx >= BOX_X + BOX_W) return;
-  if (ny < BOX_Y || ny >= BOX_Y + BOX_H) return;
-  player.x = nx;
-  player.y = ny;
-}
-
+// ── INPUT ────────────────────────────────────────────────────────────────────
+const keys = {};
 document.addEventListener('keydown', e => {
-  switch (e.key) {
-    case 'ArrowUp':    e.preventDefault(); tryMove(0, -1); break;
-    case 'ArrowDown':  e.preventDefault(); tryMove(0,  1); break;
-    case 'ArrowLeft':  e.preventDefault(); tryMove(-1, 0); break;
-    case 'ArrowRight': e.preventDefault(); tryMove( 1, 0); break;
-  }
+  keys[e.code] = true;
+  if (e.code === 'KeyR') restart();
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
 });
+document.addEventListener('keyup', e => { keys[e.code] = false; });
 
-let tx = 0, ty = 0;
-window.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
-window.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - tx;
-  const dy = e.changedTouches[0].clientY - ty;
-  if (Math.abs(dx) > Math.abs(dy)) tryMove(dx > 0 ? 1 : -1, 0);
-  else tryMove(0, dy > 0 ? 1 : -1);
-}, { passive: true });
+function restart() {
+  px = 1.5; py = 1.5; pa = 0; steps = 0; won = false;
+  document.getElementById('win-msg').style.display = 'none';
+}
 
-window.addEventListener('resize', resize);
+// ── RAYCASTER ────────────────────────────────────────────────────────────────
+function castRay(angle) {
+  const cosA = Math.cos(angle), sinA = Math.sin(angle);
+  let dist = 0, hit = false, side = 0, wallX = 0;
 
-// Main loop
-(function loop() {
-  const elapsed = Date.now() - startTime;
+  // DDA
+  let mapX = Math.floor(px), mapY = Math.floor(py);
+  const deltaX = Math.abs(1 / cosA), deltaY = Math.abs(1 / sinA);
+  const stepX = cosA < 0 ? -1 : 1;
+  const stepY = sinA < 0 ? -1 : 1;
+  let sideDistX = cosA < 0 ? (px - mapX) * deltaX : (mapX + 1 - px) * deltaX;
+  let sideDistY = sinA < 0 ? (py - mapY) * deltaY : (mapY + 1 - py) * deltaY;
 
-  // Trigger message after 2 minutes
-  if (!messageTriggered && elapsed >= MESSAGE_DELAY) {
-    messageTriggered = true;
-    showMessage = true;
+  for (let i = 0; i < MAX_DEPTH * 4 && !hit; i++) {
+    if (sideDistX < sideDistY) {
+      sideDistX += deltaX; mapX += stepX; side = 0;
+    } else {
+      sideDistY += deltaY; mapY += stepY; side = 1;
+    }
+    if (mapX < 0 || mapY < 0 || mapX >= MAP_W || mapY >= MAP_H || map[mapY][mapX] === '1') {
+      hit = true;
+      dist = side === 0 ? sideDistX - deltaX : sideDistY - deltaY;
+      wallX = side === 0
+        ? py + dist * sinA
+        : px + dist * cosA;
+      wallX -= Math.floor(wallX);
+    }
+  }
+  return { dist: Math.max(0.001, dist), side, wallX };
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+// Pre-build column imagedata for speed
+function render() {
+  // Sky gradient
+  const sky = ctx.createLinearGradient(0, 0, 0, HALF_H);
+  sky.addColorStop(0, '#050505');
+  sky.addColorStop(1, '#111');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, HALF_H);
+
+  // Floor gradient
+  const floor = ctx.createLinearGradient(0, HALF_H, 0, H);
+  floor.addColorStop(0, '#0a0a0a');
+  floor.addColorStop(1, '#181818');
+  ctx.fillStyle = floor;
+  ctx.fillRect(0, HALF_H, W, HALF_H);
+
+  for (let col = 0; col < NUM_RAYS; col++) {
+    const rayAngle = pa - FOV / 2 + (col / NUM_RAYS) * FOV;
+    const { dist, side, wallX } = castRay(rayAngle);
+
+    // Fish-eye fix
+    const corrDist = dist * Math.cos(rayAngle - pa);
+    const wallH = Math.floor(H / corrDist);
+    const drawStart = Math.max(0, HALF_H - wallH / 2);
+    const drawEnd   = Math.min(H, HALF_H + wallH / 2);
+    const drawHeight = drawEnd - drawStart;
+
+    // Texture column (sample texture image)
+    const u = wallX;
+    const texH = texReady === 'proc' ? 64 : offscreen.height;
+    const texW = texReady === 'proc' ? 64 : offscreen.width;
+
+    // Build column pixel by pixel
+    const imgData = ctx.createImageData(1, drawHeight);
+    for (let y = 0; y < drawHeight; y++) {
+      const v = (drawStart - HALF_H + wallH / 2 + y) / wallH;
+      let r, g, b;
+      if (texReady === 'proc') {
+        const pu = Math.floor(((u % 1 + 1) % 1) * texW);
+        const pv = Math.floor(((v % 1 + 1) % 1) * texH);
+        const brickH = 8, brickW = 16;
+        const row2 = Math.floor(pv / brickH);
+        const offset2 = (row2 % 2) * 8;
+        const lu2 = (pu + offset2) % brickW;
+        const lv2 = pv % brickH;
+        if (lu2 < 1 || lu2 > brickW - 1 || lv2 < 1 || lv2 > brickH - 1) {
+          r = 55; g = 50; b = 45;
+        } else {
+          const s = 110 + ((row2 * 7 + Math.floor((pu + offset2) / brickW) * 13) % 45);
+          r = s; g = Math.floor(s * 0.6); b = Math.floor(s * 0.45);
+        }
+      } else {
+        const tpx = Math.floor(((u % 1 + 1) % 1) * texW);
+        const tpy = Math.floor(((v % 1 + 1) % 1) * texH);
+        const d = otx.getImageData(tpx, tpy, 1, 1).data;
+        r = d[0]; g = d[1]; b = d[2];
+      }
+
+      // Darken side walls & distance fog
+      const fog = Math.min(1, corrDist / MAX_DEPTH);
+      const dim = side === 0 ? 1 : 0.65;
+      r = Math.floor(r * dim * (1 - fog * 0.7));
+      g = Math.floor(g * dim * (1 - fog * 0.7));
+      b = Math.floor(b * dim * (1 - fog * 0.7));
+
+      const i4 = y * 4;
+      imgData.data[i4]   = r;
+      imgData.data[i4+1] = g;
+      imgData.data[i4+2] = b;
+      imgData.data[i4+3] = 255;
+    }
+    ctx.putImageData(imgData, col, drawStart);
   }
 
-  // Fade in message over ~3 seconds once triggered
-  if (showMessage && messageOpacity < 1) {
-    messageOpacity = Math.min(1, messageOpacity + 0.005);
-  }
+  // Exit glow hint (green tint on exit direction)
+  drawMinimap();
+}
 
-  draw();
+
+// ── GAME LOOP ─────────────────────────────────────────────────────────────────
+let last = 0;
+function loop(ts = 0) {
   requestAnimationFrame(loop);
-})();
+  if (won) return;
 
-resize();
+  const dt = Math.min((ts - last) / 16.67, 3);
+  last = ts;
+
+  let moved = false;
+  const ms = MOVE_SPEED * dt;
+  const rs = ROT_SPEED * dt;
+
+  if (keys['ArrowLeft'])  { pa -= rs; }
+  if (keys['ArrowRight']) { pa += rs; }
+
+  if (keys['ArrowUp']) {
+    const nx = px + Math.cos(pa) * ms;
+    const ny = py + Math.sin(pa) * ms;
+    if (!isWall(nx, py)) px = nx;
+    if (!isWall(px, ny)) py = ny;
+    moved = true;
+  }
+  if (keys['ArrowDown']) {
+    const nx = px - Math.cos(pa) * ms;
+    const ny = py - Math.sin(pa) * ms;
+    if (!isWall(nx, py)) px = nx;
+    if (!isWall(px, ny)) py = ny;
+    moved = true;
+  }
+  if (moved) steps++;
+
+  // Check exit
+  if (isExit(px, py)) {
+    won = true;
+    document.getElementById('win-msg').style.display = 'flex';
+  }
+
+  render();
+
+  // HUD
+  const dirs = ['E','SE','S','SW','W','NW','N','NE'];
+  const di = Math.round(((pa % (Math.PI*2)) + Math.PI*2) / (Math.PI/4)) % 8;
+  document.getElementById('hud-pos').textContent   = `${Math.floor(px)},${Math.floor(py)}`;
+  document.getElementById('hud-dir').textContent   = dirs[di];
+  document.getElementById('hud-steps').textContent = steps;
+}
+
+// ── WIN OVERLAY ───────────────────────────────────────────────────────────────
+document.getElementById('win-msg').style.display = 'none';
 </script>
 </body>
 </html>
