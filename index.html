@@ -310,7 +310,31 @@ function goToVideos() {
 
 /* ── GAME CLICK (SAFE VERSION) ── */
 function playGameSound() {
-    new Audio("game1.ogg").play();
+    if (gameCooldown) return;
+    if (currentGameAudio && !currentGameAudio.ended) return;
+
+    gameCooldown = true;
+    setTimeout(() => gameCooldown = false, 600); // cooldown restored
+
+    const zone = document.querySelector(".game-zone");
+
+    // 1/100 glitch chance restored
+    if (Math.random() < 0.01) {
+        triggerGlitch();
+        return;
+    }
+
+    const pool = [1, 2, 4, 5, 6, 7];
+    const track = pool[Math.floor(Math.random() * pool.length)];
+
+    currentGameAudio = new Audio("game" + track + ".ogg");
+    currentGameAudio.play();
+
+    zone.style.cursor = "default";
+
+    currentGameAudio.addEventListener("ended", function () {
+        zone.style.cursor = "pointer";
+    });
 }
 </script>
 
