@@ -1,90 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MAZE — 1993 (OPTIMIZED)</title>
-
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: #0a0a0a;
-    background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.015) 2px, rgba(0,255,0,0.015) 4px),
-      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,255,0,0.015) 2px, rgba(0,255,0,0.015) 4px);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'VT323', monospace;
-    color: #00ff41;
-    gap: 18px;
-  }
-
-  h1 {
-    font-size: 3rem;
-    letter-spacing: 0.4em;
-    text-shadow: 0 0 10px #00ff41;
-  }
-
-  #viewport-wrap {
-    border: 2px solid #00ff41;
-    width: 400px;
-    height: 400px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  canvas {
-    width: 400px;
-    height: 400px;
-    image-rendering: pixelated;
-    display: block;
-  }
-
-  #hud {
-    font-family: monospace;
-    font-size: 0.85rem;
-    color: #00cc33;
-    display: flex;
-    gap: 20px;
-  }
-
-  #win-msg {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 10;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    flex-direction: column;
-  }
-</style>
-</head>
-
-<body>
-
-<h1>◈ MAZE ◈</h1>
-
-<div id="viewport-wrap">
-  <canvas id="c" width="400" height="400"></canvas>
-  <div id="win-msg">
-    YOU ESCAPED<br><small>PRESS R TO RESTART</small>
-  </div>
-</div>
-
-<div id="hud">
-  <span>POS: <span id="hud-pos"></span></span>
-  <span>DIR: <span id="hud-dir"></span></span>
-  <span>STEPS: <span id="hud-steps"></span></span>
-</div>
-
 <script>
 // ── MAP ─────────────────────────────
 const MAP_W = 16, MAP_H = 16;
@@ -125,7 +38,7 @@ const ctx = c.getContext("2d");
 const W=400,H=400;
 const HALF=H/2;
 const FOV=Math.PI/3;
-const RAYS=160; // 🔥 LOWER = MUCH FASTER
+const RAYS=200; // safe balance
 const MAX=16;
 
 const MOVE=0.07;
@@ -144,7 +57,14 @@ function restart(){
   document.getElementById("win-msg").style.display="none";
 }
 
-// ── RAYCAST (same logic, no change) ───
+// ── TEXTURE ──────────────────────────
+const wallImg = new Image();
+wallImg.src = "geasd.png";
+
+let texReady = false;
+wallImg.onload = ()=> texReady = true;
+
+// ── RAYCAST ──────────────────────────
 function cast(angle){
   const cos=Math.cos(angle), sin=Math.sin(angle);
   let mapX=px|0, mapY=py|0;
@@ -170,35 +90,58 @@ function cast(angle){
     }
   }
 
-  return dist||0.01;
+  return {dist:dist||0.01, side};
 }
 
-// ── RENDER (FIXED + FAST) ─────────────
+// ── RENDER (TEXTURED BUT FAST) ───────
 function render(){
 
-  // sky/floor
+  // sky + floor
   ctx.fillStyle="#050505";
   ctx.fillRect(0,0,W,HALF);
   ctx.fillStyle="#111";
   ctx.fillRect(0,HALF,W,HALF);
 
+  const colW = W / RAYS;
+
   for(let x=0;x<RAYS;x++){
 
     const rayA = pa - FOV/2 + (x/RAYS)*FOV;
-    const dist = cast(rayA);
+    const {dist, side} = cast(rayA);
 
-    const corr = dist*Math.cos(rayA-pa);
-    const h = Math.min(H, (H/corr));
+    const corr = dist * Math.cos(rayA-pa);
+    const h = Math.min(H, H / corr);
 
-    const shade = Math.max(0, 255 - corr*25);
+    const y = (H - h) / 2;
 
-    // fake texture shading (FAST instead of image sampling)
-    const sideDark = 0.7;
+    // ── TEXTURE MAPPING (FAST SLICE DRAW) ──
+    if(texReady){
 
-    ctx.fillStyle = `rgb(${shade*sideDark},${shade*0.9},${shade*0.6})`;
+      // where on wall we hit (fake UV)
+      const wallX = (px + Math.cos(rayA)*dist) % 1;
 
-    const y = (H-h)/2;
-    ctx.fillRect(x*(W/RAYS), y, (W/RAYS)+1, h);
+      const sx = Math.floor(wallX * wallImg.width);
+      const sw = 1;
+
+      const shade = Math.max(0.3, 1 - corr/10);
+      ctx.globalAlpha = side ? shade*0.7 : shade;
+
+      ctx.drawImage(
+        wallImg,
+        sx, 0, 1, wallImg.height,
+        x * colW, y,
+        colW + 1,
+        h
+      );
+
+      ctx.globalAlpha = 1;
+
+    } else {
+      // fallback color
+      const shade = Math.max(0, 255 - corr*25);
+      ctx.fillStyle = `rgb(${shade},${shade*0.8},${shade*0.6})`;
+      ctx.fillRect(x*colW, y, colW+1, h);
+    }
   }
 }
 
@@ -247,7 +190,4 @@ function loop(t=0){
 }
 
 loop();
-
 </script>
-</body>
-</html>
