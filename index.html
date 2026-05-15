@@ -12,7 +12,7 @@
 }
 
 html, body {
-    background-color: black;
+    background: black;
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -20,7 +20,7 @@ html, body {
     flex-direction: column;
 }
 
-/* ── MAIN LAYOUT ── */
+/* ── LAYOUT ── */
 .container {
     display: flex;
     flex-direction: column;
@@ -29,16 +29,14 @@ html, body {
 
 .main-image-wrap {
     position: relative;
-    display: block;
-    line-height: 0;
 }
 
 .main-image {
     display: block;
     max-width: 100%;
-    height: auto;
 }
 
+/* CLICK ZONES */
 .game-zone {
     position: absolute;
     left: 164px;
@@ -48,10 +46,8 @@ html, body {
     cursor: pointer;
 }
 
-/* ── TASKBAR ── */
 .taskbar {
     position: relative;
-    width: 100%;
 }
 
 .taskbar img {
@@ -96,10 +92,9 @@ html, body {
     font-family: monospace;
     font-size: 9px;
     color: #6ed632;
-    letter-spacing: 2px;
 }
 
-/* ── ABOUT (ONLY MODIFIED PART) ── */
+/* ── ABOUT (scuffed but intact) ── */
 .about {
     display: none;
     margin-top: 8px;
@@ -115,58 +110,18 @@ html, body {
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 10px;
 
-    box-shadow:
-        0 0 15px rgba(80,140,255,0.25),
-        0 10px 30px rgba(0,0,0,0.7);
+    box-shadow: 0 0 15px rgba(80,140,255,0.25);
 
-    font-family: Tahoma, sans-serif;
+    font-family: Tahoma;
     color: #b7c5d8;
 
     position: relative;
-    overflow: hidden;
-    transform: rotate(-0.2deg);
-}
-
-/* scanline + grime */
-.about::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        repeating-linear-gradient(
-            0deg,
-            rgba(255,255,255,0.02) 0px,
-            rgba(255,255,255,0.02) 1px,
-            transparent 1px,
-            transparent 3px
-        );
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-/* broken shine */
-.about::after {
-    content: '';
-    position: absolute;
-    top: -20%;
-    left: -10%;
-    width: 120%;
-    height: 60%;
-    background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.12),
-        transparent
-    );
-    transform: rotate(-2deg);
-    pointer-events: none;
 }
 
 .about-header {
     padding: 6px 10px;
     font-size: 9px;
     letter-spacing: 2px;
-    color: #d8e6ff;
-
     background: rgba(255,255,255,0.05);
     border-bottom: 1px solid rgba(255,255,255,0.08);
 }
@@ -177,50 +132,21 @@ html, body {
     line-height: 1.7;
 }
 
-/* ── VISIT COUNTER (RESTORED FULL) ── */
+/* ── VISIT COUNTER ── */
 #visit-counter {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    padding: 10px 0 4px;
-}
-
-#vc-wrap {
+    padding: 10px;
     font-family: monospace;
-    color: #888780;
-    display: inline-flex;
-    gap: 8px;
-}
-
-#vc-digits {
-    display: flex;
-    gap: 1px;
-}
-
-.vc-digit {
-    font-size: 18px;
-    width: 13px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: #888;
 }
 
 /* overlays */
-#blackout {
-    display: none;
+#blackout, #fade-overlay {
     position: fixed;
     inset: 0;
     background: black;
-    z-index: 9999;
+    display: none;
 }
-
 #fade-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: black;
-    z-index: 99999;
     opacity: 0;
     transition: opacity 1.8s ease;
 }
@@ -231,37 +157,38 @@ html, body {
 
 <audio src="ambient2.ogg" autoplay loop></audio>
 
-<!-- VISIT COUNTER (RESTORED FUNCTIONALITY BELOW JS) -->
+<!-- VISIT COUNTER -->
 <div id="visit-counter">
-    <div id="vc-wrap">
-        <div id="vc-digits"></div>
-    </div>
+    <div id="vc-digits"></div>
 </div>
 
 <div class="container">
+
     <div class="main-image-wrap">
         <img src="gamerfre.png">
+
         <div class="game-zone" onclick="playGameSound()"></div>
     </div>
 
     <div class="taskbar">
         <img src="takbasrceacsd.png">
 
-        <div class="click-zone" onclick="toggleAbout()"></div>
-        <div class="collection-zone" onclick="toggleCollection()"></div>
-        <div class="draws-zone" onclick="goToDraws()"></div>
-        <div class="videos-zone" onclick="goToVideos()"></div>
+        <div class="click-zone" onclick="toggleAbout(); playClickSound();"></div>
+        <div class="collection-zone" onclick="go('/discs'); playClickSound();"></div>
+        <div class="draws-zone" onclick="goDraws(); playClickSound();"></div>
+        <div class="videos-zone" onclick="goVideos(); playClickSound();">VID</div>
     </div>
 </div>
 
+<!-- ABOUT -->
 <div class="about" id="about">
     <div class="about-header">AB0UT GAMEFREE.WIN</div>
     <div class="about-body">
-        the gamefree website domain has been restored to its rightful owner on 04.14.<br>
-        gamerfree.win is for everyone and everybody<br><br>
-        you are welcome here.<br>
-        play the games / watch the films<br>
-        NNaNNaNNaNNaNNaNNaNNa<br>
+        the domain has been restored to its owner<br>
+        gamerfree.win is for everyone<br><br>
+        you are welcome here<br>
+        play / watch / explore<br>
+        NNaNNaNNaNNaNNaNNa<br>
         system stable
     </div>
 </div>
@@ -270,48 +197,71 @@ html, body {
 <div id="blackout"></div>
 
 <script>
-/* ── VISIT COUNTER (RESTORED FULL) ── */
+
+/* ── VISIT COUNTER ── */
 (function () {
-    var BASE = 1860, DIGITS = 3;
+    const el = document.getElementById("vc-digits");
+    const base = 1860;
 
-    function render() {
-        var n = String(BASE).padStart(DIGITS, '0');
-        var c = document.getElementById('vc-digits');
-        c.innerHTML = '';
-
-        for (var i = 0; i < n.length; i++) {
-            var d = document.createElement('div');
-            d.className = 'vc-digit';
-            d.textContent = n[i];
-            c.appendChild(d);
-        }
-    }
-
-    render();
+    el.textContent = base;
 })();
 
-/* ── BUTTON FIX FUNCTIONS (RESTORED STUBS IF YOU HAD THEM) ── */
-function toggleAbout() {
-    const about = document.getElementById("about");
-    about.style.display = (about.style.display === "block") ? "none" : "block";
+/* ── CLICK SOUND (WITH COOLDOWN) ── */
+let lastClick = 0;
+function playClickSound() {
+    const now = Date.now();
+    if (now - lastClick < 250) return; // cooldown
+    lastClick = now;
+
+    const file = Math.random() < 0.5 ? "c1.ogg" : "c2.ogg";
+    new Audio(file).play();
 }
 
-function toggleCollection() {
-    window.location.href = "/discs";
+/* ── GAME CLICK (1/100 GLITCH CHANCE RESTORED) ── */
+let currentGameAudio = null;
+
+function playGameSound() {
+    if (currentGameAudio && !currentGameAudio.ended) return;
+
+    // 1/100 glitch trigger
+    if (Math.floor(Math.random() * 100) === 0) {
+        triggerGlitch();
+        return;
+    }
+
+    const pool = [1,2,4,5,6,7];
+    const track = pool[Math.floor(Math.random() * pool.length)];
+
+    currentGameAudio = new Audio("game" + track + ".ogg");
+    currentGameAudio.play();
 }
 
-function goToDraws() {
+/* ── GLITCH (simple safe version placeholder) ── */
+function triggerGlitch() {
+    const audio = new Audio("game3.ogg");
+    audio.play();
+
+    document.body.style.filter = "contrast(2) hue-rotate(90deg)";
+    setTimeout(() => {
+        document.body.style.filter = "";
+    }, 2000);
+}
+
+/* ── NAV ── */
+function go(url) {
+    window.location.href = url;
+}
+function goDraws() {
     window.location.href = "/draws";
 }
-
-function goToVideos() {
+function goVideos() {
     window.location.href = "/videos";
 }
-
-/* ── GAME CLICK (SAFE VERSION) ── */
-function playGameSound() {
-    new Audio("game1.ogg").play();
+function toggleAbout() {
+    const a = document.getElementById("about");
+    a.style.display = (a.style.display === "block") ? "none" : "block";
 }
+
 </script>
 
 </body>
