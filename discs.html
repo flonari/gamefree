@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MAZE — 1993</title>
+<title>MAZE — 1993 (OPTIMIZED)</title>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
 
@@ -27,13 +28,7 @@
   h1 {
     font-size: 3rem;
     letter-spacing: 0.4em;
-    text-transform: uppercase;
-    text-shadow: 0 0 10px #00ff41, 0 0 30px #00ff41aa;
-    animation: flicker 4s infinite;
-  }
-
-  @keyframes flicker {
-    0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:0.7} 94%{opacity:1} 97%{opacity:0.85} 98%{opacity:1}
+    text-shadow: 0 0 10px #00ff41;
   }
 
   #viewport-wrap {
@@ -41,42 +36,22 @@
     width: 400px;
     height: 400px;
     position: relative;
-    box-shadow: 0 0 12px #00ff41, inset 0 0 8px rgba(0,255,0,0.08);
     overflow: hidden;
-    image-rendering: pixelated;
-  }
-
-  /* CRT scanline overlay */
-  #viewport-wrap::after {
-    content:'';
-    position:absolute; inset:0;
-    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);
-    pointer-events: none;
-    z-index: 10;
   }
 
   canvas {
-    display: block;
     width: 400px;
     height: 400px;
     image-rendering: pixelated;
+    display: block;
   }
 
   #hud {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: monospace;
     font-size: 0.85rem;
     color: #00cc33;
-    letter-spacing: 0.1em;
     display: flex;
-    gap: 30px;
-    opacity: 0.75;
-  }
-
-  #keys-hint {
-    font-size: 0.9rem;
-    color: #006622;
-    letter-spacing: 0.15em;
-    text-align: center;
+    gap: 20px;
   }
 
   #win-msg {
@@ -84,19 +59,15 @@
     position: absolute;
     inset: 0;
     background: rgba(0,0,0,0.85);
-    z-index: 20;
+    z-index: 10;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
-    letter-spacing: 0.2em;
-    color: #00ff41;
-    text-shadow: 0 0 20px #00ff41;
+    font-size: 2rem;
     flex-direction: column;
-    gap: 10px;
   }
-  #win-msg small { font-size: 1rem; letter-spacing: 0.1em; color: #00cc33; }
 </style>
 </head>
+
 <body>
 
 <h1>◈ MAZE ◈</h1>
@@ -104,291 +75,179 @@
 <div id="viewport-wrap">
   <canvas id="c" width="400" height="400"></canvas>
   <div id="win-msg">
-    <span>YOU ESCAPED</span>
-    <small>PRESS R TO RESTART</small>
+    YOU ESCAPED<br><small>PRESS R TO RESTART</small>
   </div>
 </div>
 
 <div id="hud">
-  <span>POS: <span id="hud-pos">0,0</span></span>
-  <span>DIR: <span id="hud-dir">N</span></span>
-  <span>STEPS: <span id="hud-steps">0</span></span>
+  <span>POS: <span id="hud-pos"></span></span>
+  <span>DIR: <span id="hud-dir"></span></span>
+  <span>STEPS: <span id="hud-steps"></span></span>
 </div>
 
-<div id="keys-hint">[ ↑ FORWARD ] [ ↓ BACK ] [ ← TURN LEFT ] [ → TURN RIGHT ]</div>
-
 <script>
-// ── MAZE MAP (1=wall, 0=floor, E=exit) ──────────────────────────────────────
+// ── MAP ─────────────────────────────
 const MAP_W = 16, MAP_H = 16;
 const RAW = [
-  "1111111111111111",
-  "1000000000000001",
-  "1011111011110101",
-  "1010001010000101",
-  "1010101110111101",
-  "1000101000100001",
-  "1110101110101111",
-  "1000000010100001",
-  "1011110010111101",
-  "1010000010000101",
-  "1010111011011101",
-  "1010100000010001",
-  "1011101111010111",
-  "1000001000010001",
-  "1011110111111001",
-  "1111111111111101",  // exit at [15][14]
+"1111111111111111",
+"1000000000000001",
+"1011111011110101",
+"1010001010000101",
+"1010101110111101",
+"1000101000100001",
+"1110101110101111",
+"1000000010100001",
+"1011110010111101",
+"1010000010000101",
+"1010111011011101",
+"1010100000010001",
+"1011101111010111",
+"1000001000010001",
+"1011110111111001",
+"1111111111111101"
 ];
+
 const map = RAW.map(r => r.split(''));
-// Mark exit
 map[15][14] = 'E';
 
-function isWall(x, y) {
-  const mx = Math.floor(x), my = Math.floor(y);
-  if (mx < 0 || my < 0 || mx >= MAP_W || my >= MAP_H) return true;
-  return map[my][mx] === '1';
-}
-function isExit(x, y) {
-  return map[Math.floor(y)][Math.floor(x)] === 'E';
-}
-
-// ── PLAYER ──────────────────────────────────────────────────────────────────
-let px = 1.5, py = 1.5;      // position
-let pa = 0;                   // angle in radians (0 = East)
-let steps = 0;
-let won = false;
-
-// ── CANVAS & CTX ────────────────────────────────────────────────────────────
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-const W = 400, H = 400;
-const HALF_H = H / 2;
-const FOV = Math.PI / 3;     // 60°
-const NUM_RAYS = W;
-const MAX_DEPTH = 16;
-const MOVE_SPEED = 0.07;
-const ROT_SPEED  = 0.06;
-
-// ── TEXTURE LOADING ──────────────────────────────────────────────────────────
-const wallImg = new Image();
-wallImg.src = 'geasd.png';
-let texReady = false;
-let offscreen, otx;
-
-wallImg.onload = () => {
-  texReady = true;
-  // draw texture once to offscreen canvas for pixel sampling
-  offscreen = document.createElement('canvas');
-  offscreen.width  = wallImg.naturalWidth  || 64;
-  offscreen.height = wallImg.naturalHeight || 64;
-  otx = offscreen.getContext('2d');
-  otx.drawImage(wallImg, 0, 0);
-  loop();
+const isWall = (x,y)=> {
+  x|=0; y|=0;
+  return x<0||y<0||x>=MAP_W||y>=MAP_H||map[y][x]==='1';
 };
-wallImg.onerror = () => {
-  // Fallback: generate a brick-like procedural texture
-  texReady = 'proc';
-  loop();
-};
+const isExit = (x,y)=> map[y|0][x|0]==='E';
 
-function getTexColor(u, v) {
-  // u, v in [0,1]
-  if (texReady === 'proc') return procTexColor(u, v);
-  const tw = offscreen.width, th = offscreen.height;
-  const px = Math.floor(((u % 1 + 1) % 1) * tw);
-  const py = Math.floor(((v % 1 + 1) % 1) * th);
-  const d = otx.getImageData(px, py, 1, 1).data;
-  return `rgb(${d[0]},${d[1]},${d[2]})`;
-}
+// ── PLAYER ───────────────────────────
+let px=1.5, py=1.5, pa=0, steps=0, won=false;
 
-function procTexColor(u, v) {
-  u = ((u % 1) + 1) % 1;
-  v = ((v % 1) + 1) % 1;
-  const brickH = 0.125, brickW = 0.25;
-  const row = Math.floor(v / brickH);
-  const offset = (row % 2) * 0.125;
-  const col = Math.floor((u + offset) / brickW);
-  const lu = ((u + offset) % brickW) / brickW;
-  const lv = (v % brickH) / brickH;
-  const mortar = 0.04;
-  if (lu < mortar || lu > 1 - mortar || lv < mortar || lv > 1 - mortar) {
-    return `rgb(60,55,50)`;
-  }
-  const shade = 120 + ((row * 7 + col * 13) % 40);
-  return `rgb(${shade},${Math.floor(shade*0.6)},${Math.floor(shade*0.45)})`;
-}
+// ── CANVAS ───────────────────────────
+const c = document.getElementById("c");
+const ctx = c.getContext("2d");
+const W=400,H=400;
+const HALF=H/2;
+const FOV=Math.PI/3;
+const RAYS=160; // 🔥 LOWER = MUCH FASTER
+const MAX=16;
 
-// ── INPUT ────────────────────────────────────────────────────────────────────
-const keys = {};
-document.addEventListener('keydown', e => {
-  keys[e.code] = true;
-  if (e.code === 'KeyR') restart();
-  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
+const MOVE=0.07;
+const ROT=0.06;
+
+// ── INPUT ────────────────────────────
+const keys={};
+addEventListener("keydown",e=>{
+  keys[e.code]=1;
+  if(e.code==="KeyR") restart();
 });
-document.addEventListener('keyup', e => { keys[e.code] = false; });
+addEventListener("keyup",e=>keys[e.code]=0);
 
-function restart() {
-  px = 1.5; py = 1.5; pa = 0; steps = 0; won = false;
-  document.getElementById('win-msg').style.display = 'none';
+function restart(){
+  px=1.5;py=1.5;pa=0;steps=0;won=0;
+  document.getElementById("win-msg").style.display="none";
 }
 
-// ── RAYCASTER ────────────────────────────────────────────────────────────────
-function castRay(angle) {
-  const cosA = Math.cos(angle), sinA = Math.sin(angle);
-  let dist = 0, hit = false, side = 0, wallX = 0;
+// ── RAYCAST (same logic, no change) ───
+function cast(angle){
+  const cos=Math.cos(angle), sin=Math.sin(angle);
+  let mapX=px|0, mapY=py|0;
 
-  // DDA
-  let mapX = Math.floor(px), mapY = Math.floor(py);
-  const deltaX = Math.abs(1 / cosA), deltaY = Math.abs(1 / sinA);
-  const stepX = cosA < 0 ? -1 : 1;
-  const stepY = sinA < 0 ? -1 : 1;
-  let sideDistX = cosA < 0 ? (px - mapX) * deltaX : (mapX + 1 - px) * deltaX;
-  let sideDistY = sinA < 0 ? (py - mapY) * deltaY : (mapY + 1 - py) * deltaY;
+  const dX=Math.abs(1/cos);
+  const dY=Math.abs(1/sin);
 
-  for (let i = 0; i < MAX_DEPTH * 4 && !hit; i++) {
-    if (sideDistX < sideDistY) {
-      sideDistX += deltaX; mapX += stepX; side = 0;
-    } else {
-      sideDistY += deltaY; mapY += stepY; side = 1;
-    }
-    if (mapX < 0 || mapY < 0 || mapX >= MAP_W || mapY >= MAP_H || map[mapY][mapX] === '1') {
-      hit = true;
-      dist = side === 0 ? sideDistX - deltaX : sideDistY - deltaY;
-      wallX = side === 0
-        ? py + dist * sinA
-        : px + dist * cosA;
-      wallX -= Math.floor(wallX);
+  const stepX=cos<0?-1:1;
+  const stepY=sin<0?-1:1;
+
+  let sX=cos<0?(px-mapX)*dX:(mapX+1-px)*dX;
+  let sY=sin<0?(py-mapY)*dY:(mapY+1-py)*dY;
+
+  let side=0, dist=0;
+
+  for(let i=0;i<MAX*4;i++){
+    if(sX<sY){ sX+=dX; mapX+=stepX; side=0; }
+    else { sY+=dY; mapY+=stepY; side=1; }
+
+    if(isWall(mapX,mapY)){
+      dist = side? sY-dY : sX-dX;
+      break;
     }
   }
-  return { dist: Math.max(0.001, dist), side, wallX };
+
+  return dist||0.01;
 }
 
-// ── RENDER ───────────────────────────────────────────────────────────────────
-// Pre-build column imagedata for speed
-function render() {
-  // Sky gradient
-  const sky = ctx.createLinearGradient(0, 0, 0, HALF_H);
-  sky.addColorStop(0, '#050505');
-  sky.addColorStop(1, '#111');
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, W, HALF_H);
+// ── RENDER (FIXED + FAST) ─────────────
+function render(){
 
-  // Floor gradient
-  const floor = ctx.createLinearGradient(0, HALF_H, 0, H);
-  floor.addColorStop(0, '#0a0a0a');
-  floor.addColorStop(1, '#181818');
-  ctx.fillStyle = floor;
-  ctx.fillRect(0, HALF_H, W, HALF_H);
+  // sky/floor
+  ctx.fillStyle="#050505";
+  ctx.fillRect(0,0,W,HALF);
+  ctx.fillStyle="#111";
+  ctx.fillRect(0,HALF,W,HALF);
 
-  for (let col = 0; col < NUM_RAYS; col++) {
-    const rayAngle = pa - FOV / 2 + (col / NUM_RAYS) * FOV;
-    const { dist, side, wallX } = castRay(rayAngle);
+  for(let x=0;x<RAYS;x++){
 
-    // Fish-eye fix
-    const corrDist = dist * Math.cos(rayAngle - pa);
-    const wallH = Math.floor(H / corrDist);
-    const drawStart = Math.max(0, HALF_H - wallH / 2);
-    const drawEnd   = Math.min(H, HALF_H + wallH / 2);
-    const drawHeight = drawEnd - drawStart;
+    const rayA = pa - FOV/2 + (x/RAYS)*FOV;
+    const dist = cast(rayA);
 
-    // Texture column (sample texture image)
-    const u = wallX;
-    const texH = texReady === 'proc' ? 64 : offscreen.height;
-    const texW = texReady === 'proc' ? 64 : offscreen.width;
+    const corr = dist*Math.cos(rayA-pa);
+    const h = Math.min(H, (H/corr));
 
-    // Build column pixel by pixel
-    const imgData = ctx.createImageData(1, drawHeight);
-    for (let y = 0; y < drawHeight; y++) {
-      const v = (drawStart - HALF_H + wallH / 2 + y) / wallH;
-      let r, g, b;
-      if (texReady === 'proc') {
-        const pu = Math.floor(((u % 1 + 1) % 1) * texW);
-        const pv = Math.floor(((v % 1 + 1) % 1) * texH);
-        const brickH = 8, brickW = 16;
-        const row2 = Math.floor(pv / brickH);
-        const offset2 = (row2 % 2) * 8;
-        const lu2 = (pu + offset2) % brickW;
-        const lv2 = pv % brickH;
-        if (lu2 < 1 || lu2 > brickW - 1 || lv2 < 1 || lv2 > brickH - 1) {
-          r = 55; g = 50; b = 45;
-        } else {
-          const s = 110 + ((row2 * 7 + Math.floor((pu + offset2) / brickW) * 13) % 45);
-          r = s; g = Math.floor(s * 0.6); b = Math.floor(s * 0.45);
-        }
-      } else {
-        const tpx = Math.floor(((u % 1 + 1) % 1) * texW);
-        const tpy = Math.floor(((v % 1 + 1) % 1) * texH);
-        const d = otx.getImageData(tpx, tpy, 1, 1).data;
-        r = d[0]; g = d[1]; b = d[2];
-      }
+    const shade = Math.max(0, 255 - corr*25);
 
-      // Darken side walls & distance fog
-      const fog = Math.min(1, corrDist / MAX_DEPTH);
-      const dim = side === 0 ? 1 : 0.65;
-      r = Math.floor(r * dim * (1 - fog * 0.7));
-      g = Math.floor(g * dim * (1 - fog * 0.7));
-      b = Math.floor(b * dim * (1 - fog * 0.7));
+    // fake texture shading (FAST instead of image sampling)
+    const sideDark = 0.7;
 
-      const i4 = y * 4;
-      imgData.data[i4]   = r;
-      imgData.data[i4+1] = g;
-      imgData.data[i4+2] = b;
-      imgData.data[i4+3] = 255;
-    }
-    ctx.putImageData(imgData, col, drawStart);
+    ctx.fillStyle = `rgb(${shade*sideDark},${shade*0.9},${shade*0.6})`;
+
+    const y = (H-h)/2;
+    ctx.fillRect(x*(W/RAYS), y, (W/RAYS)+1, h);
   }
+}
 
-
-
-// ── GAME LOOP ─────────────────────────────────────────────────────────────────
-let last = 0;
-function loop(ts = 0) {
+// ── LOOP ─────────────────────────────
+let last=0;
+function loop(t=0){
   requestAnimationFrame(loop);
-  if (won) return;
 
-  const dt = Math.min((ts - last) / 16.67, 3);
-  last = ts;
+  const dt=(t-last)/16; last=t;
 
-  let moved = false;
-  const ms = MOVE_SPEED * dt;
-  const rs = ROT_SPEED * dt;
+  const ms=MOVE*dt;
+  const rs=ROT*dt;
 
-  if (keys['ArrowLeft'])  { pa -= rs; }
-  if (keys['ArrowRight']) { pa += rs; }
+  if(keys.ArrowLeft)pa-=rs;
+  if(keys.ArrowRight)pa+=rs;
 
-  if (keys['ArrowUp']) {
-    const nx = px + Math.cos(pa) * ms;
-    const ny = py + Math.sin(pa) * ms;
-    if (!isWall(nx, py)) px = nx;
-    if (!isWall(px, ny)) py = ny;
-    moved = true;
+  if(keys.ArrowUp){
+    let nx=px+Math.cos(pa)*ms;
+    let ny=py+Math.sin(pa)*ms;
+    if(!isWall(nx,py))px=nx;
+    if(!isWall(px,ny))py=ny;
+    steps++;
   }
-  if (keys['ArrowDown']) {
-    const nx = px - Math.cos(pa) * ms;
-    const ny = py - Math.sin(pa) * ms;
-    if (!isWall(nx, py)) px = nx;
-    if (!isWall(px, ny)) py = ny;
-    moved = true;
-  }
-  if (moved) steps++;
 
-  // Check exit
-  if (isExit(px, py)) {
-    won = true;
-    document.getElementById('win-msg').style.display = 'flex';
+  if(keys.ArrowDown){
+    let nx=px-Math.cos(pa)*ms;
+    let ny=py-Math.sin(pa)*ms;
+    if(!isWall(nx,py))px=nx;
+    if(!isWall(px,ny))py=ny;
+    steps++;
+  }
+
+  if(isExit(px,py)){
+    won=1;
+    document.getElementById("win-msg").style.display="flex";
   }
 
   render();
 
-  // HUD
-  const dirs = ['E','SE','S','SW','W','NW','N','NE'];
-  const di = Math.round(((pa % (Math.PI*2)) + Math.PI*2) / (Math.PI/4)) % 8;
-  document.getElementById('hud-pos').textContent   = `${Math.floor(px)},${Math.floor(py)}`;
-  document.getElementById('hud-dir').textContent   = dirs[di];
-  document.getElementById('hud-steps').textContent = steps;
+  const dirs=["E","SE","S","SW","W","NW","N","NE"];
+  const di=((pa/(Math.PI*2))*8+8)|0;
+
+  document.getElementById("hud-pos").textContent=`${px|0},${py|0}`;
+  document.getElementById("hud-dir").textContent=dirs[di%8];
+  document.getElementById("hud-steps").textContent=steps;
 }
 
-// ── WIN OVERLAY ───────────────────────────────────────────────────────────────
-document.getElementById('win-msg').style.display = 'none';
+loop();
+
 </script>
 </body>
 </html>
