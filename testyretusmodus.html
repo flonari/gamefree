@@ -24,14 +24,12 @@
 
     /* Outer gray frame */
     .frame {
-      background-color: #b8b8b8;
-      border: 3px solid #999;
-      padding: 20px;
-      box-shadow: none;
-      max-width: 690px;
-      width: 100%;
-    }
-
+  background-color: #b8b8b8;
+  border: 3px solid #999;
+  padding: 20px;
+  box-shadow: none;
+  width: fit-content; /* shrinks exactly to content */
+}
     /* Top bar */
     .top-bar {
       width: 100%;
@@ -45,11 +43,10 @@
     }
 
     /* Image area */
-    .image-container {
-      width: 100%;
-      border: 2px solid #888;
-
-    }
+.image-container {
+  width: 650px;
+  border: 2px solid #888;
+}
 
     .image-placeholder {
       width: 650px;
