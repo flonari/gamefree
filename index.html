@@ -181,24 +181,6 @@ body.glitching { animation: glitch-shake 0.18s steps(1) infinite; }
   }, 700);
 })();
 
-/* ── ABOUT NaN/HEX NOISE ── */
-(function () {
-  var nc = 'NaN0x░▒█?!@~%&#';
-  var nanEl = document.getElementById('nanline');
-  var hexEl = document.getElementById('hexline');
-  setInterval(function () {
-    var s = '';
-    for (var i = 0; i < 18; i++) s += nc[Math.floor(Math.random() * nc.length)];
-    nanEl.textContent = s;
-  }, 350);
-  setInterval(function () {
-    if (Math.random() < 0.5) {
-      var h = '0123456789abcdef', s = '';
-      for (var i = 0; i < 18; i++) { if (i && i % 3 === 0) s += ' '; s += h[Math.floor(Math.random() * 16)]; }
-      hexEl.textContent = s;
-    }
-  }, 500);
-})();
 
 /* ── GAME AUDIO ── */
 let currentGameAudio = null;
@@ -268,53 +250,7 @@ function playClickSound() {
   new Audio(file).play();
 }
 
-/* ── NAVIGATION ── */
-function goToDraws() {
-  const overlay = document.getElementById("fade-overlay");
-  overlay.style.display = "block";
-  requestAnimationFrame(function () { requestAnimationFrame(function () { overlay.style.opacity = "1"; }); });
-  setTimeout(function () { window.location.href = "/draws"; }, 2000);
-}
 
-function goToVideos() {
-  const blackout = document.getElementById("blackout");
-  const container = document.querySelector(".container");
-  const about = document.getElementById("about");
-  const counter = document.getElementById("visit-counter");
-  const allEls = [container, about, counter];
-  let flickerInterval = null, shakeInterval = null, flickerPeriod = 120, visible = true, elapsed = 0;
-  const freakDuration = 2800, pauseDuration = 600;
-  shakeInterval = setInterval(function () {
-    allEls.forEach(function (el) {
-      if (!el) return;
-      const x = (Math.random() - 0.5) * 80, y = (Math.random() - 0.5) * 50, skew = (Math.random() - 0.5) * 6;
-      el.style.transform = "translate(" + x + "px," + y + "px) skewX(" + skew + "deg)";
-    });
-  }, 60);
-  function runFlicker() {
-    flickerInterval = setInterval(function () {
-      elapsed += flickerPeriod; visible = !visible;
-      blackout.style.display = visible ? "none" : "block";
-      flickerPeriod = Math.max(30, flickerPeriod * 0.92);
-      clearInterval(flickerInterval);
-      if (elapsed >= freakDuration) {
-        clearInterval(shakeInterval);
-        allEls.forEach(function (el) { if (!el) return; el.style.transform = ""; el.style.visibility = "hidden"; });
-        blackout.style.display = "block";
-        setTimeout(function () { window.location.href = "/videos"; }, pauseDuration);
-      } else { runFlicker(); }
-    }, flickerPeriod);
-  }
-  runFlicker();
-}
-
-/* ── TOGGLE PANELS ── */
-function toggleCollection() { playClickSound(); window.location.href = "/discs"; }
-function toggleAbout() {
-  playClickSound();
-  const about = document.getElementById("about");
-  about.style.display = (about.style.display === "block") ? "none" : "block";
-}
 </script>
 </body>
 </html>
