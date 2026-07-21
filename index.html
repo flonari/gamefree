@@ -349,6 +349,40 @@ please check back on us later....
     var btn = document.getElementById('pressBtn');
     var onCooldown = false;
     var COOLDOWN_MS = 1500;
+    var FADE_MS = 250;
+    var DUCK_AMOUNT = 0.5; // duck to 50% of current volume
+
+    function fadeVolume(audioEl, from, to, duration){
+        var start = null;
+        function step(ts){
+            if(start === null) start = ts;
+            var progress = Math.min((ts - start) / duration, 1);
+            audioEl.volume = from + (to - from) * progress;
+            if(progress < 1){
+                requestAnimationFrame(step);
+            }
+        }
+        requestAnimationFrame(step);
+    }
+
+    function duckOtherAudio(exceptEl){
+        var ducked = [];
+        document.querySelectorAll('audio').forEach(function(a){
+            if(a === exceptEl) return;
+            if(!a.paused){
+                var originalVolume = a.volume;
+                fadeVolume(a, originalVolume, originalVolume * DUCK_AMOUNT, FADE_MS);
+                ducked.push({ el: a, original: originalVolume });
+            }
+        });
+        return ducked;
+    }
+
+    function restoreAudio(ducked){
+        ducked.forEach(function(item){
+            fadeVolume(item.el, item.el.volume, item.original, FADE_MS);
+        });
+    }
 
     btn.addEventListener('click', function(){
         if(onCooldown) return;
@@ -357,8 +391,22 @@ please check back on us later....
 
         var n = Math.floor(Math.random() * 7) + 1; // 1-7
         var sfx = new Audio('game' + n + '.ogg');
+
+        var ducked = duckOtherAudio(sfx);
+
+        var restored = false;
+        function restoreOnce(){
+            if(restored) return;
+            restored = true;
+            restoreAudio(ducked);
+        }
+
+        sfx.addEventListener('ended', restoreOnce);
+        sfx.addEventListener('error', restoreOnce);
+
         sfx.play().catch(function(err){
             console.warn('could not play sound:', err);
+            restoreOnce();
         });
 
         setTimeout(function(){
