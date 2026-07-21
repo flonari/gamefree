@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>GAMEFREE.WIN</title>
-
+<title>::: GAMEFREE.WIN - the #1 site for free downloadz :::</title>
 <style>
 *{
     margin:0;
@@ -11,201 +10,327 @@
     box-sizing:border-box;
     image-rendering:pixelated;
 }
-
-body{
-    background:#000 url("bac12.png") repeat;
-    background-size:96px;
-    color:white;
-    font-family:Verdana,Arial,sans-serif;
-    overflow-x:hidden;
+html{
+    cursor:url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="),auto;
 }
-
-/* dark overlay */
+body{
+    background:#000 repeating-conic-gradient(#0a0a0a 0deg 90deg, #050505 90deg 180deg) 0 0/48px 48px;
+    color:#e0e0e0;
+    font-family:"Comic Sans MS",Verdana,Arial,sans-serif;
+    overflow-x:hidden;
+    font-size:13px;
+}
 body::before{
     content:"";
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,.45);
+    background:rgba(0,0,0,.4);
     pointer-events:none;
+    z-index:1;
 }
-
-.wrapper{
+/* scanlines for extra crunch */
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 3px);
+    pointer-events:none;
+    z-index:60;
+}
+table.layout{
     position:relative;
     z-index:2;
-    width:900px;
-    margin:25px auto;
+    width:820px;
+    margin:20px auto;
+    border-collapse:collapse;
+}
+/* logo */
+.logo{
+    font-size:52px;
+    font-weight:bold;
+    text-align:center;
+    letter-spacing:-2px;
+    background:linear-gradient(180deg,#ffff00,#ff8800 40%,#ff0000 70%,#ffff00);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow:3px 3px 0 #000;
+    filter:drop-shadow(0 0 6px #ff0);
+    padding:10px 0 0 0;
+    transform:skewX(-3deg) scaleY(1.15);
+}
+.tagline{
+    text-align:center;
+    color:#00ffff;
+    font-size:11px;
+    text-shadow:1px 1px #000;
+    margin-bottom:6px;
+    font-family:"Courier New",monospace;
+}
+marquee.top{
+    background:#000080;
+    color:#ffff00;
+    border:3px ridge silver;
+    padding:5px;
+    font-weight:bold;
+    font-size:12px;
+}
+marquee.side{
+    background:#111;
+    color:#00ff00;
+    border:2px groove #555;
+    font-size:10px;
+    padding:3px;
+}
+/* nav */
+.navbar{
+    background:#000;
+    border:3px outset #666;
+    padding:6px;
     text-align:center;
 }
-
-/* logo */
-
-.logo{
-    font-size:58px;
-    color:#00ff00;
-    font-weight:bold;
-    text-shadow:
-        3px 3px #000,
-        0 0 10px #00ff00;
-    margin-bottom:10px;
-}
-
-/* marquee */
-
-marquee{
-    background:#000080;
-    color:yellow;
-    border:3px ridge silver;
-    padding:6px;
-    margin-bottom:15px;
-    font-weight:bold;
-}
-
-/* navbar */
-
-.navbar{
-    display:flex;
-    justify-content:center;
-    gap:8px;
-    margin-bottom:25px;
-    flex-wrap:wrap;
-}
-
 .navbar a{
-    color:white;
+    color:#ffff00;
     text-decoration:none;
-    background:#111;
-    border:3px outset gray;
-    padding:8px 18px;
+    background:#1a1a1a;
+    border:2px outset gray;
+    padding:5px 10px;
     font-weight:bold;
+    font-size:11px;
+    margin:2px;
+    display:inline-block;
 }
-
+.navbar a:visited{color:#cc99ff;}
 .navbar a:hover{
     border-style:inset;
-    background:#222;
-    color:#00ff00;
+    background:#330000;
+    color:#fff;
 }
-
-/* content */
-
+/* under construction banner */
+.constr{
+    background:repeating-linear-gradient(45deg,#ffcc00,#ffcc00 12px,#000 12px,#000 24px);
+    color:#000;
+    text-align:center;
+    font-weight:bold;
+    font-size:14px;
+    padding:5px;
+    border:2px solid #000;
+    text-shadow:1px 1px #fff;
+}
+/* sidebar */
+.sidebar{
+    width:170px;
+    vertical-align:top;
+    padding-right:8px;
+}
+.sidebox{
+    background:#0d0d0d;
+    border:2px ridge #777;
+    margin-bottom:10px;
+    font-size:11px;
+}
+.sidebox h3{
+    background:#000080;
+    color:#fff;
+    padding:3px 5px;
+    font-size:11px;
+    border-bottom:2px solid #000;
+}
+.sidebox .body{
+    padding:6px;
+    line-height:1.5;
+}
+.sidebox .body a{color:#00ffff;display:block;margin:2px 0;}
+.badge-row{
+    text-align:center;
+    padding:6px 0;
+}
+.badge{
+    display:inline-block;
+    width:78px;
+    height:28px;
+    background:#000;
+    border:1px solid #555;
+    color:#0f0;
+    font-size:8px;
+    font-family:"Courier New",monospace;
+    line-height:28px;
+    margin:2px;
+    text-shadow:0 0 3px #0f0;
+}
+/* main window */
 .window{
-    background:#101010;
+    background:#0a0a0a;
     border:4px ridge silver;
-    padding:20px;
+    padding:16px;
+    vertical-align:top;
 }
-
 .window h2{
     color:#ff4444;
-    margin-bottom:15px;
+    text-shadow:1px 1px #000;
+    margin-bottom:10px;
+    font-size:20px;
+    border-bottom:1px dashed #555;
+    padding-bottom:4px;
 }
-
 .window p{
-    line-height:1.6;
+    line-height:1.7;
     margin:10px 0;
 }
-
+.rainbow{
+    font-weight:bold;
+    background:linear-gradient(90deg,red,orange,yellow,green,cyan,blue,violet,red);
+    background-size:200% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:rainbow 3s linear infinite;
+}
+@keyframes rainbow{
+    to{background-position:200% center;}
+}
+.newgif{
+    background:red;
+    color:#ff0;
+    font-size:9px;
+    font-weight:bold;
+    padding:1px 4px;
+    border:1px solid #ff0;
+    vertical-align:middle;
+    animation:blink .6s steps(1) infinite;
+}
 .counter{
     display:inline-block;
-    margin-top:20px;
-    padding:6px 15px;
-    background:black;
+    margin-top:16px;
+    padding:5px 12px;
+    background:#000;
     border:3px inset gray;
-    color:lime;
-    font-family:monospace;
-    font-size:20px;
+    color:#0f0;
+    font-family:"Courier New",monospace;
+    font-size:18px;
+    letter-spacing:2px;
+    text-shadow:0 0 5px #0f0;
 }
-
-.blink{
-    animation:blink .8s infinite;
+.blink{animation:blink .8s infinite;}
+@keyframes blink{50%{opacity:0;}}
+hr.old{
+    border:0;
+    height:3px;
+    background:linear-gradient(90deg,transparent,#888,transparent);
+    margin:14px 0;
 }
-
-@keyframes blink{
-    50%{
-        opacity:0;
-    }
+.guestbook{
+    text-align:center;
+    margin-top:10px;
+    font-size:11px;
 }
-
+.guestbook a{color:#ffcc00;}
+.stars{color:#ffff00;letter-spacing:2px;}
 /* floating junk */
-
 .box{
     position:fixed;
-    width:18px;
-    height:18px;
+    width:16px;
+    height:16px;
     background:#00ff00;
-    opacity:.15;
+    opacity:.12;
+    z-index:0;
 }
-
-.b1{left:8%;top:15%;}
-.b2{left:90%;top:25%;}
-.b3{left:15%;bottom:10%;}
-.b4{right:12%;bottom:20%;}
-.b5{left:50%;top:8%;}
-
+.b1{left:6%;top:12%;transform:rotate(20deg);}
+.b2{left:92%;top:22%;transform:rotate(-15deg);}
+.b3{left:14%;bottom:8%;}
+.b4{right:10%;bottom:18%;transform:rotate(45deg);}
+.b5{left:48%;top:5%;}
 .footer{
-    margin-top:25px;
-    color:#999;
-    font-size:13px;
+    text-align:center;
+    margin-top:18px;
+    color:#888;
+    font-size:11px;
+    padding-bottom:20px;
 }
-
+.footer .stamp{
+    font-family:"Courier New",monospace;
+    color:#555;
+}
 </style>
 </head>
 <body>
-
 <audio src="ambient2.ogg" autoplay loop></audio>
-
 <div class="box b1"></div>
 <div class="box b2"></div>
 <div class="box b3"></div>
 <div class="box b4"></div>
 <div class="box b5"></div>
 
-<div class="wrapper">
-
-<div class="logo">
-GAMEFREE.WIN
-</div>
-
-<marquee scrollamount="6">
-• LAST UPDATED 2003 •
-</marquee>
-
+<table class="layout" cellpadding="0" cellspacing="0">
+<tr><td colspan="2">
+<div class="logo">GAMEFREE.WIN</div>
+<div class="tagline">~*~ the #1 spot for 100% FREE gamez since 2002 ~*~</div>
+<marquee class="top" scrollamount="6">• LAST UPDATED 2005 •</marquee>
+<br>
 <div class="navbar">
 <a href="#">HOME</a>
 <a href="#">DOWNLOADS</a>
 <a href="#">SCREENSHOTS</a>
 <a href="#">LINKS</a>
+<a href="#">WEBRING</a>
 <a href="#">CONTACT</a>
 </div>
-
-<div class="window">
-
-<h2 class="blink">
-UNDER CONSTRUCTION
-</h2>
-
-<p>
-Welcome to GAMEFREE.WIN!
-</p>
-
-<p>
-
-</p>
-
-<p>
-please check back at a later date.
-</p>
-
 <br>
+</td></tr>
 
-<div class="counter">
-Visitors: 00001337
-</div>
+<tr>
+<td class="sidebar">
+  <div class="sidebox">
+    <h3>NAVIGATION</h3>
+    <div class="body">
+      <a href="#">» Home</a>
+      <a href="#">» Downloads <span class="newgif">NEW</span></a>
+      <a href="#">» Screenshots</a>
+      <a href="#">» Forum (offline)</a>
+    </div>
+  </div>
 
-</div>
+  <div class="sidebox">
+    <h3>SITE INFO</h3>
+    <div class="body">
+      Hosted on a 56k modem<br>
+      Optimized for IE 5.5<br>
+      No frames used!!!<br>
+      <span class="stars">★★★★★</span> rated by 3 people
+    </div>
+  </div>
 
+
+  <marquee class="side" direction="up" scrollamount="3">
+    thx for visiting!! more downloadz comin soon!!
+  </marquee>
+</td>
+
+<td class="window">
+<div class="constr">⚠ UNDER CONSTRUCTION ⚠ PLEASE PARDON OUR DUST ⚠</div>
+<br>
+<h2 class="blink">WELCOME!!!</h2>
+<p>
+Welcome to <span class="rainbow">GAMEFREE.WIN</span>, your #1 destination for totally free game downloadz. This site has been under construction since 2002 and will continue to be under construction for the foreseeable future.
+</p>
+<p>
+We are currently rebuilding the downloads section after our last host went out of business. <span class="newgif">NEW</span> Please check back at a later date for updates!
+</p>
+<hr class="old">
+<p>
+please check later..
+</p>
+<div class="counter">Visitors: 00001337</div>
+</td>
+</tr>
+
+<tr><td colspan="2">
 <div class="footer">
-© 2002-2006 GAMEFREE.WIN
+© 2002-2006 GAMEFREE.WIN — all rights reserved (probably)<br>
+<span class="stamp">page generated in 0.03 seconds | you are visitor #1748</span>
 </div>
+</td></tr>
+</table>
 
-</div>
 </body>
 </html>
