@@ -350,7 +350,7 @@ please check back on us later....
     var onCooldown = false;
     var COOLDOWN_MS = 1500;
     var FADE_MS = 250;
-    var DUCK_AMOUNT = 1; // duck to 50% of current volume
+    var DUCK_AMOUNT = 0.15; // duck to 50% of current volume
     var activeSfx = new Set(); // game1-7.ogg players currently playing, never ducked
 
     function fadeVolume(audioEl, from, to, duration){
