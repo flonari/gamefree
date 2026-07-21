@@ -9,118 +9,113 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
+    image-rendering:pixelated;
 }
 
-html,body{
-    height:100%;
-    image-rendering:pixelated;
-
+body{
     background:#000 url("bac12.png") repeat;
     background-size:96px;
-
-    font-family:"Courier New",monospace;
     color:white;
+    font-family:Verdana,Arial,sans-serif;
+    overflow-x:hidden;
 }
 
-/* fake stars */
-
+/* dark overlay */
 body::before{
     content:"";
     position:fixed;
     inset:0;
-    background:
-    radial-gradient(white 1px,transparent 1px);
-    background-size:60px 60px;
-    opacity:.08;
+    background:rgba(0,0,0,.45);
     pointer-events:none;
 }
 
 .wrapper{
-    width:760px;
-    margin:30px auto;
+    position:relative;
+    z-index:2;
+    width:900px;
+    margin:25px auto;
+    text-align:center;
 }
 
-.header{
-    text-align:center;
-    margin-bottom:20px;
-}
+/* logo */
 
 .logo{
-    font-size:54px;
+    font-size:58px;
     color:#00ff00;
     font-weight:bold;
     text-shadow:
-        3px 3px #003300;
+        3px 3px #000,
+        0 0 10px #00ff00;
+    margin-bottom:10px;
 }
 
-.tagline{
+/* marquee */
+
+marquee{
+    background:#000080;
     color:yellow;
-    font-size:18px;
+    border:3px ridge silver;
+    padding:6px;
+    margin-bottom:15px;
+    font-weight:bold;
 }
 
-.mainbox{
+/* navbar */
 
-    background:#bdbdbd;
-
-    border-top:3px solid white;
-    border-left:3px solid white;
-    border-right:3px solid #555;
-    border-bottom:3px solid #555;
-
-    color:black;
-
-    padding:18px;
-}
-
-.section{
-    background:white;
-    border:2px inset #888;
-    padding:12px;
-    margin-bottom:16px;
-}
-
-.section h2{
-    margin-bottom:8px;
-    color:navy;
-}
-
-.links{
-    display:grid;
-    grid-template-columns:1fr 1fr;
+.navbar{
+    display:flex;
+    justify-content:center;
     gap:8px;
+    margin-bottom:25px;
+    flex-wrap:wrap;
 }
 
-.links a{
-    color:blue;
-    text-decoration:underline;
+.navbar a{
+    color:white;
+    text-decoration:none;
+    background:#111;
+    border:3px outset gray;
+    padding:8px 18px;
+    font-weight:bold;
 }
 
-.links a:hover{
-    background:yellow;
+.navbar a:hover{
+    border-style:inset;
+    background:#222;
+    color:#00ff00;
+}
+
+/* content */
+
+.window{
+    background:#101010;
+    border:4px ridge silver;
+    padding:20px;
+}
+
+.window h2{
+    color:#ff4444;
+    margin-bottom:15px;
+}
+
+.window p{
+    line-height:1.6;
+    margin:10px 0;
 }
 
 .counter{
-    text-align:center;
-    font-size:22px;
-    color:red;
+    display:inline-block;
     margin-top:20px;
-}
-
-.footer{
-    text-align:center;
-    margin-top:25px;
-    color:white;
-    font-size:13px;
-}
-
-hr{
-    margin:15px 0;
+    padding:6px 15px;
+    background:black;
+    border:3px inset gray;
+    color:lime;
+    font-family:monospace;
+    font-size:20px;
 }
 
 .blink{
     animation:blink .8s infinite;
-    color:red;
-    font-weight:bold;
 }
 
 @keyframes blink{
@@ -129,121 +124,112 @@ hr{
     }
 }
 
-marquee{
-    color:cyan;
-    font-weight:bold;
-    margin:12px 0;
+/* floating junk */
+
+.box{
+    position:fixed;
+    width:18px;
+    height:18px;
+    background:#00ff00;
+    opacity:.15;
 }
 
-.button{
-    display:inline-block;
-    background:silver;
-    color:black;
-    padding:4px 10px;
-    border-top:2px solid white;
-    border-left:2px solid white;
-    border-right:2px solid #555;
-    border-bottom:2px solid #555;
-    margin:4px;
-    text-decoration:none;
+.b1{left:8%;top:15%;}
+.b2{left:90%;top:25%;}
+.b3{left:15%;bottom:10%;}
+.b4{right:12%;bottom:20%;}
+.b5{left:50%;top:8%;}
+
+.footer{
+    margin-top:25px;
+    color:#999;
+    font-size:13px;
 }
 
-.button:active{
-    border-top:2px solid #555;
-    border-left:2px solid #555;
-    border-right:2px solid white;
-    border-bottom:2px solid white;
-}
-
-.guestbook{
-    text-align:center;
-    margin-top:18px;
-}
-
-.small{
-    font-size:12px;
-}
 </style>
 </head>
-
 <body>
 
 <audio src="ambient2.ogg" autoplay loop></audio>
 
+<div class="box b1"></div>
+<div class="box b2"></div>
+<div class="box b3"></div>
+<div class="box b4"></div>
+<div class="box b5"></div>
+
 <div class="wrapper">
 
-<div class="header">
-<div class="logo">GAMEFREE.WIN</div>
-<div class="tagline">Welcome to our</div>
+<div class="logo">
+GAMEFREE.WIN
 </div>
 
-<div class="mainbox">
+<marquee scrollamount="6">
+• LAST UPDATED 2003 •
+</marquee>
 
-<div class="section">
-<h2>Welcome!</h2>
+<div class="navbar">
+<a href="#">HOME</a>
+<a href="#">DOWNLOADS</a>
+<a href="#">SCREENSHOTS</a>
+<a href="#">LINKS</a>
+<a href="#">CONTACT</a>
+</div>
+
+<div class="window">
+
+<h2 class="blink">
+UNDER CONSTRUCTION
+</h2>
 
 <p>
-Welcome to <b>GAMEFREE.WIN</b>!
-This website is currently under construction.
+Welcome to GAMEFREE.WIN!
 </p>
 
-<hr>
+<p>
 
-<center>
-<span class="blink">🚧 UNDER CONSTRUCTION 🚧</span>
-</center>
+</p>
 
-</div>
+<p>
+Please check back later while the archive is still being built.
+</p>
 
-<div class="section">
+<img src="https://web.archive.org/web/20091027023433/http://hk.geocities.com/underconstruction1/underconstruction.gif" style="margin-top:20px">
 
-<h2>Navigation</h2>
-
-<div class="links">
-
-<a href="#">Games</a>
-<a href="#">Downloads</a>
-
-<a href="#">Guestbook</a>
-<a href="#">Links</a>
-
-<a href="#">About Us</a>
-<a href="#">Contact</a>
-
-</div>
-
-</div>
-
-<div class="guestbook">
-
-<a class="button" href="#">Sign Guestbook</a>
-
-<a class="button" href="#">View Guestbook</a>
-
-<a class="button" href="#">Email Me</a>
-
-</div>
+<br>
 
 <div class="counter">
-
-Visitor #00001337
-
+Visitors: 00001337
 </div>
 
 </div>
 
 <div class="footer">
-
-<p class="small">
-© 1999-2026 GAMEFREE.WIN
-</p>
-
-<p class="small">
-</p>
-
+© 2002-2006 GAMEFREE.WIN
 </div>
 
 </div>
+
+<script>
+
+let currentGameAudio=null;
+
+document.body.addEventListener("click",function(){
+
+    if(currentGameAudio && !currentGameAudio.ended)
+        return;
+
+    const pool=[1,2,4,5,6,7];
+
+    const track=pool[Math.floor(Math.random()*pool.length)];
+
+    currentGameAudio=new Audio("game"+track+".ogg");
+
+    currentGameAudio.play();
+
+});
+
+</script>
 
 </body>
 </html>
