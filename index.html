@@ -160,6 +160,7 @@ marquee.side{
 }
 /* main window */
 .window{
+    position:relative;
     background:#0a0a0a;
     border:4px ridge silver;
     padding:16px;
@@ -251,6 +252,18 @@ hr.old{
     font-family:"Courier New",monospace;
     color:#555;
 }
+/* press image in corner of the window */
+#pressBtn{
+    position:absolute;
+    bottom:8px;
+    right:8px;
+    cursor:pointer;
+    z-index:5;
+    display:block;
+}
+#pressBtn.on-cooldown{
+    pointer-events:none;
+}
 </style>
 </head>
 <body>
@@ -304,6 +317,7 @@ hr.old{
 </td>
 
 <td class="window">
+<img id="pressBtn" src="press.png" alt="">
 <div class="constr">⚠ UNDER CONSTRUCTION ⚠ PLEASE PARDON OUR DUST ⚠</div>
 <br>
 <h2 class="blink">WELCOME!!!</h2>
@@ -329,6 +343,31 @@ please check back on us later....
 </div>
 </td></tr>
 </table>
+
+<script>
+(function(){
+    var btn = document.getElementById('pressBtn');
+    var onCooldown = false;
+    var COOLDOWN_MS = 1500;
+
+    btn.addEventListener('click', function(){
+        if(onCooldown) return;
+        onCooldown = true;
+        btn.classList.add('on-cooldown');
+
+        var n = Math.floor(Math.random() * 7) + 1; // 1-7
+        var sfx = new Audio('game' + n + '.ogg');
+        sfx.play().catch(function(err){
+            console.warn('could not play sound:', err);
+        });
+
+        setTimeout(function(){
+            onCooldown = false;
+            btn.classList.remove('on-cooldown');
+        }, COOLDOWN_MS);
+    });
+})();
+</script>
 
 </body>
 </html>
