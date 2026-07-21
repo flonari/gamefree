@@ -349,8 +349,9 @@ please check back on us later....
     var btn = document.getElementById('pressBtn');
     var onCooldown = false;
     var COOLDOWN_MS = 1500;
-    var FADE_MS = 150;
-    var DUCK_AMOUNT = 0.90; // duck to 50% of current volume
+    var FADE_MS = 250;
+    var DUCK_AMOUNT = 0.5; // duck to 50% of current volume
+    var activeSfx = new Set(); // game1-7.ogg players currently playing, never ducked
 
     function fadeVolume(audioEl, from, to, duration){
         var start = null;
@@ -365,10 +366,10 @@ please check back on us later....
         requestAnimationFrame(step);
     }
 
-    function duckOtherAudio(exceptEl){
+    function duckOtherAudio(){
         var ducked = [];
         document.querySelectorAll('audio').forEach(function(a){
-            if(a === exceptEl) return;
+            if(activeSfx.has(a)) return; // never touch the game sfx
             if(!a.paused){
                 var originalVolume = a.volume;
                 fadeVolume(a, originalVolume, originalVolume * DUCK_AMOUNT, FADE_MS);
@@ -391,13 +392,15 @@ please check back on us later....
 
         var n = Math.floor(Math.random() * 7) + 1; // 1-7
         var sfx = new Audio('game' + n + '.ogg');
+        activeSfx.add(sfx);
 
-        var ducked = duckOtherAudio(sfx);
+        var ducked = duckOtherAudio();
 
         var restored = false;
         function restoreOnce(){
             if(restored) return;
             restored = true;
+            activeSfx.delete(sfx);
             restoreAudio(ducked);
         }
 
