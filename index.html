@@ -26,8 +26,6 @@ body{
     background-image:url("bac12.png");
     background-repeat:repeat;
 
-    /* 25% smaller tiles (128 -> 96) */
-    background-size:96px 96px;
 
     image-rendering:pixelated;
     font-family:Arial, sans-serif;
@@ -66,35 +64,6 @@ body::before{
     cursor:pointer;
 }
 
-/* Retro construction sign */
-.notice{
-    margin-top:18px;
-    padding:8px 18px;
-
-    background:#111;
-    color:#d7d7d7;
-
-    border:3px solid #bfbfbf;
-    outline:2px solid #444;
-    outline-offset:-5px;
-
-    font-family:"Courier New", monospace;
-    font-size:22px;
-    font-weight:bold;
-    text-transform:uppercase;
-    letter-spacing:2px;
-    line-height:1.4;
-    text-align:center;
-
-    box-shadow:
-        4px 4px 0 #000;
-
-    transform:rotate(-0.8deg);
-    animation:shake .18s infinite steps(2);
-
-    image-rendering:pixelated;
-    z-index:2;
-}
 
 @keyframes shake{
     0%{
