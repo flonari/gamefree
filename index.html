@@ -1,59 +1,220 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>GAMEFREE.WIN</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      background-color: black;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+<meta charset="UTF-8">
+<title>GAMEFREE.WIN</title>
+
+<style>
+*,*::before,*::after{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,body{
+    background:black;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+}
+
+/* ---------------- LOADING ---------------- */
+
+#loading{
+    position:fixed;
+    inset:0;
+    background:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+    overflow:hidden;
+}
+
+.fakeCursor{
+    position:absolute;
+    width:28px;
+    pointer-events:none;
+    image-rendering:pixelated;
+    animation:pop .25s linear;
+}
+
+@keyframes pop{
+    from{
+        transform:scale(.5);
+        opacity:0;
     }
-    .main-image-wrap {
-      position: relative;
-      display: block;
-      line-height: 0;
+    to{
+        transform:scale(1);
+        opacity:1;
     }
-    .main-image {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
-    .game-zone {
-      position: absolute;
-      left: 164px;
-      top: 267px;
-      width: 79px;
-      height: 71px;
-      cursor: pointer;
-    }
-  </style>
+}
+
+#dImage{
+    position:absolute;
+    width:340px;
+    opacity:0;
+    transition:opacity .5s;
+}
+
+/* ---------------- WEBSITE ---------------- */
+
+#site{
+    opacity:0;
+    transition:opacity .8s;
+}
+
+.main-image-wrap{
+    position:relative;
+    display:block;
+    line-height:0;
+}
+
+.main-image{
+    display:block;
+    max-width:100%;
+    height:auto;
+}
+
+.game-zone{
+    position:absolute;
+    left:164px;
+    top:267px;
+    width:79px;
+    height:71px;
+    cursor:pointer;
+}
+
+.message{
+    color:white;
+    text-align:center;
+    margin-top:20px;
+}
+</style>
 </head>
+
 <body>
-  <audio src="ambient2.ogg" autoplay loop></audio>
 
-  <div class="main-image-wrap">
-    <img src="gamerfre.png" class="main-image" alt="main image">
+<div id="loading">
+    <img id="dImage" src="d.png">
+</div>
+
+<div id="site">
+
+<audio src="ambient2.ogg" autoplay loop></audio>
+
+<div class="main-image-wrap">
+    <img src="gamerfre.png" class="main-image">
+
     <div class="game-zone" onclick="playGameSound()"></div>
-  </div>
-  <font color="white"></font>
-  <h1></h1>
-<p style="color: white;">UNDER CONSTRUCTION.</p>
-  <script>
-    let currentGameAudio = null;
+</div>
 
-    function playGameSound() {
-      if (currentGameAudio && !currentGameAudio.ended) return;
-      const zone = document.querySelector(".game-zone");
-      const pool = [1, 2, 4, 5, 6, 7];
-      const track = pool[Math.floor(Math.random() * pool.length)];
-      currentGameAudio = new Audio("game" + track + ".ogg");
-      currentGameAudio.play();
-      zone.style.cursor = "default";
-      currentGameAudio.addEventListener("ended", function () { zone.style.cursor = "pointer"; });
+<p class="message">UNDER CONSTRUCTION.</p>
+
+</div>
+
+<script>
+
+/* ---------------- WEBSITE ---------------- */
+
+let currentGameAudio=null;
+
+function playGameSound(){
+
+    if(currentGameAudio && !currentGameAudio.ended) return;
+
+    const zone=document.querySelector(".game-zone");
+
+    const pool=[1,2,4,5,6,7];
+    const track=pool[Math.floor(Math.random()*pool.length)];
+
+    currentGameAudio=new Audio("game"+track+".ogg");
+
+    currentGameAudio.play();
+
+    zone.style.cursor="default";
+
+    currentGameAudio.addEventListener("ended",()=>{
+        zone.style.cursor="pointer";
+    });
+
+}
+
+/* ---------------- LOADING ---------------- */
+
+const loading=document.getElementById("loading");
+const site=document.getElementById("site");
+const dImage=document.getElementById("dImage");
+
+const intro=new Audio("l.ogg");
+
+intro.play();
+
+intro.onended=()=>{
+
+    let delay=250;
+    let created=0;
+
+    function spawn(){
+
+        const img=document.createElement("img");
+
+        img.src="cursor.png";      // fake cursor image
+
+        img.className="fakeCursor";
+
+        img.style.left=Math.random()*window.innerWidth+"px";
+        img.style.top=Math.random()*window.innerHeight+"px";
+
+        loading.appendChild(img);
+
+        new Audio("d.ogg").play();
+
+        created++;
+
+        delay*=0.95;
+
+        if(delay<8) delay=8;
+
+        if(created<350){
+
+            setTimeout(spawn,delay);
+
+        }else{
+
+            document.querySelectorAll(".fakeCursor").forEach(c=>{
+                c.remove();
+            });
+
+            dImage.style.opacity=1;
+
+            setTimeout(()=>{
+
+                loading.style.opacity=0;
+
+                loading.style.transition="opacity .8s";
+
+                site.style.opacity=1;
+
+                setTimeout(()=>{
+                    loading.remove();
+                    document.body.style.overflow="auto";
+                },800);
+
+            },2500);
+
+        }
+
     }
-  </script>
+
+    spawn();
+
+};
+
+</script>
+
 </body>
 </html>
