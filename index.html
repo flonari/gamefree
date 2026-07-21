@@ -13,7 +13,8 @@
     padding:0;
 }
 
-html,body{
+html,
+body{
     min-height:100vh;
     display:flex;
     justify-content:center;
@@ -21,13 +22,25 @@ html,body{
     flex-direction:column;
     overflow:hidden;
 
-    /* Tiled background */
-    background-color:#000;
+    background:#000;
     background-image:url("bac12.png");
     background-repeat:repeat;
-    background-size:128px 128px;
+
+    /* 25% smaller tiles (128 -> 96) */
+    background-size:96px 96px;
+
     image-rendering:pixelated;
     font-family:Arial, sans-serif;
+}
+
+/* Slight dark overlay */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.32);
+    pointer-events:none;
+    z-index:1;
 }
 
 .main-image-wrap{
@@ -43,43 +56,62 @@ html,body{
     height:auto;
 }
 
+/* Audio hotspot */
 .game-zone{
     position:absolute;
-    left:164px;
-    top:267px;
-    width:79px;
-    height:71px;
+    left:170px;
+    top:144px;
+    width:72px;
+    height:81px;
     cursor:pointer;
 }
 
-/* Construction notice */
+/* Retro construction sign */
 .notice{
-    margin-top:30px;
-    padding:14px 30px;
-    border:2px solid #ffffff;
-    background:rgba(0,0,0,.8);
-    color:#fff;
-    font-size:30px;
+    margin-top:18px;
+    padding:8px 18px;
+
+    background:#111;
+    color:#d7d7d7;
+
+    border:3px solid #bfbfbf;
+    outline:2px solid #444;
+    outline-offset:-5px;
+
+    font-family:"Courier New", monospace;
+    font-size:22px;
     font-weight:bold;
-    letter-spacing:4px;
     text-transform:uppercase;
-    text-shadow:
-        0 0 5px #ffffff,
-        0 0 10px #ffffff;
+    letter-spacing:2px;
+    line-height:1.4;
+    text-align:center;
+
     box-shadow:
-        0 0 15px rgba(255,255,255,.25),
-        inset 0 0 10px rgba(255,255,255,.08);
+        4px 4px 0 #000;
+
+    transform:rotate(-0.8deg);
+    animation:shake .18s infinite steps(2);
+
+    image-rendering:pixelated;
     z-index:2;
 }
 
-/* Dark overlay to make the background less distracting */
-body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.35);
-    pointer-events:none;
-    z-index:1;
+@keyframes shake{
+    0%{
+        transform:translate(0,0) rotate(-0.8deg);
+    }
+    25%{
+        transform:translate(-1px,1px) rotate(-1deg);
+    }
+    50%{
+        transform:translate(1px,0) rotate(-0.5deg);
+    }
+    75%{
+        transform:translate(0,-1px) rotate(-1.2deg);
+    }
+    100%{
+        transform:translate(0,0) rotate(-0.8deg);
+    }
 }
 </style>
 </head>
@@ -94,7 +126,8 @@ body::before{
 </div>
 
 <div class="notice">
-    🚧 UNDER CONSTRUCTION 🚧
+    [ UNDER CONSTRUCTION ]<br>
+    PLEASE COME BACK LATER...
 </div>
 
 <script>
