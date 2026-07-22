@@ -480,6 +480,21 @@ please check back on us later....
 <div class="dice-counter" id="diceCounter">1/6</div>
 
 <script>
+function setCookie(name, value, days){
+    var expires = '';
+    if(days){
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = '; expires=' + date.toUTCString();
+    }
+    document.cookie = name + '=' + value + expires + '; path=/';
+}
+
+function getCookie(name){
+    var match = document.cookie.match('(^|;\\s*)' + name + '=([^;]*)');
+    return match ? match[2] : null;
+}
+
 (function(){
     var btn = document.getElementById('pressBtn');
     var onCooldown = false;
@@ -491,21 +506,6 @@ please check back on us later....
     var PRESSES_FOR_DOWNLOAD = 5;
     var DOWNLOAD_FILENAME = 'gamefreevarients.zip';
     var DOWNLOAD_URL = 'gamefreevarients.zip'; // actual file on the server
-
-    function setCookie(name, value, days){
-        var expires = '';
-        if(days){
-            var date = new Date();
-            date.setTime(date.getTime() + (days*24*60*60*1000));
-            expires = '; expires=' + date.toUTCString();
-        }
-        document.cookie = name + '=' + value + expires + '; path=/';
-    }
-
-    function getCookie(name){
-        var match = document.cookie.match('(^|;\\s*)' + name + '=([^;]*)');
-        return match ? match[2] : null;
-    }
 
     function fadeVolume(audioEl, from, to, duration){
         var start = null;
