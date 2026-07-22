@@ -516,7 +516,7 @@ hr.old{
     <img src="logoings.png" alt="logo">
     <h2>⚠ DISCLAIMER ⚠</h2>
     <p>
-      GAMEFREE.WIN is currently in development, everything you see is subject to change.
+      GAMEFREE.WIN is a silly little art project and should not be taken seriously.
       Everything shown is a work of fiction; any resemblance to actual persons
       or actual events is purely coincidental.
     </p>
@@ -968,6 +968,8 @@ function getCookie(name){
     var startTime = 0;
     var rafId = null;
     var restartTimeout = null;
+    var delayTimeout = null;
+    var TRIGGER_DELAY = 650; // ms before the effect kicks in
 
     function clearAllCookies(){
         document.cookie.split(';').forEach(function(c){
@@ -1013,13 +1015,18 @@ function getCookie(name){
         if(!window.siteReady) return; // only works after the name chooser finishes
         if(e.key.toLowerCase() !== 'r' || e.repeat) return;
         holding = true;
-        startTime = performance.now();
-        rafId = requestAnimationFrame(shakeFrame);
-        restartTimeout = setTimeout(doRestart, HOLD_DURATION);
+        delayTimeout = setTimeout(function(){
+            if(!holding) return;
+            startTime = performance.now();
+            rafId = requestAnimationFrame(shakeFrame);
+            restartTimeout = setTimeout(doRestart, HOLD_DURATION);
+        }, TRIGGER_DELAY);
     });
 
     document.addEventListener('keyup', function(e){
         if(e.key.toLowerCase() !== 'r') return;
+        holding = false;
+        clearTimeout(delayTimeout);
         clearTimeout(restartTimeout);
         stopShake();
     });
