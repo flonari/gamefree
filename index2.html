@@ -183,14 +183,26 @@ marquee.side{
     line-height:1.7;
     margin:10px 0;
 }
+.rainbow-drag{
+    display:inline-block;
+    cursor:grab;
+    position:relative;
+    transition:transform .5s cubic-bezier(.34,1.56,.64,1);
+}
+.rainbow-drag.dragging{
+    cursor:grabbing;
+    transition:none;
+}
 .rainbow{
     font-weight:bold;
     background:linear-gradient(90deg,red,orange,yellow,green,cyan,blue,violet,red);
     background-size:200% auto;
     -webkit-background-clip:text;
     background-clip:text;
+    -webkit-text-fill-color:transparent;
     color:transparent;
     animation:rainbow 3s linear infinite;
+    display:inline-block;
 }
 @keyframes rainbow{
     to{background-position:200% center;}
@@ -441,7 +453,7 @@ hr.old{
 <br>
 <h2 class="blink">WELCOME!!!</h2>
 <p>
-Welcome to <span class="rainbow">GAMEFREE.WIN</span>, your #1 destination for your free game downloadz. This site has been under construction since 2005 and will continue to be under construction for the foreseeable future.
+Welcome to <span class="rainbow-drag" id="rainbowText"><span class="rainbow">GAMEFREE.WIN</span></span>, your #1 destination for your free game downloadz. This site has been under construction since 2005 and will continue to be under construction for the foreseeable future.
 </p>
 <p>
 We are currently rebuilding the downloads section after our last host went out of business. <span class="newgif" id="newBadge">NEW</span> Please check back at a later date for updates!
@@ -736,6 +748,35 @@ function getCookie(name){
         if(clicks >= CLICKS_NEEDED){
             spawnBadgesEverywhere();
         }
+    });
+})();
+
+(function(){
+    var rainbowText = document.getElementById('rainbowText');
+    var dragging = false;
+    var startX = 0, startY = 0;
+    var RESISTANCE = 0.75; // much bigger drag radius now
+
+    rainbowText.addEventListener('mousedown', function(e){
+        dragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        rainbowText.classList.add('dragging');
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e){
+        if(!dragging) return;
+        var dx = (e.clientX - startX) * RESISTANCE;
+        var dy = (e.clientY - startY) * RESISTANCE;
+        rainbowText.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    });
+
+    document.addEventListener('mouseup', function(){
+        if(!dragging) return;
+        dragging = false;
+        rainbowText.classList.remove('dragging');
+        rainbowText.style.transform = 'translate(0,0)';
     });
 })();
 </script>
