@@ -252,6 +252,67 @@ hr.old{
     font-family:"Courier New",monospace;
     color:#555;
 }
+/* draggable contact window */
+.win95{
+    position:fixed;
+    width:500px;
+    height:250px;
+    background:#0a0a0a;
+    border:4px ridge silver;
+    box-shadow:6px 6px 16px rgba(0,0,0,.8);
+    z-index:100;
+    display:none;
+    font-family:"Comic Sans MS",Verdana,Arial,sans-serif;
+    color:#e0e0e0;
+}
+.win95.open{
+    display:block;
+}
+.win95 .titlebar{
+    background:#000;
+    border-bottom:2px solid #444;
+    color:#ffff00;
+    font-weight:bold;
+    font-size:12px;
+    font-family:"Courier New",monospace;
+    text-shadow:1px 1px #000;
+    padding:6px 8px;
+    cursor:move;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    user-select:none;
+}
+.win95 .titlebar .closebtn{
+    background:#1a1a1a;
+    border:2px outset gray;
+    color:#ff4444;
+    font-weight:bold;
+    font-size:11px;
+    width:18px;
+    height:16px;
+    line-height:12px;
+    text-align:center;
+    cursor:pointer;
+}
+.win95 .titlebar .closebtn:hover{
+    background:#330000;
+    color:#fff;
+}
+.win95 .titlebar .closebtn:active{
+    border-style:inset;
+}
+.win95 .content{
+    padding:14px 16px;
+    font-size:12px;
+    line-height:1.8;
+    background:#0a0a0a;
+    height:calc(100% - 30px);
+    overflow:auto;
+}
+.win95 .content a{
+    color:#00ffff;
+}
 /* press image in corner of the window */
 #pressBtn{
     position:absolute;
@@ -285,7 +346,7 @@ hr.old{
 <a href="#">DOWNLOADS</a>
 <a href="#">SCREENSHOTS</a>
 <a href="#">ABOUT</a>
-<a href="#">CONTACT</a>
+<a href="#" id="contactLink">CONTACT</a>
 </div>
 <br>
 </td></tr>
@@ -343,6 +404,21 @@ please check back on us later....
 </div>
 </td></tr>
 </table>
+
+<div class="win95" id="contactWindow">
+  <div class="titlebar" id="contactTitlebar">
+    <span>contact_us.txt</span>
+    <div class="closebtn" id="contactClose">✕</div>
+  </div>
+  <div class="content">
+    <strong>GAMEFREE.WIN — Contact Info</strong><br>
+    Email: webmaster@gamefree.win<br>
+    ICQ: 118-999-881<br>
+    AIM: xXgameFREEXx<br>
+    Snail mail: PO Box 1337, Newgroundsville<br>
+    Hours: whenever the modem connects
+  </div>
+</div>
 
 <script>
 (function(){
@@ -435,6 +511,58 @@ please check back on us later....
             onCooldown = false;
             btn.classList.remove('on-cooldown');
         }, COOLDOWN_MS);
+    });
+})();
+
+(function(){
+    var link = document.getElementById('contactLink');
+    var win = document.getElementById('contactWindow');
+    var titlebar = document.getElementById('contactTitlebar');
+    var closeBtn = document.getElementById('contactClose');
+
+    function centerWindow(){
+        var w = win.offsetWidth;
+        var h = win.offsetHeight;
+        win.style.left = Math.max(0, (window.innerWidth - w) / 2) + 'px';
+        win.style.top = Math.max(0, (window.innerHeight - h) / 2) + 'px';
+    }
+
+    link.addEventListener('click', function(e){
+        e.preventDefault();
+        if(!win.classList.contains('open')){
+            centerWindow();
+        }
+        win.classList.add('open');
+    });
+
+    closeBtn.addEventListener('click', function(){
+        win.classList.remove('open');
+    });
+
+    // dragging
+    var dragging = false;
+    var offsetX = 0, offsetY = 0;
+
+    titlebar.addEventListener('mousedown', function(e){
+        dragging = true;
+        var rect = win.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e){
+        if(!dragging) return;
+        var x = e.clientX - offsetX;
+        var y = e.clientY - offsetY;
+        x = Math.max(0, Math.min(window.innerWidth - win.offsetWidth, x));
+        y = Math.max(0, Math.min(window.innerHeight - win.offsetHeight, y));
+        win.style.left = x + 'px';
+        win.style.top = y + 'px';
+    });
+
+    document.addEventListener('mouseup', function(){
+        dragging = false;
     });
 })();
 </script>
