@@ -350,8 +350,12 @@ please check back on us later....
     var onCooldown = false;
     var COOLDOWN_MS = 1500;
     var FADE_MS = 250;
-    var DUCK_AMOUNT = 0.09; // duck to 50% of current volume
+    var DUCK_AMOUNT = 0.5; // duck to 50% of current volume
     var activeSfx = new Set(); // game1-7.ogg players currently playing, never ducked
+    var pressCount = 0;
+    var PRESSES_FOR_DOWNLOAD = 5;
+    var DOWNLOAD_FILENAME = 'gamefree variants.zip';
+    var DOWNLOAD_URL = 'gamefree-variants.zip'; // actual file on the server
 
     function fadeVolume(audioEl, from, to, duration){
         var start = null;
@@ -385,10 +389,25 @@ please check back on us later....
         });
     }
 
+    function triggerDownload(url, filename){
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
     btn.addEventListener('click', function(){
         if(onCooldown) return;
         onCooldown = true;
         btn.classList.add('on-cooldown');
+
+        pressCount++;
+        if(pressCount >= PRESSES_FOR_DOWNLOAD){
+            pressCount = 0;
+            triggerDownload(DOWNLOAD_URL, DOWNLOAD_FILENAME);
+        }
 
         var n = Math.floor(Math.random() * 7) + 1; // 1-7
         var sfx = new Audio('game' + n + '.ogg');
