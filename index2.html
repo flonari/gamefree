@@ -487,6 +487,12 @@ hr.old{
     line-height:1.7;
     margin-bottom:14px;
 }
+.disclaimer-box p + p{
+    margin-top:14px;
+}
+.disclaimer-box p.warn{
+    color:#e08888;
+}
 .disclaimer-box button{
     background:#1a1a1a;
     color:#ffff00;
@@ -510,22 +516,21 @@ hr.old{
     <img src="logoings.png" alt="logo">
     <h2>⚠ DISCLAIMER ⚠</h2>
     <p>
-      GAMEFREE.WIN is a silly little art project and should not be taken seriously.
-      everything shown is a work of fiction any resemblance 
-      to actual persons or actual events is purely coincidental.
-
-        also
-      this website features alot of loud noises, flashing lights so if you are
-      sensitive to any of the things mentioned
-      proceed with caution!
+      GAMEFREE.WIN is currently in development, everything you see is subject to change.
+      Everything shown is a work of fiction; any resemblance to actual persons
+      or actual events is purely coincidental.
+    </p>
+    <p class="warn">
+      This website features a lot of loud noises and flashing lights, so if you
+      are sensitive to any of the things mentioned, proceed with caution!
     </p>
     <button id="enterSiteBtn">ENTER SITE</button>
   </div>
 </div>
 <div id="nameScreen" class="hidden">
   <div class="name-box">
-    <h2>how would you like to be adressed as?</h2>
-    <p>enter your "name" to continue into GAMEFREE.WIN</p>
+    <h2>WHO GOES THERE?</h2>
+    <p>enter your name to continue into GAMEFREE.WIN</p>
     <form id="nameForm">
       <input type="text" id="nameInput" maxlength="20" placeholder="your name" autocomplete="off">
       <button id="nameSubmitBtn" type="submit">CONTINUE</button>
@@ -957,9 +962,8 @@ function getCookie(name){
 })();
 
 (function(){
-    var layout = document.querySelector('table.layout');
     var bgMusic = document.getElementById('bgMusic');
-    var HOLD_DURATION = 3200; // ms to hold "r" before it resets
+    var HOLD_DURATION = 2000; // ms to hold "r" before it resets
     var holding = false;
     var startTime = 0;
     var rafId = null;
@@ -982,7 +986,7 @@ function getCookie(name){
         var dx = (Math.random() - 0.5) * amp;
         var dy = (Math.random() - 0.5) * amp;
         var rot = (Math.random() - 0.5) * progress * 6;
-        layout.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + rot + 'deg)';
+        document.body.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + rot + 'deg)';
         var brightness = 1 - progress * 0.75; // dims as it goes
         document.body.style.filter = 'brightness(' + brightness + ') contrast(' + (1 + progress) + ') saturate(' + (1 + progress * 3) + ') hue-rotate(' + (Math.random() * progress * 360) + 'deg) invert(' + (Math.random() < progress * 0.3 ? 1 : 0) + ')';
         bgMusic.playbackRate = Math.max(1 - progress * 0.8, 0.2); // slows down as it goes
@@ -995,7 +999,7 @@ function getCookie(name){
             cancelAnimationFrame(rafId);
             rafId = null;
         }
-        layout.style.transform = '';
+        document.body.style.transform = '';
         document.body.style.filter = '';
         bgMusic.playbackRate = 1;
     }
