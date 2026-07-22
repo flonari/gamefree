@@ -343,6 +343,25 @@ hr.old{
     height:100%;
     object-fit:cover;
     display:block;
+    cursor:pointer;
+}
+.dice-counter{
+    position:fixed;
+    left:12px;
+    bottom:12px;
+    background:#0a0a0a;
+    border:2px ridge silver;
+    color:#0f0;
+    font-family:"Courier New",monospace;
+    font-size:16px;
+    letter-spacing:2px;
+    padding:6px 12px;
+    text-shadow:0 0 5px #0f0;
+    z-index:200;
+    display:none;
+}
+.dice-counter.shown{
+    display:block;
 }
 /* press image in corner of the window */
 #pressBtn{
@@ -373,6 +392,7 @@ hr.old{
 <marquee class="top" scrollamount="6">• LAST UPDATED 2005 •</marquee>
 <br>
 <div class="navbar">
+<a href="#">HOME</a>
 <a href="#">DOWNLOADS</a>
 <a href="#">SCREENSHOTS</a>
 <a href="#">ABOUT</a>
@@ -448,10 +468,12 @@ please check back on us later....
     just don't try to be funny<br>
   </div>
   <div class="corner-dice">
-    <img src="dices.png" alt="">
+    <img src="dices2.png" alt="">
   </div>
   <div class="corner-piece" id="cornerPiece"></div>
 </div>
+
+<div class="dice-counter" id="diceCounter">1/6</div>
 
 <script>
 (function(){
@@ -602,19 +624,59 @@ please check back on us later....
     var cornerClicks = 0;
     var CLICKS_TO_FALL = 6;
     cornerPiece.addEventListener('click', function(){
+        var n = Math.floor(Math.random() * 6) + 1; // 1-6
+        var tap = new Audio('tap' + n + '.ogg');
+        tap.play().catch(function(err){
+            console.warn('could not play tap sound:', err);
+        });
+
         cornerClicks++;
         if(cornerClicks >= CLICKS_TO_FALL){
             cornerPiece.classList.add('fallen');
         }
     });
+
+    var diceImg = document.querySelector('.corner-dice img');
+    var diceCounter = document.getElementById('diceCounter');
+    diceImg.addEventListener('click', function(){
+        diceImg.src = 'it.png';
+        diceCounter.classList.add('shown');
+    });
 })();
 (function(){
-    document.addEventListener('click', function(){
-        var pick = Math.random() < 0.5 ? 'c1.ogg' : 'c2.ogg';
-        var click = new Audio(pick);
-        click.play().catch(function(err){
+    var clickAudioCtx = null;
+    function getClickAudioCtx(){
+        if(!clickAudioCtx){
+            clickAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return clickAudioCtx;
+    }
+
+    function playBoostedClick(url, gainValue){
+        var audioEl = new Audio(url);
+        try{
+            var ctx = getClickAudioCtx();
+            if(ctx.state === 'suspended'){
+                ctx.resume();
+            }
+            var source = ctx.createMediaElementSource(audioEl);
+            var gainNode = ctx.createGain();
+            gainNode.gain.value = gainValue;
+            source.connect(gainNode).connect(ctx.destination);
+        }catch(err){
+            console.warn('volume boost unavailable, playing at normal volume:', err);
+        }
+        audioEl.play().catch(function(err){
             console.warn('could not play click sound:', err);
         });
+    }
+
+    document.addEventListener('click', function(e){
+        if(e.target.closest && e.target.closest('#cornerPiece')){
+            return; // corner piece plays its own tap sound instead
+        }
+        var pick = Math.random() < 0.5 ? 'c1.ogg' : 'c2.ogg';
+        playBoostedClick(pick, 1.5); // 50% louder
     }, true);
 })();
 </script>
