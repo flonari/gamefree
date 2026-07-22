@@ -349,14 +349,18 @@ hr.old{
     position:fixed;
     left:12px;
     bottom:12px;
-    background:#0a0a0a;
-    border:2px ridge silver;
-    color:#0f0;
+    background:#111;
+    border:1px dashed #ff0044;
+    color:#39ff14;
     font-family:"Courier New",monospace;
-    font-size:16px;
-    letter-spacing:2px;
-    padding:6px 12px;
-    text-shadow:0 0 5px #0f0;
+    font-size:15px;
+    font-weight:bold;
+    letter-spacing:1px;
+    padding:5px 11px 7px 9px;
+    text-shadow:1px 1px 0 #000, 0 0 4px #39ff14;
+    box-shadow:3px 3px 0 rgba(0,0,0,.7);
+    transform:rotate(-3.5deg) scaleY(1.6) skewX(-2deg);
+    transform-origin:bottom left;
     z-index:200;
     display:none;
 }
@@ -487,6 +491,21 @@ please check back on us later....
     var PRESSES_FOR_DOWNLOAD = 5;
     var DOWNLOAD_FILENAME = 'gamefreevarients.zip';
     var DOWNLOAD_URL = 'gamefreevarients.zip'; // actual file on the server
+
+    function setCookie(name, value, days){
+        var expires = '';
+        if(days){
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = '; expires=' + date.toUTCString();
+        }
+        document.cookie = name + '=' + value + expires + '; path=/';
+    }
+
+    function getCookie(name){
+        var match = document.cookie.match('(^|;\\s*)' + name + '=([^;]*)');
+        return match ? match[2] : null;
+    }
 
     function fadeVolume(audioEl, from, to, duration){
         var start = null;
@@ -638,9 +657,19 @@ please check back on us later....
 
     var diceImg = document.querySelector('.corner-dice img');
     var diceCounter = document.getElementById('diceCounter');
+
+    // restore persisted state: if it was already found, show it.png and keep the counter visible
+    if(getCookie('dice1Found') === 'true'){
+        diceImg.src = 'it.png';
+        diceImg.style.cursor = 'default';
+        diceCounter.classList.add('shown');
+    }
+
     diceImg.addEventListener('click', function(){
         diceImg.src = 'it.png';
+        diceImg.style.cursor = 'default';
         diceCounter.classList.add('shown');
+        setCookie('dice1Found', 'true', 365);
     });
 })();
 (function(){
@@ -676,7 +705,7 @@ please check back on us later....
             return; // corner piece plays its own tap sound instead
         }
         var pick = Math.random() < 0.5 ? 'c1.ogg' : 'c2.ogg';
-        playBoostedClick(pick, 1.5); // 50% louder
+        playBoostedClick(pick, 3.75); // 150% louder on top of the previous 1.5x boost
     }, true);
 })();
 </script>
