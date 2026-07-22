@@ -641,6 +641,7 @@ please check back on us later....
         bgMusic.play().catch(function(err){
             console.warn('could not start background music:', err);
         });
+        window.siteReady = true;
     }
 
     function setWelcomeName(name){
@@ -952,6 +953,7 @@ function getCookie(name){
 
 (function(){
     var layout = document.querySelector('table.layout');
+    var bgMusic = document.getElementById('bgMusic');
     var HOLD_DURATION = 2000; // ms to hold "r" before it resets
     var holding = false;
     var startTime = 0;
@@ -976,7 +978,9 @@ function getCookie(name){
         var dy = (Math.random() - 0.5) * amp;
         var rot = (Math.random() - 0.5) * progress * 6;
         layout.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + rot + 'deg)';
-        document.body.style.filter = 'contrast(' + (1 + progress) + ') saturate(' + (1 + progress * 3) + ') hue-rotate(' + (Math.random() * progress * 360) + 'deg) invert(' + (Math.random() < progress * 0.3 ? 1 : 0) + ')';
+        var brightness = 1 - progress * 0.75; // dims as it goes
+        document.body.style.filter = 'brightness(' + brightness + ') contrast(' + (1 + progress) + ') saturate(' + (1 + progress * 3) + ') hue-rotate(' + (Math.random() * progress * 360) + 'deg) invert(' + (Math.random() < progress * 0.3 ? 1 : 0) + ')';
+        bgMusic.playbackRate = Math.max(1 - progress * 0.8, 0.2); // slows down as it goes
         rafId = requestAnimationFrame(shakeFrame);
     }
 
@@ -988,6 +992,7 @@ function getCookie(name){
         }
         layout.style.transform = '';
         document.body.style.filter = '';
+        bgMusic.playbackRate = 1;
     }
 
     function doRestart(){
@@ -996,6 +1001,7 @@ function getCookie(name){
     }
 
     document.addEventListener('keydown', function(e){
+        if(!window.siteReady) return; // only works after the name chooser finishes
         if(e.key.toLowerCase() !== 'r' || e.repeat) return;
         holding = true;
         startTime = performance.now();
