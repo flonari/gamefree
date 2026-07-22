@@ -313,6 +313,37 @@ hr.old{
 .win95 .content a{
     color:#00ffff;
 }
+.corner-piece{
+    position:absolute;
+    width:200px;
+    height:100px;
+    right:18px;
+    bottom:18px;
+    background:#0c0c0c;
+    z-index:3;
+    transition:transform .8s ease-in, opacity .8s ease-in;
+    transform-origin:top left;
+}
+.corner-piece.fallen{
+    transform:translateY(260px) rotate(35deg);
+    opacity:0;
+    pointer-events:none;
+}
+.corner-dice{
+    position:absolute;
+    width:200px;
+    height:100px;
+    right:18px;
+    bottom:18px;
+    z-index:2;
+    overflow:hidden;
+}
+.corner-dice img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
 /* press image in corner of the window */
 #pressBtn{
     position:absolute;
@@ -342,6 +373,7 @@ hr.old{
 <marquee class="top" scrollamount="6">• LAST UPDATED 2005 •</marquee>
 <br>
 <div class="navbar">
+<a href="#">HOME</a>
 <a href="#">DOWNLOADS</a>
 <a href="#">SCREENSHOTS</a>
 <a href="#">ABOUT</a>
@@ -416,6 +448,10 @@ please check back on us later....
     we accept and anwser anything! (really!)<br>
     just don't try to be funny<br>
   </div>
+  <div class="corner-dice">
+    <img src="dices.png" alt="">
+  </div>
+  <div class="corner-piece" id="cornerPiece"></div>
 </div>
 
 <script>
@@ -562,6 +598,25 @@ please check back on us later....
     document.addEventListener('mouseup', function(){
         dragging = false;
     });
+
+    var cornerPiece = document.getElementById('cornerPiece');
+    var cornerClicks = 0;
+    var CLICKS_TO_FALL = 6;
+    cornerPiece.addEventListener('click', function(){
+        cornerClicks++;
+        if(cornerClicks >= CLICKS_TO_FALL){
+            cornerPiece.classList.add('fallen');
+        }
+    });
+})();
+(function(){
+    document.addEventListener('click', function(){
+        var pick = Math.random() < 0.5 ? 'c1.ogg' : 'c2.ogg';
+        var click = new Audio(pick);
+        click.play().catch(function(err){
+            console.warn('could not play click sound:', err);
+        });
+    }, true);
 })();
 </script>
 
