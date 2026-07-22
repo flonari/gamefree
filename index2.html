@@ -396,9 +396,88 @@ hr.old{
 #pressBtn.on-cooldown{
     pointer-events:none;
 }
+/* disclaimer splash screen */
+#disclaimerScreen{
+    position:fixed;
+    inset:0;
+    background:#000;
+    z-index:500;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:opacity .8s ease-in;
+}
+#disclaimerScreen.leaving{
+    opacity:0;
+}
+#disclaimerScreen.hidden{
+    display:none;
+}
+.disclaimer-box{
+    width:480px;
+    max-width:90%;
+    text-align:center;
+    font-family:"Comic Sans MS",Verdana,Arial,sans-serif;
+    color:#e0e0e0;
+    opacity:0;
+    transform:translateY(100px);
+    transition:opacity 2.2s ease-out, transform 2.2s ease-out;
+}
+.disclaimer-box.entered{
+    opacity:1;
+    transform:translateY(0);
+}
+.disclaimer-box.leaving{
+    opacity:0;
+    transform:translateY(0);
+    transition:opacity .5s ease-in;
+}
+.disclaimer-box img{
+    display:block;
+    margin:0 auto 12px auto;
+    max-width:100%;
+}
+.disclaimer-box h2{
+    color:#ff4444;
+    text-shadow:1px 1px #000;
+    font-size:18px;
+    margin-bottom:10px;
+}
+.disclaimer-box p{
+    font-size:12px;
+    line-height:1.7;
+    margin-bottom:14px;
+}
+.disclaimer-box button{
+    background:#1a1a1a;
+    color:#ffff00;
+    border:2px outset gray;
+    font-weight:bold;
+    font-size:12px;
+    padding:8px 18px;
+    cursor:pointer;
+    font-family:inherit;
+}
+.disclaimer-box button:hover{
+    border-style:inset;
+    background:#330000;
+    color:#fff;
+}
 </style>
 </head>
 <body>
+<div id="disclaimerScreen">
+  <div class="disclaimer-box">
+    <img src="logoings.png" alt="logo">
+    <h2>⚠ DISCLAIMER ⚠</h2>
+    <p>
+      GAMEFREE.WIN is not responsible for any viruses, lost data, blown speakers,
+      or existential crises caused by the content on this site. All downloadz are
+      provided "as-is" with zero guarantees. Enter at your own risk!!
+    </p>
+    <button id="enterSiteBtn">ENTER SITE</button>
+  </div>
+</div>
 <audio src="back.ogg" autoplay loop></audio>
 <div class="box b1"></div>
 <div class="box b2"></div>
@@ -496,6 +575,40 @@ please check back on us later....
 <div class="dice-counter" id="diceCounter">1/6</div>
 
 <script>
+(function(){
+    var screen = document.getElementById('disclaimerScreen');
+    var box = document.querySelector('.disclaimer-box');
+    var enterBtn = document.getElementById('enterSiteBtn');
+
+    // trigger the slow rise-in shortly after load
+    requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+            box.classList.add('entered');
+        });
+    });
+
+    enterBtn.addEventListener('click', function(){
+        // stage 1: fade out just the disclaimer content, leaving a solid black screen
+        box.classList.add('leaving');
+
+        box.addEventListener('transitionend', function onBoxFaded(e){
+            if(e.propertyName !== 'opacity') return;
+            box.removeEventListener('transitionend', onBoxFaded);
+
+            // stage 2: hold on solid black for a beat
+            setTimeout(function(){
+                // stage 3: fade the black screen away to reveal the main site
+                screen.classList.add('leaving');
+                screen.addEventListener('transitionend', function onScreenFaded(e2){
+                    if(e2.propertyName !== 'opacity') return;
+                    screen.classList.add('hidden');
+                    screen.removeEventListener('transitionend', onScreenFaded);
+                });
+            }, 500);
+        });
+    });
+})();
+
 function setCookie(name, value, days){
     var expires = '';
     if(days){
