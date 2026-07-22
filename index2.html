@@ -141,6 +141,11 @@ marquee.side{
     line-height:1.5;
 }
 .sidebox .body a{color:#00ffff;display:block;margin:2px 0;}
+.sidebox .body a.disabled{
+    color:#ff0000;
+    pointer-events:none;
+    cursor:default;
+}
 .badge-row{
     text-align:center;
     padding:6px 0;
@@ -412,7 +417,7 @@ hr.old{
       <a href="#">» Home</a>
       <a href="#">» Downloads</a>
       <a href="#">» Newsletters</a>
-      <a href="#">» Forum (offline)</a>
+      <a href="#" class="disabled">» Forum (offline)</a>
     </div>
   </div>
 
@@ -439,7 +444,7 @@ hr.old{
 Welcome to <span class="rainbow">GAMEFREE.WIN</span>, your #1 destination for your free game downloadz. This site has been under construction since 2005 and will continue to be under construction for the foreseeable future.
 </p>
 <p>
-We are currently rebuilding the downloads section after our last host went out of business. <span class="newgif">NEW</span> Please check back at a later date for updates!
+We are currently rebuilding the downloads section after our last host went out of business. <span class="newgif" id="newBadge">NEW</span> Please check back at a later date for updates!
 </p>
 <hr class="old">
 <p>
@@ -706,6 +711,32 @@ function getCookie(name){
         var pick = Math.random() < 0.5 ? 'c1.ogg' : 'c2.ogg';
         playBoostedClick(pick, 2.5); // 150% louder on top of the previous 1.5x boost
     }, true);
+})();
+
+(function(){
+    var newBadge = document.getElementById('newBadge');
+    var clicks = 0;
+    var CLICKS_NEEDED = 3;
+
+    function spawnBadgesEverywhere(){
+        var targets = document.querySelectorAll(
+            '.window p, .window h2, .tagline, .footer .stamp, .sidebox h3, .sidebox .body a, .counter, .constr'
+        );
+        targets.forEach(function(el){
+            var clone = newBadge.cloneNode(true);
+            clone.removeAttribute('id');
+            el.appendChild(document.createTextNode(' '));
+            el.appendChild(clone);
+        });
+    }
+
+    newBadge.addEventListener('click', function(e){
+        e.stopPropagation();
+        clicks++;
+        if(clicks >= CLICKS_NEEDED){
+            spawnBadgesEverywhere();
+        }
+    });
 })();
 </script>
 
