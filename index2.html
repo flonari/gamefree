@@ -527,7 +527,7 @@ hr.old{
     </form>
   </div>
 </div>
-<audio src="back.ogg" autoplay loop></audio>
+<audio id="bgMusic" src="back.ogg" loop></audio>
 <div class="box b1"></div>
 <div class="box b2"></div>
 <div class="box b3"></div>
@@ -635,6 +635,13 @@ please check back on us later....
     var nameForm = document.getElementById('nameForm');
 
     var nameSlot = document.getElementById('nameSlot');
+    var bgMusic = document.getElementById('bgMusic');
+
+    function startMusic(){
+        bgMusic.play().catch(function(err){
+            console.warn('could not start background music:', err);
+        });
+    }
 
     function setWelcomeName(name){
         if(name){
@@ -684,6 +691,7 @@ please check back on us later....
         disclaimerScreen.classList.add('hidden');
         nameScreen.classList.add('hidden');
         setWelcomeName(savedName);
+        startMusic();
     } else {
         // show disclaimer first
         riseIn(disclaimerBox);
@@ -705,6 +713,7 @@ please check back on us later....
             setCookie('visitorName', name, 365);
             fadeOutThenRun(nameScreen, nameBox, function(){
                 setWelcomeName(name);
+                startMusic();
             });
         }
 
@@ -939,6 +948,66 @@ function getCookie(name){
         var pick = Math.random() < 0.5 ? 'c1.ogg' : 'c2.ogg';
         playBoostedClick(pick, 2.5); // 150% louder on top of the previous 1.5x boost
     }, true);
+})();
+
+(function(){
+    var layout = document.querySelector('table.layout');
+    var HOLD_DURATION = 2000; // ms to hold "r" before it resets
+    var holding = false;
+    var startTime = 0;
+    var rafId = null;
+    var restartTimeout = null;
+
+    function clearAllCookies(){
+        document.cookie.split(';').forEach(function(c){
+            var name = c.split('=')[0].trim();
+            if(name){
+                document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            }
+        });
+    }
+
+    function shakeFrame(now){
+        if(!holding) return;
+        var elapsed = now - startTime;
+        var progress = Math.min(elapsed / HOLD_DURATION, 1);
+        var amp = 2 + progress * 22; // grows more intense the longer you hold
+        var dx = (Math.random() - 0.5) * amp;
+        var dy = (Math.random() - 0.5) * amp;
+        var rot = (Math.random() - 0.5) * progress * 6;
+        layout.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + rot + 'deg)';
+        document.body.style.filter = 'contrast(' + (1 + progress) + ') saturate(' + (1 + progress * 3) + ') hue-rotate(' + (Math.random() * progress * 360) + 'deg) invert(' + (Math.random() < progress * 0.3 ? 1 : 0) + ')';
+        rafId = requestAnimationFrame(shakeFrame);
+    }
+
+    function stopShake(){
+        holding = false;
+        if(rafId){
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+        layout.style.transform = '';
+        document.body.style.filter = '';
+    }
+
+    function doRestart(){
+        clearAllCookies();
+        location.reload();
+    }
+
+    document.addEventListener('keydown', function(e){
+        if(e.key.toLowerCase() !== 'r' || e.repeat) return;
+        holding = true;
+        startTime = performance.now();
+        rafId = requestAnimationFrame(shakeFrame);
+        restartTimeout = setTimeout(doRestart, HOLD_DURATION);
+    });
+
+    document.addEventListener('keyup', function(e){
+        if(e.key.toLowerCase() !== 'r') return;
+        clearTimeout(restartTimeout);
+        stopShake();
+    });
 })();
 
 (function(){
