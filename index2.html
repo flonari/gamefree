@@ -396,8 +396,8 @@ hr.old{
 #pressBtn.on-cooldown{
     pointer-events:none;
 }
-/* disclaimer splash screen */
-#disclaimerScreen{
+/* disclaimer + name-chooser splash screens */
+#disclaimerScreen, #nameScreen{
     position:fixed;
     inset:0;
     background:#000;
@@ -407,13 +407,13 @@ hr.old{
     justify-content:center;
     transition:opacity .8s ease-in;
 }
-#disclaimerScreen.leaving{
+#disclaimerScreen.leaving, #nameScreen.leaving{
     opacity:0;
 }
-#disclaimerScreen.hidden{
+#disclaimerScreen.hidden, #nameScreen.hidden{
     display:none;
 }
-.disclaimer-box{
+.disclaimer-box, .name-box{
     width:480px;
     max-width:90%;
     text-align:center;
@@ -423,14 +423,53 @@ hr.old{
     transform:translateY(100px);
     transition:opacity 2.2s ease-out, transform 2.2s ease-out;
 }
-.disclaimer-box.entered{
+.disclaimer-box.entered, .name-box.entered{
     opacity:1;
     transform:translateY(0);
 }
-.disclaimer-box.leaving{
+.disclaimer-box.leaving, .name-box.leaving{
     opacity:0;
     transform:translateY(0);
     transition:opacity .5s ease-in;
+}
+.name-box h2{
+    color:#ff4444;
+    text-shadow:1px 1px #000;
+    font-size:18px;
+    margin-bottom:10px;
+}
+.name-box p{
+    font-size:12px;
+    line-height:1.7;
+    margin-bottom:14px;
+}
+.name-box input[type="text"]{
+    background:#1a1a1a;
+    color:#0f0;
+    border:2px inset gray;
+    font-family:"Courier New",monospace;
+    font-size:14px;
+    padding:6px 10px;
+    text-align:center;
+    margin-bottom:14px;
+    width:220px;
+}
+.name-box button{
+    background:#1a1a1a;
+    color:#ffff00;
+    border:2px outset gray;
+    font-weight:bold;
+    font-size:12px;
+    padding:8px 18px;
+    cursor:pointer;
+    font-family:inherit;
+    display:block;
+    margin:0 auto;
+}
+.name-box button:hover{
+    border-style:inset;
+    background:#330000;
+    color:#fff;
 }
 .disclaimer-box img{
     display:block;
@@ -476,6 +515,16 @@ hr.old{
       provided "as-is" with zero guarantees. Enter at your own risk!!
     </p>
     <button id="enterSiteBtn">ENTER SITE</button>
+  </div>
+</div>
+<div id="nameScreen" class="hidden">
+  <div class="name-box">
+    <h2>WHO GOES THERE?</h2>
+    <p>enter your name to continue into GAMEFREE.WIN</p>
+    <form id="nameForm">
+      <input type="text" id="nameInput" maxlength="20" placeholder="your name" autocomplete="off">
+      <button id="nameSubmitBtn" type="submit">CONTINUE</button>
+    </form>
   </div>
 </div>
 <audio src="back.ogg" autoplay loop></audio>
@@ -530,7 +579,7 @@ hr.old{
 <img id="pressBtn" src="press.png" alt="">
 <div class="constr">⚠ UNDER CONSTRUCTION ⚠ PLEASE PARDON OUR DUST ⚠</div>
 <br>
-<h2 class="blink">WELCOME!!!</h2>
+<h2 class="blink" id="welcomeHeading">WELCOME<span id="nameSlot"></span>!!!</h2>
 <p>
 Welcome to <span class="rainbow-drag" id="rainbowText"><span class="rainbow">GAMEFREE.WIN</span></span>, your #1 destination for your free game downloadz. This site has been under construction since 2005 and will continue to be under construction for the foreseeable future.
 </p>
@@ -576,37 +625,91 @@ please check back on us later....
 
 <script>
 (function(){
-    var screen = document.getElementById('disclaimerScreen');
-    var box = document.querySelector('.disclaimer-box');
+    var disclaimerScreen = document.getElementById('disclaimerScreen');
+    var disclaimerBox = document.querySelector('.disclaimer-box');
     var enterBtn = document.getElementById('enterSiteBtn');
 
-    // trigger the slow rise-in shortly after load
-    requestAnimationFrame(function(){
+    var nameScreen = document.getElementById('nameScreen');
+    var nameBox = document.querySelector('.name-box');
+    var nameInput = document.getElementById('nameInput');
+    var nameForm = document.getElementById('nameForm');
+
+    var nameSlot = document.getElementById('nameSlot');
+
+    function setWelcomeName(name){
+        if(name){
+            nameSlot.textContent = ' ' + name;
+            nameSlot.parentNode.lastChild.textContent = '!!!!'; // 4 marks when a name is shown
+        }
+    }
+
+    function riseIn(box){
         requestAnimationFrame(function(){
-            box.classList.add('entered');
+            requestAnimationFrame(function(){
+                box.classList.add('entered');
+            });
         });
-    });
+    }
 
-    enterBtn.addEventListener('click', function(){
-        // stage 1: fade out just the disclaimer content, leaving a solid black screen
-        box.classList.add('leaving');
-
-        box.addEventListener('transitionend', function onBoxFaded(e){
-            if(e.propertyName !== 'opacity') return;
+    function fadeOutThenRun(screen, box, callback){
+        var done = false;
+        function proceed(){
+            if(done) return;
+            done = true;
             box.removeEventListener('transitionend', onBoxFaded);
-
-            // stage 2: hold on solid black for a beat
+            // stage 2: hold on solid black for a beat (screen bg still fully visible)
             setTimeout(function(){
-                // stage 3: fade the black screen away to reveal the main site
-                screen.classList.add('leaving');
-                screen.addEventListener('transitionend', function onScreenFaded(e2){
-                    if(e2.propertyName !== 'opacity') return;
-                    screen.classList.add('hidden');
-                    screen.removeEventListener('transitionend', onScreenFaded);
-                });
+                screen.classList.add('hidden');
+                callback();
             }, 500);
+        }
+
+        function onBoxFaded(e){
+            if(e.propertyName !== 'opacity') return;
+            proceed();
+        }
+
+        // stage 1: fade out the box content, leaving a solid black screen
+        box.classList.add('leaving');
+        box.addEventListener('transitionend', onBoxFaded);
+        // fallback in case transitionend doesn't fire for any reason (e.g. reduced-motion settings)
+        setTimeout(proceed, 700);
+    }
+
+    var savedName = getCookie('visitorName');
+    var seenDisclaimer = getCookie('seenDisclaimer') === 'true';
+
+    if(seenDisclaimer && savedName){
+        // skip both screens entirely
+        disclaimerScreen.classList.add('hidden');
+        nameScreen.classList.add('hidden');
+        setWelcomeName(savedName);
+    } else {
+        // show disclaimer first
+        riseIn(disclaimerBox);
+
+        enterBtn.addEventListener('click', function(){
+            setCookie('seenDisclaimer', 'true', 365);
+            fadeOutThenRun(disclaimerScreen, disclaimerBox, function(){
+                // show the name chooser next
+                nameScreen.classList.remove('hidden');
+                riseIn(nameBox);
+                nameInput.focus();
+            });
         });
-    });
+
+        function submitName(e){
+            if(e && e.preventDefault) e.preventDefault();
+            var name = nameInput.value.trim();
+            if(!name) name = 'GAMER';
+            setCookie('visitorName', name, 365);
+            fadeOutThenRun(nameScreen, nameBox, function(){
+                setWelcomeName(name);
+            });
+        }
+
+        nameForm.addEventListener('submit', submitName);
+    }
 })();
 
 function setCookie(name, value, days){
