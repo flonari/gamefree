@@ -516,7 +516,7 @@ hr.old{
     <img src="logoings.png" alt="logo">
     <h2>⚠ DISCLAIMER ⚠</h2>
     <p>
-      GAMEFREE.WIN is a silly little art project and should not be taken seriously.
+      GAMEFREE.WIN is still in development so everything shown is subject to change.
       Everything shown is a work of fiction; any resemblance to actual persons
       or actual events is purely coincidental.
     </p>
@@ -524,7 +524,7 @@ hr.old{
       This website features a lot of loud noises and flashing lights, so if you
       are sensitive to any of the things mentioned, proceed with caution!
     </p>
-    <button id="enterSiteBtn">ENTER SITE</button>
+    <button id="enterSiteBtn" disabled>ENTER SITE</button>
   </div>
 </div>
 <div id="nameScreen" class="hidden">
@@ -533,7 +533,7 @@ hr.old{
     <p>enter your name to continue into GAMEFREE.WIN</p>
     <form id="nameForm">
       <input type="text" id="nameInput" maxlength="20" placeholder="your name" autocomplete="off">
-      <button id="nameSubmitBtn" type="submit">CONTINUE</button>
+      <button id="nameSubmitBtn" type="submit" disabled>CONTINUE</button>
     </form>
   </div>
 </div>
@@ -661,12 +661,27 @@ please check back on us later....
         }
     }
 
-    function riseIn(box){
+    function riseIn(box, onDone){
         requestAnimationFrame(function(){
             requestAnimationFrame(function(){
                 box.classList.add('entered');
             });
         });
+        if(onDone){
+            var done = false;
+            function finish(){
+                if(done) return;
+                done = true;
+                box.removeEventListener('transitionend', onEntered);
+                onDone();
+            }
+            function onEntered(e){
+                if(e.propertyName !== 'opacity') return;
+                finish();
+            }
+            box.addEventListener('transitionend', onEntered);
+            setTimeout(finish, 2500); // fallback in case transitionend doesn't fire
+        }
     }
 
     function fadeOutThenRun(screen, box, callback){
@@ -697,6 +712,9 @@ please check back on us later....
     var savedName = getCookie('visitorName');
     var seenDisclaimer = getCookie('seenDisclaimer') === 'true';
 
+    var disclaimerReady = false;
+    var nameReady = false;
+
     if(seenDisclaimer && savedName){
         // skip both screens entirely
         disclaimerScreen.classList.add('hidden');
@@ -705,20 +723,28 @@ please check back on us later....
         startMusic();
     } else {
         // show disclaimer first
-        riseIn(disclaimerBox);
+        riseIn(disclaimerBox, function(){
+            disclaimerReady = true;
+            enterBtn.disabled = false;
+        });
 
         enterBtn.addEventListener('click', function(){
+            if(!disclaimerReady) return;
             setCookie('seenDisclaimer', 'true', 365);
             fadeOutThenRun(disclaimerScreen, disclaimerBox, function(){
                 // show the name chooser next
                 nameScreen.classList.remove('hidden');
-                riseIn(nameBox);
+                riseIn(nameBox, function(){
+                    nameReady = true;
+                    document.getElementById('nameSubmitBtn').disabled = false;
+                });
                 nameInput.focus();
             });
         });
 
         function submitName(e){
             if(e && e.preventDefault) e.preventDefault();
+            if(!nameReady) return;
             var name = nameInput.value.trim();
             if(!name) name = 'GAMER';
             setCookie('visitorName', name, 365);
@@ -956,6 +982,10 @@ function getCookie(name){
         if(e.target.closest && e.target.closest('#cornerPiece')){
             return; // corner piece plays its own tap sound instead
         }
+        var disclaimerScreen = document.getElementById('disclaimerScreen');
+        var nameScreen = document.getElementById('nameScreen');
+        var introShowing = !disclaimerScreen.classList.contains('hidden') || !nameScreen.classList.contains('hidden');
+        if(introShowing) return;
         var pick = Math.random() < 0.5 ? 'c1.ogg' : 'c2.ogg';
         playBoostedClick(pick, 2.5); // 150% louder on top of the previous 1.5x boost
     }, true);
