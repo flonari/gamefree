@@ -269,6 +269,53 @@ hr.old{
     font-family:"Courier New",monospace;
     color:#555;
 }
+/* admin mode easter egg */
+.admin-banner{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    background:#330000;
+    color:#ff3333;
+    text-align:center;
+    font-family:"Courier New",monospace;
+    font-size:12px;
+    font-weight:bold;
+    letter-spacing:3px;
+    padding:5px;
+    z-index:250;
+    display:none;
+    animation:blink 1s steps(1) infinite;
+}
+body.admin-mode{
+    background-color:#140000;
+}
+body.admin-mode .admin-banner{
+    display:block;
+}
+body.admin-mode .logo{
+    background:linear-gradient(180deg,#ff2222,#880000 60%,#000);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    filter:drop-shadow(0 0 6px #f00);
+}
+body.admin-mode .tagline{
+    color:#ff5555;
+}
+body.admin-mode .window{
+    border-color:#ff2222;
+}
+body.admin-mode .window h2{
+    color:#ff2222;
+}
+body.admin-mode .sidebox h3{
+    background:#330000;
+}
+body.admin-mode marquee.top{
+    background:#330000;
+    color:#ff5555;
+}
 /* draggable contact window */
 .win95{
     position:fixed;
@@ -497,33 +544,6 @@ hr.old{
     opacity:0;
     pointer-events:none;
 }
-.folder-hint{
-    position:absolute;
-    right:100%;
-    margin-right:14px;
-    color:#ff5555;
-    font-family:"Comic Sans MS",Verdana,Arial,sans-serif;
-    font-size:13px;
-    text-shadow:1px 1px 0 #000;
-    white-space:nowrap;
-    animation:shakyText .15s infinite;
-    opacity:0;
-    transition:opacity 1s ease-in;
-    pointer-events:none;
-}
-.folder-hint.shown{
-    opacity:1;
-}
-.folder-hint.fading{
-    opacity:0;
-}
-@keyframes shakyText{
-    0%{transform:translate(0,0) rotate(0deg);}
-    25%{transform:translate(-1px,1px) rotate(-1deg);}
-    50%{transform:translate(1px,-1px) rotate(1deg);}
-    75%{transform:translate(-1px,-1px) rotate(0deg);}
-    100%{transform:translate(0,0) rotate(0deg);}
-}
 .disclaimer-box img{
     display:block;
     margin:0 auto 12px auto;
@@ -564,6 +584,7 @@ hr.old{
 </style>
 </head>
 <body>
+<div class="admin-banner">⚠ ADMIN MODE ACTIVE ⚠</div>
 <div id="disclaimerScreen">
   <div class="disclaimer-box">
     <img src="logoings.png" alt="logo">
@@ -593,7 +614,6 @@ hr.old{
 <div id="folderScreen" class="hidden">
   <div class="folder-wrap" id="folderWrap">
     <img id="folderImg" src="folder.png" alt="folder">
-    <div class="folder-hint" id="folderHint">placeholder text</div>
   </div>
 </div>
 
@@ -710,7 +730,6 @@ please check back on us later....
     var folderScreen = document.getElementById('folderScreen');
     var folderWrap = document.getElementById('folderWrap');
     var folderImg = document.getElementById('folderImg');
-    var folderHint = document.getElementById('folderHint');
 
     function showFolderScreen(){
         folderScreen.classList.remove('hidden');
@@ -730,10 +749,6 @@ please check back on us later....
             folderImg.addEventListener('load', applyFolderSize, { once: true });
         }
 
-        // position the hint text at a random height along the folder image's left side
-        var randomTop = Math.floor(Math.random() * 70) + 10; // 10% - 80%
-        folderHint.style.top = randomTop + '%';
-
         // pop up (fades in over 1s)
         requestAnimationFrame(function(){
             requestAnimationFrame(function(){
@@ -745,11 +760,6 @@ please check back on us later....
         popSound.play().catch(function(err){
             console.warn('could not play folder sound:', err);
         });
-
-        // once the folder has fully faded in, wait 1s more, then fade the hint text in too
-        setTimeout(function(){
-            folderHint.classList.add('shown');
-        }, 1000 + 1000);
 
         folderImg.addEventListener('click', onFolderClick);
     }
@@ -766,7 +776,6 @@ please check back on us later....
         document.body.removeChild(a);
 
         folderImg.classList.add('falling');
-        folderHint.classList.add('fading');
 
         setTimeout(function(){
             folderScreen.classList.add('hidden');
@@ -785,6 +794,9 @@ please check back on us later....
         if(name){
             nameSlot.textContent = ' ' + name;
             nameSlot.parentNode.lastChild.textContent = '!!!!'; // 4 marks when a name is shown
+        }
+        if(name && name.trim().toLowerCase() === 'admin'){
+            document.body.classList.add('admin-mode');
         }
     }
 
