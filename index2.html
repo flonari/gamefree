@@ -316,6 +316,49 @@ body.admin-mode marquee.top{
     background:#330000;
     color:#ff5555;
 }
+.admin-only{
+    display:none;
+}
+body.admin-mode .admin-only{
+    display:block;
+}
+.status-dot{
+    display:inline-block;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    margin-right:6px;
+    vertical-align:middle;
+}
+.status-dot.green{
+    background:#33ff33;
+    box-shadow:0 0 4px #33ff33;
+}
+.status-dot.yellow{
+    background:#ffee33;
+    box-shadow:0 0 4px #ffee33;
+}
+.status-dot.gray{
+    background:#888;
+    box-shadow:0 0 3px #555;
+}
+.user-row{
+    display:flex;
+    align-items:center;
+    margin:3px 0;
+    font-family:"Courier New",monospace;
+    font-size:10px;
+}
+.log-entry{
+    margin:4px 0;
+    font-family:"Courier New",monospace;
+    font-size:10px;
+    line-height:1.5;
+}
+.log-entry .ver{
+    color:#ff5555;
+    font-weight:bold;
+}
 /* draggable contact window */
 .win95{
     position:fixed;
@@ -551,13 +594,6 @@ body.admin-mode marquee.top{
 .spin-wrap.entered{
     opacity:1;
 }
-.spin-wrap.spinning img{
-    animation:spinAround 1.2s linear infinite;
-}
-@keyframes spinAround{
-    from{transform:rotate(0deg);}
-    to{transform:rotate(360deg);}
-}
 .spin-wrap{
     opacity:0;
     transition:opacity 2s ease-in;
@@ -701,6 +737,28 @@ body.admin-mode marquee.top{
     </div>
   </div>
 
+  <div class="sidebox admin-only">
+    <h3>UPDATE LOG</h3>
+    <div class="body">
+      <div class="log-entry"><span class="ver">v0.9.4</span> - added admin panel access</div>
+      <div class="log-entry"><span class="ver">v0.9.3</span> - fixed forum links (lol)</div>
+      <div class="log-entry"><span class="ver">v0.9.2</span> - added hidden dice easter egg</div>
+      <div class="log-entry"><span class="ver">v0.9.1</span> - initial disclaimer + name screens</div>
+      <div class="log-entry"><span class="ver">v0.9.0</span> - site relaunch</div>
+    </div>
+  </div>
+
+  <div class="sidebox admin-only">
+    <h3>REGISTERED USERS</h3>
+    <div class="body">
+      <div class="user-row"><span class="status-dot green"></span>xX_Gamer420_Xx</div>
+      <div class="user-row"><span class="status-dot yellow"></span>pixelqueen99</div>
+      <div class="user-row"><span class="status-dot gray"></span>byte_bandit</div>
+      <div class="user-row"><span class="status-dot green"></span>retroRaptor</div>
+      <div class="user-row"><span class="status-dot gray"></span>modem_muncher</div>
+    </div>
+  </div>
+
 
   <marquee class="side" direction="up" scrollamount="3">
     thx for visiting!! more downloadz comin soon!!
@@ -775,6 +833,7 @@ please check back on us later....
 
     var spinScreen = document.getElementById('spinScreen');
     var spinWrap = document.getElementById('spinWrap');
+    var spinImg = document.getElementById('spinImg');
 
     function showSpinScreen(){
         spinScreen.classList.remove('hidden');
@@ -786,13 +845,33 @@ please check back on us later....
             });
         });
 
+        var spinAngle = 0;
+        var spinStartTime = null;
+        var spinRafId = null;
+        var ACCEL_DURATION = 2500; // ms to ramp up from slow to fast
+        var MIN_SPEED = 0.5; // degrees per frame, starting speed
+        var MAX_SPEED = 22; // degrees per frame, top speed
+
+        function spinFrame(now){
+            if(spinStartTime === null) spinStartTime = now;
+            var elapsed = now - spinStartTime;
+            var progress = Math.min(elapsed / ACCEL_DURATION, 1);
+            // ease-in curve so it ramps up gradually rather than linearly
+            var eased = progress * progress;
+            var speed = MIN_SPEED + (MAX_SPEED - MIN_SPEED) * eased;
+            spinAngle = (spinAngle + speed) % 360;
+            spinImg.style.transform = 'rotate(' + spinAngle + 'deg)';
+            spinRafId = requestAnimationFrame(spinFrame);
+        }
+
         // once faded in, start spinning
         setTimeout(function(){
-            spinWrap.classList.add('spinning');
+            spinRafId = requestAnimationFrame(spinFrame);
         }, 1500);
 
         // spin for a while, then move on to the main site
         setTimeout(function(){
+            if(spinRafId) cancelAnimationFrame(spinRafId);
             spinScreen.classList.add('leaving');
             spinScreen.addEventListener('transitionend', function onSpinFaded(e){
                 if(e.propertyName !== 'opacity') return;
